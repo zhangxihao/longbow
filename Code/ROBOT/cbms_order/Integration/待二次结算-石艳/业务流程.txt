@@ -1,0 +1,34 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          脚本关键字.txt
+
+*** Keywords ***
+登录系统
+    [Arguments]    ${url}    ${username}    ${password}
+    打开浏览器_SY    ${url}
+    最大化浏览器窗口_SY
+    输入用户名_Sy    ${username}
+    输入密码_SY    ${password}
+    点击登录_SY
+
+进入交易单管理页面
+    [Arguments]    ${menu}
+    进入菜单页面_SY    ${menu}
+
+进入待二次结算tab页
+    goto    http://sim-cbms.prcsteel.com/order/query/secondsettlement.html
+
+给相应的交易单录入实提量
+    [Arguments]    ${buyer}    ${number1}    ${weight1}    ${number2}    ${weight2}
+    Wait Until Element Is Visible    queryBtn
+    根据买家全称进行搜索_SY    ${buyer}
+    进入录入实提单页面_SY
+    Wait Until Page Contains Element    cancel
+    录入实提量_SY    ${number1}    ${weight1}    ${number2}    ${weight2}
+
+进行二次结算
+    Wait Until Element Is Visible    secondary
+    click element    secondary
+    sleep    2
+    Wait Until Element Is Visible    xpath=/html/body/div[3]/div[2]/div/div[2]/button
+    click element    xpath=/html/body/div[3]/div[2]/div/div[2]/button

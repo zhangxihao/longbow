@@ -1,0 +1,46 @@
+*** Settings ***
+Library           AutoItLibrary
+Resource          mykeyword.txt
+Resource          flow.txt
+Library           Selenium2Library
+Resource          page2.txt
+
+*** Test Cases ***
+LoginDemo
+    [Setup]    结束进程
+    [Timeout]
+    登录流程    yff    123456
+    登录检查    pass
+    添加采购单    15867000001    张三    杭州CVVC公司    100
+    [Teardown]    测试失败时调用
+
+testdemo
+    openbrowser    file:///C:/Users/prcsteel/Desktop/Test/test.html
+    select radio button    sex    man
+    select checkbox    run
+    select checkbox    draw
+    sleep    3
+    unselect checkbox    run
+    Comment    select from list    xpath=/html/body/select    C
+    select from list by index    xpath=/html/body/select    1
+    ${title}=    get title
+    log    ${title}
+
+testdemo2
+    openbrowser    file:///C:/Users/prcsteel/Desktop/Test/dialog.html
+    click button    alert
+    Comment    ${msg}=    get alert message
+    Comment    log    ${msg}
+    Alert Should Be Present    欢迎！请按确认继续！
+    choose cancel on next confirmation
+    Comment    click button    confirm
+    Comment    ${msg}=    confirm action
+    click button    prompt
+    send    123456
+    confirm Action
+
+testUserKd
+    打开浏览器    http://ssotest.com:8080/cas/login?service=http://smart.com:8081/web/shiro-cas
+    输入用户名    yff
+    输入密码    123456
+    登录

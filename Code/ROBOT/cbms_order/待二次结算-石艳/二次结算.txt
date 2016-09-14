@@ -1,0 +1,27 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          业务流程.txt
+
+*** Variables ***
+${url}            http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas
+${jusername}      yangbin    # 交易员用户名
+${jpassword}      Oct.2015    # 交易员密码
+${buyer}          买家44    # 买家全称
+${weight}         8    # 实提重量
+${number}         8    # 实提数量
+${nusername}      gonghuan    # 内勤用户名
+${npassword}      gtxh123    # 内勤密码
+
+*** Test Cases ***
+交易员登录系统，在待二次结算tab页面录入实提量，进行二结
+    登录系统    ${url}    ${jusername}    ${jpassword}
+    检查有“交易管理”菜单
+    进入交易单管理页面    http://sim-cbms.prcsteel.com/order/query/index.html
+    进入待二次结算tab页
+    给相应的交易单录入实提量    ${buyer}    ${number}    ${weight}
+    关闭浏览器
+    登录系统    ${url}    ${nusername}    ${npassword}
+    进入交易单管理页面    http://sim-cbms.prcsteel.com/order/query/index.html
+    进入待二次结算tab页
+    给相应的交易单录入实提量    ${buyer}    ${number}    ${weight}
+    进行二次结算

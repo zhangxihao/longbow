@@ -1,0 +1,98 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource_2.0.txt
+
+*** Keywords ***
+页面超市-选择品名
+    [Arguments]    ${NsortName}
+    输入文本    xpath=//*[@id="nsortName"]    ${NsortName}
+    模拟发送按键    {TAB}
+
+页面超市-选择材质
+    [Arguments]    ${locator1}
+    Comment    执行同步JavaScript    document.getElementById('material').removeAttribute('readonly');
+    单击元素    xpath=//*[@id="material"]
+    单击链接    ${locator1}
+    单击按钮    xpath=//*[@id="showLayer_material"]/div[3]/button[2]
+
+页面超市-选择厂家
+    [Arguments]    ${locator2}
+    Comment    执行同步JavaScript    document.getElementById('factory').removeAttribute('readonly');
+    单击元素    xpath=//*[@id="factory"]
+    单击链接    ${locator2}
+    单击按钮    xpath=//*[@id="showLayer_factory"]/div[3]/button[2]
+
+页面超市-选择规格1
+    [Arguments]    ${locator3}
+    Comment    执行同步JavaScript    document.getElementById('inputspec1').removeAttribute('readonly');
+    单击元素    xpath=//*[@id="inputspec1"]
+    单击链接    ${locator3}
+    单击按钮    xpath=//*[@id="showLayer_spec1"]]//button[@class="confirm-btn"]
+
+页面超市-选择规格2
+    [Arguments]    ${locator4}
+    Comment    执行同步JavaScript    document.getElementById('inputspec2').removeAttribute('readonly');
+    单击元素    xpath=//*[@id="inputspec2"]
+    单击链接    ${locator4}
+    Comment    单击按钮    xpath=//*[@id="showLayer_spec1"]//button[@class="confirm-btn"]
+
+页面超市-选择规格3
+    [Arguments]    ${locator5}
+    Comment    执行同步JavaScript    document.getElementById('inputspec3').removeAttribute('readonly');
+    单击元素    xpath=//*[@id="inputspec3"]
+    单击链接    ${locator5}
+    Comment    单击按钮    xpath=//*[@id="showLayer_spec3"]]//button[@class="confirm-btn"]
+    Comment    输入文本    xpath=//*[@id="from_spec3"]    ${From_spec3}
+    Comment    输入文本    xpath=//*[@id="to_spec3"]    ${To_spec3}
+
+页面超市-点击搜索
+    单击按钮    xpath=//*[@id="searchBtn"]
+
+页面超市-点击帮我找
+    [Arguments]    ${locator}
+    单击元素    ${locator}
+
+页面超市-点击帮我找-输入文本
+    [Arguments]    ${value}
+    输入文本    xpath=//*[@id="textarea"]    ${value}
+
+页面超市-点击帮我找-上传文件（中间+）
+    [Arguments]    ${FilePath}
+    选择文件    xpath=//*[@id="uploadFile3"]    ${FilePath}
+
+页面超市-点击帮我找-上传文件（左下+）
+    [Arguments]    ${FilePath}
+    选择文件    xpath=//*[@id="uploadFile4"]    ${FilePath}
+
+页面超市-发送需求-点击钢为帮我找
+    单击按钮    xpath=//*[@id="shopcart"]//input[@class="helpme-btn"]
+
+页面超市-发送需求成功-点击我知道了
+    单击链接    xpath=//*[@id="dialogContBox"]//div[@class="succ-link"]//a[text()="我知道了"]
+
+页面超市-点击加入购物车
+    [Arguments]    ${locator}
+    单击按钮    ${locator}
+
+页面超市-输入采购重量
+    [Arguments]    ${value}
+    输入文本    xpath=//*[@id="dialogContBox"]//div[@class="pur-bar"]//input[@class="weight-ipt"]    ${EMPTY}
+    输入文本    xpath=//*[@id="dialogContBox"]//div[@class="pur-bar"]//input[@class="weight-ipt"]    ${value}
+
+页面超市-点击按钮
+    单击按钮    xpath=//*[@id="dialogContBox"]//div[@class="pur-btn-bar"]//button[text()="加入购物车"]    #点击加入购物车
+
+页面超市-点击购物车
+    单击链接    xpath=//*[@id="shopcart"]//li[@class="cartLink"]//a[text()="购物车"]    #点击查看前台购物车
+
+页面超市-点击去购物车
+    [Arguments]    ${locator}
+    单击链接    xpath=//*[@id="shopcart"]//div[@class="cart_btn"]//a[text()="去购物车"]    #点击加入购物车
+    选择窗口    ${locator}
+
+页面超市-点击提交询价
+    单击链接    xpath=//div[@class="list-total"]//p[@class="right"]//a[text()="提交询价"]
+
+页面超市-点击我知道了
+    单击链接    xpath=//*[@id="dialogContBox"]//div[@class="succ-link"]//a[text()="我知道了"]

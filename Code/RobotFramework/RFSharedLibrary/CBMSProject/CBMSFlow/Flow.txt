@@ -1,0 +1,241 @@
+*** Settings ***
+Documentation     * 约定：
+...
+...               命名规则：流程“模块”-“子模块”-“...”
+...
+...               例如1：流程登录
+...
+...               例如2：流程新开交易单-录入买家
+...
+...               例如3：流程交易单管理-待审核Tab
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../CBMSPage/Page.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource.txt
+
+*** Keywords ***
+流程登录
+    [Arguments]    ${URL}    ${UserName}    ${PassWord}    ${Browser}=chrome    ${Alias}=${None}
+    [Documentation]    * 登录流程接受以下参数：
+    ...
+    ...    URL：网址
+    ...
+    ...    UserName：用户名
+    ...
+    ...    PassWord：密码
+    ...
+    ...    Browser: 选择浏览器，FireFox，Chrome，默认Chrome
+    ...
+    ...    Alias：浏览器别名，选填
+    打开浏览器并最大化    ${URL}    ${Browser}    ${Alias}
+    页面登录    ${UserName}    ${PassWord}
+
+流程搜索
+    [Arguments]    ${Code}=${empty}    ${AccountName}=${empty}    ${SellerName}=${empty}    ${Select_pay_style}=${empty}    ${StartTime}=${empty}    ${EndTime}=${empty}
+    [Documentation]    根据所传入的可选参数执行相应的动作：
+    ...
+    ...    code=交易单号
+    ...
+    ...    accountName=买家全称
+    ...
+    ...    sellerName=卖家全称
+    ...
+    ...    selectValue=支付类型
+    ...
+    ...    startTime=开始日期
+    ...
+    ...    endTime=结束日期
+    页面搜索    ${Code}    ${AccountName}    ${SellerName}    ${Select_pay_style}    ${StartTime}    ${EndTime}
+    Comment    sleep    1s    \    #执行完搜索后其实正常情况有个页面重载的过程，应该等待页面加载完毕
+    运行关键字并判断    '${Code}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+    运行关键字并判断    '${AccountName}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[text()="${AccountName}"]
+    运行关键字并判断    '${SellerName}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[text()="${SellerName}"]
+    运行关键字并判断    '${Select_pay_style}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+    运行关键字并判断    '${StartTime}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+    运行关键字并判断    '${EndTime}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+
+流程获取新开单后的交易单号
+    [Documentation]    * 此流程主要用于获取新开单后的交易单号.
+    ...
+    ...    *使用变量${OrderID}即可获取订单ID*
+    跳转到地址    ${URL.ApprovalOrder}    #待审核Tab
+    Comment    防止并发先根据卖家名称进行搜索一把
+    流程搜索    \    \    ${Account.SellerName}
+    Comment    ${OrderIdText}    Get Text    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]
+    ${OrderIdText}    页面新开交易单-获取订单号
+    Set Global Variable    ${OrderID}    ${OrderIdText}
+
+流程新开交易单-录入买家信息
+    [Arguments]    ${BuyerName}    ${BuyerDepartment}    ${BuyerContact}    ${BuyerContactTel}
+    跳转到地址    ${URL.CreateOrder}    #跳转到新开交易单
+    页面新开交易单-录入买家信息    ${BuyerName}    ${BuyerDepartment}    ${BuyerContact}    ${BuyerContactTel}
+
+流程新开交易单-录入资源信息
+    [Arguments]    ${SellerName}    ${SellerDepartment}    ${SellerContact}    ${NsortName}    ${Material}    ${Spec}
+    ...    ${Factory}    ${Province}    ${City}    ${Warehouse}    ${Quantity}    ${Weight}
+    ...    ${WeightConcept}    ${DealPrice}    ${CostPrice}    ${IsPayedByAcceptDraft}
+    [Documentation]    新开单录入卖家信息：
+    ...
+    ...    ${LocationCopy}：点击复制链接(可传参数)
+    ...
+    ...    ${LocationManualAdd}：手动添加(可传参数)
+    ...
+    ...    ${LocationSearchAdd}：搜索添加(可传参数)
+    ...
+    ...    *虽然可以不传，但是不能中间某一个不传...*
+    页面新开交易单-录入资源信息    ${SellerName}    ${SellerDepartment}    ${SellerContact}    ${NsortName}    ${Material}    ${Spec}
+    ...    ${Factory}    ${Province}    ${City}    ${Warehouse}    ${Quantity}    ${Weight}
+    ...    ${WeightConcept}    ${DealPrice}    ${CostPrice}    ${IsPayedByAcceptDraft}
+    Comment    运行关键字并判断    '${LocationCopy}' == '单击复制'    单击链接    xpath=//*[@id="table_resource"]/tbody/tr[last()]//a[@copy="copy"]
+    Comment    第二种方式：直接在testcase中传入选择器，根据传入的选择器执行相应的动作
+    Comment    运行关键字并判断    '${LocationCopy}' != 'None'    单击链接    ${LocationCopy}
+    Comment    运行关键字并判断    '${LocationManualAdd}' != 'None'    单击按钮    ${LocationManualAdd}
+    Comment    运行关键字并判断    '${LocationSearchAdd}' != 'None'    单击按钮    ${LocationSearchAdd}
+
+流程新开交易单-录入交提货信息
+    [Arguments]    ${DeliveryType}=${EMPTY}    ${EndTime}=${EMPTY}    ${FeeTaker}=${EMPTY}    ${OutboundTaker}=${EMPTY}    ${ContractAddress}=${EMPTY}
+    [Documentation]    交易货信息：
+    ...
+    ...    DeliveryType：交货方式
+    ...
+    ...    EndTime：交货时间
+    ...
+    ...    FeeTaker：运费
+    ...
+    ...    OutboundTaker：出库费
+    ...
+    ...    ContractAddress：合同签订地
+    页面新开交易单-录入交提货信息    ${DeliveryType}    ${EndTime}    ${FeeTaker}    ${OutboundTaker}    ${ContractAddress}
+
+流程交易单管理-待审核Tab-审核
+    [Documentation]    * Status: 接受一个参数，PASS执行审核流程，FAIL执行审核不通过流程，默认PASS
+    跳转到地址    ${URL.ApprovalOrder}    #待审核Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待审核Tab
+
+流程交易单管理-待审核Tab-审核通过
+    [Arguments]    ${OrderNote}=${empty}
+    [Documentation]    OrderNote：订单备注,默认空
+    页面交易单管理-待审核Tab-审核通过    ${OrderNote}    #点击通过按钮
+    关闭当前浏览器
+
+流程交易单管理-待审核Tab-审核不通过
+    [Arguments]    ${OrderNote}    ${text}
+    [Documentation]    * 这里故意将备注选为必填，为后面做校验使用
+    页面交易单管理-待审核Tab-审核不通过    ${OrderNote}    ${text}    #点击不通过按钮
+
+流程交易单管理-待关联Tab
+    跳转到地址    ${URL.AssociateOrder}    #待审核Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待关联Tab
+
+流程交易单管理-待关联Tab-关联
+    页面交易单管理-待关联Tab-关联
+    关闭当前浏览器
+
+流程交易单管理-待关联Tab-申请关闭
+    [Arguments]    ${text}
+    [Documentation]    text:待关联申请关闭理由
+    页面交易单管理-待关联Tab-申请关闭    ${text}
+
+流程交易单管理-待申请付款Tab
+    跳转到地址    ${URL.ApplyPayment}    #待审核Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待申请付款Tab
+
+流程交易单管理-待申请付款Tab-申请付款
+    [Arguments]    ${PictureFileName}    ${ContractNo}
+    [Documentation]    ContracNo：合同编号
+    ...
+    ...    PictureFileName：合同图片
+    页面交易单管理-待申请付款Tab-申请付款    ${PictureFileName}    ${ContractNo}
+    关闭当前浏览器
+
+流程交易单管理-待申请付款Tab-申请关闭
+    [Arguments]    ${text}
+    [Documentation]    text:待关联申请关闭理由
+    页面交易单管理-待申请付款Tab-申请关闭    ${text}
+
+流程交易单管理-待审核付款Tab
+    跳转到地址    ${URL.AuditPaymentOrder}    #待审核付款Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待审核付款Tab
+
+流程交易单管理-待审核付款Tab-通过
+    [Documentation]    OrderNote：订单备注,默认空
+    页面交易单管理-待审核付款Tab-通过    #点击通过按钮
+    关闭当前浏览器
+
+流程交易单管理-待审核付款Tab-不通过
+    [Arguments]    ${text}
+    [Documentation]    text:待审核不通过理由
+    页面交易单管理-待审核付款Tab-不通过    ${text}
+    关闭当前浏览器
+
+流程交易单管理-交易关闭Tab
+    跳转到地址    ${URL.TradeClose}    #交易关闭Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-交易关闭Tab
+
+流程交易单管理-待打印付款申请Tab
+    跳转到地址    ${URL.PrintPendingPayapply}    #待打印付款申请Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待打印付款申请Tab
+
+流程交易单管理-待打印付款申请Tab-打印付款申请单
+    页面交易单管理-待打印付款申请Tab-打印付款申请单
+
+流程交易单管理-待确认已付款Tab
+    跳转到地址    ${URL.ConfirmPayment}    #待确认已付款Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待确认已付款Tab
+
+流程交易单管理-待确认已付款Tab-确认已付款
+    页面交易单管理-待确认已付款Tab-确认已付款
+    关闭当前浏览器
+
+流程交易单管理-待提货Tab
+    跳转到地址    ${URL.Pickup}    #待提货Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待提货Tab
+
+流程交易单管理-待提货Tab-确认提交
+    [Arguments]    ${Text}    ${FilePath}    # 车船号
+    [Documentation]    Text：车船号。
+    ...
+    ...    例如：浙A12345
+    页面交易单管理-待提货Tab-确认提交    ${Text}    ${FilePath}
+    关闭当前浏览器
+
+流程交易单管理-待放货Tab
+    跳转到地址    ${URL.Fillup}    #待放货Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待放货Tab
+
+流程交易单管理-待放货Tab-打印放货单
+    页面交易单管理-待放货Tab-打印放货单
+
+流程交易单管理-待二次结算Tab
+    跳转到地址    ${URL.SecondSettlement}    #待二次结算Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-待二次结算Tab
+
+流程交易单管理-待二次结算Tab-录入实提量
+    [Arguments]    ${Number}    ${Weight}
+    页面交易单管理-待二次结算Tab-录入实提量    ${Number}    ${Weight}
+
+流程交易单管理-已二结Tab
+    跳转到地址    ${URL.Invoice}    #已二结Tab
+    Comment    根据订单号进行搜索
+    流程搜索    ${OrderID}
+    页面交易单管理-已二结Tab

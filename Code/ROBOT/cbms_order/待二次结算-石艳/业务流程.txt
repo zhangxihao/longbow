@@ -1,0 +1,32 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          脚本关键字.txt
+
+*** Keywords ***
+登录系统
+    [Arguments]    ${url}    ${username}    ${password}
+    打开浏览器    ${url}
+    最大化浏览器窗口
+    输入用户名    ${username}
+    输入密码    ${password}
+    点击登录
+
+进入交易单管理页面
+    [Arguments]    ${menu}
+    进入菜单页面    ${menu}
+
+进入待二次结算tab页
+    click link    xpath=//a[@href='/order/query/secondsettlement.html']
+
+给相应的交易单录入实提量
+    [Arguments]    ${buyer}    ${number}    ${weight}
+    根据买家全称进行搜索    ${buyer}
+    进入录入实提单页面
+    Wait Until Page Contains Element    cancel
+    录入实提量    ${number}    ${weight}
+
+进行二次结算
+    Wait Until Element Is Visible    secondary
+    click element    secondary
+    sleep    10
+    click element    xpath=/html/body/div[3]/div[2]/div/div[2]/button

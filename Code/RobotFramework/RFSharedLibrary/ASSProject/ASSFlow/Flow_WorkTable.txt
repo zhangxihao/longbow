@@ -1,0 +1,400 @@
+*** Settings ***
+Resource          ../ASSPage/Page_WorkTable.txt
+Resource          ../../SharedLibrary/Action/Database.txt
+Resource          EC2.0Flow.txt
+Resource          ../ASSProjectResource.txt
+Resource          ../DataBase/busi_requirement.txt
+Resource          Flow_SystemParam.txt
+
+*** Keywords ***
+流程切换为离线
+    ${status}    页面获取状态
+    Run Keyword If    '${status}'=='空闲'    页面切换为离线
+    ...    ELSE IF    '${status}'=='忙碌'    流程忙碌状态，切换为离线
+    ...    ELSE IF    '${status}'=='离开'    流程离开状态，切换为离线
+
+流程忙碌状态，切换为离线
+    页面切换为离开
+    页面暂缓需求单
+    页面切换为离线
+
+流程离开状态，切换为离线
+    [Documentation]    \#
+    ...
+    ...    disabled_newAddOrder值有2种结果：1true、2null
+    ...
+    ...    true代表新开询价单按钮置灰、即目前为离开（有处理中的需求）
+    ...    null代表新开询价单按钮可点击、即目前为离开（无处理中的需求）
+    ${disabled_newAddOrder}=    页面获取新开询价单元素的disabled属性
+    运行关键字并判断    '${disabled_newAddOrder}'=='true'    流程离开（有处理中的需求），切换为离线
+    页面切换为离线
+
+流程离开（有处理中的需求），切换为离线
+    页面切换为上线
+    页面切换为离开
+    页面暂缓需求单
+    页面切换为离线
+
+流程推送需求
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    user:超市登录用户手机号    #user、password为可选参数
+    ...
+    ...    password：超市登录用户密码
+    ...
+    ...
+    ...
+    ...    待分配的需求为0：可自定义配置user&password、未配置则使用默认值
+    ...
+    ...    待分配的需求不为0：无需配置user、password
+    ${count}    获取待分配状态的需求单总数
+    Run Keyword If    '${count}'=='0'    Run Keywords    流程超市提交回执需求    ${user}    ${password}
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    Sleep    10    #定时任务，最长10s获取需求单
+
+流程切换为离开（无处理中的需求）
+    ${status}    页面获取状态
+    Run Keyword If    '${status}'=='空闲'    页面切换为离开
+    ...    ELSE IF    '${status}'=='忙碌'    流程忙碌状态，切换为离开（无处理中的需求）
+    ...    ELSE IF    '${Text}'=='离开'    流程离开状态，切换为离开（无处理中的需求）
+    ...    ELSE IF    '${Text}'=='离线'    页面切换为离开
+
+流程忙碌状态，切换为离开（无处理中的需求）
+    页面切换为离开
+    页面暂缓需求单
+    Comment    页面关闭需求单
+
+流程离开状态，切换为离开（无处理中的需求）
+    [Documentation]    \#
+    ...
+    ...    disabled_newAddOrder值有2种结果：1true、2null
+    ...
+    ...    true代表新开询价单按钮置灰、即目前为离开（有处理中的需求）
+    ...    null代表新开询价单按钮可点击、即目前为离开（无处理中的需求）
+    ${disabled_newAddOrder}=    页面获取新开询价单元素的disabled属性
+    运行关键字并判断    '${disabled_newAddOrder}'=='true'    流程离开（有处理中的需求），切换为离开（无处理中的需求）
+
+流程离开（有处理中的需求），切换为离开（无处理中的需求）
+    页面切换为上线
+    页面切换为离开
+    页面暂缓需求单
+
+流程切换为离开（有处理中的需求）
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    user:超市登录用户手机号    #
+    ...
+    ...    password：超市登录用户密码
+    ...
+    ...
+    ...    当前状态空闲|当前状态离开且需求池无待分配的需求|当前状态离线且需求池无待分配的需求3种场景下时，可自定义配置user、password、未配置则使用默认值
+    ...
+    ...    其它场景下无需配置user、password
+    ${status}    页面获取状态
+    Run Keyword If    '${status}'=='空闲'    流程空闲状态，切换为离开（有处理中的需求）    ${user}    ${password}
+    ...    ELSE IF    '${status}'=='忙碌'    页面切换为离开
+    ...    ELSE IF    '${Text}'=='离开'    流程离开状态，切换为离开（有处理中的需求）    ${user}    ${password}
+    ...    ELSE IF    '${Text}'=='离线'    流程离线状态，切换为离开（有处理中的需求）    ${user}    ${password}
+
+流程空闲状态，切换为离开（有处理中的需求）
+    [Arguments]    ${user}    ${password}
+    [Documentation]    user:超市登录用户手机号
+    ...
+    ...    password：超市登录用户密码
+    流程超市提交回执需求    ${user}    ${password}
+    选择浏览器    ${Browser.AliasASS}
+    页面已分配需求单，请点击确定跳转到工作台页面
+    Comment    等待页面包含指定元素    xpath=.//*[@class='mari close-box dwcl']/a
+    Comment    Element Text Should Be    xpath=.//*[@class='mari close-box dwcl']/a    忙碌    #校验是否派发需求单，状态自动切换为忙碌
+    页面切换为离开
+
+流程离开状态，切换为离开（有处理中的需求）
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    user:超市登录用户手机号    #
+    ...
+    ...    password：超市登录用户密码
+    ...
+    ...
+    ...
+    ...    当前状态离开&无待分配的需求：可自定义配置user、password，未配置则使用默认值
+    ...
+    ...    其它场景下无需配置user、password
+    ${disabled_newAddOrder}=    页面获取新开询价单元素的disabled属性
+    运行关键字并判断    '${disabled_newAddOrder}'!='true'    流程离开（无处理中的需求），切换为离开（有处理中的需求）    ${user}    ${password}
+
+流程离开（无处理中的需求），切换为离开（有处理中的需求）
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    user:超市登录用户手机号    #
+    ...
+    ...    password：超市登录用户密码
+    ...
+    ...
+    ...
+    ...    当前状态离开且需求池无待分配的需求时，可自定义配置user、password、未配置则使用默认值
+    ...    当前状态离开且需求池存在待分配的需求时，无需配置user、password
+    页面切换为上线
+    流程上线状态，切换为离开（有处理中的需求）    ${user}    ${password}
+
+流程上线状态，切换为离开（有处理中的需求）
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    user:超市登录用户手机号    #
+    ...
+    ...    password：超市登录用户密码
+    ...
+    ...
+    ...    当空闲状态时，可自定义配置user&password、未配置则使用默认值
+    ...
+    ...    当忙碌状态时，无需配置user&password
+    ${status}    页面获取状态
+    Run Keyword If    '${status}'=='空闲'    流程空闲状态，切换为离开（有处理中的需求）    ${user}    ${password}
+    ...    ELSE IF    '${Text}'=='忙碌'    页面切换为离开
+
+流程离线状态，切换为离开（有处理中的需求）
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    user:超市登录用户手机号    #
+    ...
+    ...    password：超市登录用户密码
+    ...
+    ...
+    ...    当前状态离线且需求池无待分配的需求时，可自定义配置user、password、未配置则使用默认值
+    ...    当前状态离线且需求池存在待分配的需求时，无需配置user、password
+    页面切换为上线
+    流程上线状态，切换为离开（有处理中的需求）    ${user}    ${password}
+
+流程切换为空闲
+    ${status}    页面获取状态
+    Run Keyword If    '${status}'=='忙碌'    流程忙碌状态，自动切换为空闲
+    ...    ELSE IF    '${Text}'=='离开'    流程离开状态，切换为空闲
+    ...    ELSE IF    '${Text}'=='离线'    流程离线状态，切换为空闲
+
+流程忙碌状态，自动切换为空闲
+    [Documentation]    \#
+    ...    忙碌状态，处理完所有需求、即自动切换为空闲
+    ${count}    获取待分配状态的需求单总数
+    : FOR    ${index}    IN RANGE    ${Count}+1
+    \    页面暂缓需求单
+
+流程离开状态，切换为空闲
+    [Documentation]    \#
+    ...
+    ...    disabled_newAddOrder值有2种结果：1true、2null
+    ...
+    ...    true代表新开询价单按钮置灰、即目前为离开（有处理中的需求）
+    ...    null代表新开询价单按钮可点击、即目前为离开（无处理中的需求）
+    ${disabled_newAddOrder}=    页面获取新开询价单元素的disabled属性
+    运行关键字并判断    '${disabled_newAddOrder}'=='true'    流程离开（有处理中的需求），切换为离开（无处理中的需求）
+    页面切换为上线
+    ${status}    页面获取状态
+    运行关键字并判断    '${status}'=='忙碌'    流程忙碌状态，自动切换为空闲
+
+流程离线状态，切换为空闲
+    页面切换为上线
+    ${status}    页面获取状态
+    运行关键字并判断    '${status}'=='忙碌'    流程忙碌状态，自动切换为空闲
+
+流程切换为忙碌
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    ${status}    页面获取状态
+    Run Keyword If    '${status}'=='空闲'    流程空闲状态，自动切换为忙碌    ${user}    ${password}
+    ...    ELSE IF    '${Text}'=='离开'    流程离开状态，切换为忙碌    ${user}    ${password}
+    ...    ELSE IF    '${Text}'=='离线'    流程离线状态，切换为忙碌    ${user}    ${password}
+
+流程空闲状态，自动切换为忙碌
+    [Arguments]    ${user}    ${password}
+    [Documentation]    user:超市登录用户手机号
+    ...
+    ...    password：超市登录用户密码
+    流程超市提交回执需求    ${user}    ${password}
+    选择浏览器    ${Browser.AliasASS}
+    页面已分配需求单，请点击确定跳转到工作台页面
+    ${status}    页面获取状态
+    Should Be Equal    ${status}    忙碌    #校验派发需求单，状态自动切换为忙碌
+
+流程离开状态，切换为忙碌
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    离开（无处理中的需求）&无待分配的需求时：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    ...
+    ...    其他场景下无需配置
+    ${disabled_newAddOrder}=    页面获取新开询价单元素的disabled属性
+    Run Keyword If    '${disabled_newAddOrder}'!='true'    流程离开（无处理中的需求），切换为忙碌    ${user}    ${password}
+    ...    ELSE IF    '${disabled_newAddOrder}'=='true'    页面切换为上线
+
+流程离开（无处理中的需求），切换为忙碌
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...    离开（无处理中的需求）&无待分配的需求时：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    页面切换为上线
+    ${status}    页面获取状态    #获取当前状态
+    运行关键字并判断    '${status}'=='空闲'    流程空闲状态，自动切换为忙碌    ${user}    ${password}
+
+流程离线状态，切换为忙碌
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    离线&无待分配的需求时：配置自定义的user、password,未配置则使用默认值
+    页面切换为上线
+    ${status}    页面获取状态    #获取当前状态
+    运行关键字并判断    '${status}'=='空闲'    流程空闲状态，自动切换为忙碌    ${user}    ${password}
+
+流程暂缓(无启用状态的理由)
+    [Arguments]    ${content}    ${sort}    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    content：理由
+    ...
+    ...    sort：显示顺序
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    流程理由Tab_新增理由    ${content}    ${sort}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌    ${user}    ${password}
+    页面暂缓需求单
+
+流程暂缓
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌    ${user}    ${password}
+    页面暂缓需求单
+
+流程关闭(无启用状态的理由)
+    [Arguments]    ${content}    ${sort}    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    content：理由
+    ...
+    ...    sort：显示顺序
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    流程理由Tab_新增理由    ${content}    ${sort}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌    ${user}    ${password}
+    页面关闭需求单
+
+流程关闭
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌    ${user}    ${password}
+    页面关闭需求单
+
+流程提交询价单
+    [Arguments]    ${contract_info}    ${account_info}    ${nsortName}    ${material}    ${inputspec1}    ${inputspec2}
+    ...    ${inputspec3}    ${factory}    ${weight}    ${city_info}    ${alias}=${EMPTY}    ${quantity}=${EMPTY}
+    ...    ${remark}=${EMPTY}    ${total_remark}=${EMPTY}    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    contract_info：联系人
+    ...    account_info：买家全称
+    ...    nsortName：品名
+    ...    material：材质
+    ...    inputspec1：规格1
+    ...    inputspec2：规格2
+    ...    inputspec3：规格3
+    ...    factory：厂家
+    ...    weight：重量
+    ...    city_info：交货地
+    ...    alias：别名
+    ...    quantity：数量
+    ...    remark：询价明细行备注
+    ...    total_remark：总备注
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌    ${user}    ${password}
+    页面提交询价单    ${contract_info}    ${account_info}    ${nsortName}    ${material}    ${inputspec1}    ${inputspec2}
+    ...    ${inputspec3}    ${factory}    ${weight}    ${city_info}    ${alias}    ${quantity}
+    ...    ${remark}    ${total_remark}
+
+流程新开询价单
+    [Arguments]    ${requirementMobile}    ${contract_info}    ${account_info}    ${nsortName}    ${material}    ${inputspec1}
+    ...    ${inputspec2}    ${inputspec3}    ${factory}    ${weight}    ${city_info}    ${alias}=${EMPTY}
+    ...    ${quantity}=${EMPTY}    ${remark}=${EMPTY}    ${total_remark}=${EMPTY}
+    [Documentation]    \#
+    ...
+    ...    requirementMobile：联系电话
+    ...    contract_info：联系人
+    ...    account_info：买家全称
+    ...    nsortName：品名
+    ...    material：材质
+    ...    inputspec1：规格1
+    ...    inputspec2：规格2
+    ...    inputspec3：规格3
+    ...    factory：厂家
+    ...    weight：重量
+    ...    city_info：交货地
+    ...    alias：别名
+    ...    quantity：数量
+    ...    remark：询价明细行备注
+    ...    total_remark：总备注
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（无处理中的需求）
+    页面点击新开询价单
+    页面新开询价单    ${requirementMobile}    ${contract_info}    ${account_info}    ${nsortName}    ${material}    ${inputspec1}
+    ...    ${inputspec2}    ${inputspec3}    ${factory}    ${weight}    ${city_info}    ${alias}
+    ...    ${quantity}    ${remark}    ${total_remark}
+
+流程从需求池（N>1）获取创建时间最早的需求单号
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    待分配的需求=0/1个时，可配置自定义的user、password,未配置则使用默认值
+    ${Count}    获取待分配状态的需求单总数
+    Comment    Run Keyword If    '${Count}'=='0'    流程超市提交回执需求    ${user}    ${password}
+    Comment    查询数据库行数    select * from busi_requirement where status='NEW'
+    Comment    Run Keyword If    '${Count}'=='1'    流程超市提交回执需求    ${user}    ${password}    #使需求池至少存在2张待分配的需求单
+    Run Keyword If    '${Count}'=='0'    Run Keywords    流程超市提交回执需求    ${user}    ${password}
+    ...    AND    流程超市提交回执需求    ${user}    ${password}
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    ...    ELSE IF    '${Count}'=='1'    Run Keywords    流程超市提交回执需求    ${user}    ${password}
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    ${earlyRequirementCode}    获取创建时间最早&待分配状态的需求单号
+    [Return]    ${earlyRequirementCode}
+
+流程客服工作台_获取联系电话
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌    ${user}    ${password}
+    ${contract_mobile}    页面客服工作台_获取联系电话
+    [Return]    ${contract_mobile}
+
+流程客服工作台_获取共发起询价
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌    ${user}    ${password}
+    ${countRequirement}    页面客服工作台_获取共发起询价
+    [Return]    ${countRequirement}
+
+流程获取生成询价单
+    [Arguments]    ${user}=${User_EC.UsernameLogin1}    ${password}=${User_EC.PasswordLogin1}
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    可配置自定义的user、password,未配置则使用默认值
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌    ${user}    ${password}
+    ${countInquiry}    页面获取生成询价单
+    [Return]    ${countInquiry}

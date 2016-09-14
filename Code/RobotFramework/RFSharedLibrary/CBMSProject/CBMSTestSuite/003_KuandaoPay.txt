@@ -1,0 +1,446 @@
+*** Settings ***
+Documentation     - 款道支付流程
+Resource          ../CBMSFlow/FlowInit.txt
+Resource          ../CBMSFlow/Flow.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../ProjectResource.txt
+Resource          ../../SharedLibrary/Action/CBMSGloble.txt
+
+*** Test Cases ***
+开户管理_未开户_客户类型_买家
+    [Documentation]    - 未开户
+    ...    1. 创建买家客户--校验款道中存在此买家客户
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}    买家
+    ${Text}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    Run Keyword If    '${Text}' == ''    测试失败    创建客户类型错误
+    断言页面应该包含文本    ${MyAccountName}_买家_${AccountName}
+
+开户管理_未开户_客户类型_卖家_临
+    [Documentation]    - 未开户
+    ...    1. 创建买家客户--校验款道中存在此类型客户
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    卖家    临
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}    卖家(临)
+    ${Text}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    Run Keyword If    '${Text}' == ''    测试失败    创建客户类型错误
+    断言页面应该包含文本    ${MyAccountName}_卖家_${AccountName}
+
+开户管理_未开户_客户类型_卖家_代
+    [Documentation]    - 未开户
+    ...    1. 创建买家客户--校验款道中存在此类型客户
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    卖家    代
+    流程临时-审核代运营协议    ${AccountName}
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}    卖家(代)
+    ${Text}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    Run Keyword If    '${Text}' == ''    测试失败    创建客户类型错误
+    断言页面应该包含文本    ${MyAccountName}_卖家_${AccountName}
+
+开户管理_未开户_客户类型_仓库
+    [Documentation]    - 未开户
+    ...    1. 创建买家客户--校验款道中存在此类型客户
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    仓库
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}    仓库
+    ${Text}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    Run Keyword If    '${Text}' == ''    测试失败    创建客户类型错误
+    断言页面应该包含文本    ${MyAccountName}_仓库_${AccountName}
+
+开户管理_未开户_客户类型_运输
+    [Documentation]    - 未开户
+    ...    1. 创建买家客户--校验款道中存在此类型客户
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    运输
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}    运输
+    ${Text}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    Run Keyword If    '${Text}' == ''    测试失败    创建客户类型错误
+    断言页面应该包含文本    ${MyAccountName}_运输_${AccountName}
+
+开户管理_未开户_客户类型_加工
+    [Documentation]    - 未开户
+    ...    1. 创建买家客户--校验款道中存在此类型客户
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    加工
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}    加工
+    ${Text}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    Run Keyword If    '${Text}' == ''    测试失败    创建客户类型错误
+    断言页面应该包含文本    ${MyAccountName}_加工_${AccountName}
+
+开户管理_未开户_状态_正常
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建完客户后，校验此条记录。
+    ...
+    ...    校验状态：正常
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家    临
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[8]/span
+    断言两个对象是否相等    ${Expect}    正常    客户状态错误
+    Comment    错误演示，校验脚本正确性
+    Comment    断言页面应该不包含勾选框    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[1]/input[@type="checkbox"]    当前页包含勾选框，断言错误
+
+开户管理_未开户_状态_有空值
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建完客户后，校验此客户状态为：有空值
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    ${EMPTY}    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[8]/span
+    断言两个对象是否相等    ${Expect}    有空值    客户状态错误
+    断言页面应该不包含链接    开户    当前页包含开户链接，断言错误
+    断言页面应该不包含勾选框    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[1]/input[@type="checkbox"]    当前页包含勾选框，断言错误
+    Comment    错误演示，校验脚本正确性.当前记录不包含修改连接
+    Comment    断言页面应该不包含链接    修改    当前页包含开户链接，断言错误
+
+开户管理_未开户_状态_锁定
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户，校验此客户状态为：有空值
+    流程临时-锁定客户
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[8]/span
+    断言两个对象是否相等    ${Expect}    锁定    客户状态错误
+    断言页面应该包含链接    开户    当前页不包含开户链接，断言错误
+
+开户管理_未开户_默认款道电话校验
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户，校验此客户：默认款道电话为13456807615
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家    临
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[6]
+    断言两个对象是否相等    ${Expect}    13456807615    默认款道电话生成错误
+    Comment    错误演示，校验脚本正确性.使用错误手机号与获取的手机号进行对比
+    Comment    断言两个对象是否相等    ${Expect}    12345678901    默认款道电话生成错误
+
+开户管理_未开户_删除后保留会员号
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--开户--删除--校验是否保留浦发会员号
+    流程款道-未开户-开户
+    流程款道-已开户-搜索    ${AccountName}
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[2]
+    流程款道-删除
+    流程款道-未开户-搜索    ${AccountName}
+    ${Actual}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[7]
+    Comment    错误演示，校验脚本正确性.使用手机号与浦发号进行对比
+    Comment    ${Actual}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[6]
+    断言两个对象是否相等    ${Expect}    ${Actual}    已开户删除后浦发会员号变更了
+
+开户管理_未开户_修改_公司名称
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--修改
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    页面款道-未开户-修改    #单击修改
+    ${Actual}    获取元素值    xpath=//*[@id="memeberName"]
+    断言两个对象是否相等    ${Expect}    ${Actual}    修改弹出框默认客户名称与原客户名称不符
+
+开户管理_未开户_修改_公司名称已存在
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--修改--更改为系统已存在的客户名称
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    ${Account1}=    Set Variable    ${MyAccountName}_${Type}_${AccountName}
+    Log    1=${Account1}
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    ${Account2}=    Set Variable    ${MyAccountName}_${Type}_${AccountName}
+    Log    2=${Account2}
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${MyAccountName}_${Type}_${AccountName}
+    Log    3=${MyAccountName}_${Type}_${AccountName}
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    页面款道-未开户-修改    #单击修改
+    页面款道-未开户-修改-输入公司名称    ${Account1}    #这个是第一次创建客户的名称
+    页面款道-未开户-修改-确定
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '客户名已存在'    单击浮层OK
+    ...    ELSE IF    '${Temp}' == 'code:null,message:null'    测试失败    修改客户名称报错
+    ...    ELSE    测试失败    修改客户名称报错，未知错误
+
+开户管理_未开户_修改_公司名称为空
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--修改--输入空的公司名--确定
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    页面款道-未开户-修改    #单击修改
+    页面款道-未开户-修改-输入公司名称    ${EMPTY}123123
+    页面款道-未开户-修改-确定    #click
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '请输入客户名称'    单击浮层OK
+    ...    ELSE IF    '${Temp}' == '修改客户信息成功'    测试失败    输入了非空字符
+    ...    ELSE    测试失败    修改客户名称错误，请查看日志
+
+开户管理_未开户_修改_买家组织结构代码为空
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户买家--未开户--修改--输入空的组织结构代码--确定
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}    买家
+    页面款道-未开户-修改    #单击修改
+    页面款道-未开户-修改-输入组织机构代码    ${EMPTY}
+    页面款道-未开户-修改-确定    #click
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '请输入组织机构代码证号'    单击浮层OK
+    ...    ELSE    测试失败    修改卖家组织结构代码错误，请查看日志
+
+开户管理_未开户_修改_卖家组织结构代码为空
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户卖家--未开户--修改--输入空的组织结构代码--确定
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    卖家    临
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}    卖家(临)
+    页面款道-未开户-修改    #单击修改
+    页面款道-未开户-修改-输入组织机构代码    ${EMPTY}
+    页面款道-未开户-修改-确定    #click
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '请输入组织机构代码证号'    单击浮层OK
+    ...    ELSE    测试失败    修改卖家组织结构代码错误，请查看日志
+
+开户管理_未开户_修改_款道手机-长度异常
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--修改--输入款道手机--长度大于11位--确定
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    页面款道-未开户-修改    #单击修改
+    页面款道-未开户-修改-输入款道手机    153456789012    #手机号异常，超过11位
+    Comment    错误演示
+    Comment    页面款道-未开户-修改-输入款道手机    15345678901    #手机号异常，超过11位
+    页面款道-未开户-修改-确定    #click
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '请输入正确的手机号'    单击浮层OK
+    ...    ELSE    测试失败    修改款道手机错误，请查看日志
+
+开户管理_未开户_修改_款道手机-字母异常
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--修改--输入款道手机--包含字母--确定
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    页面款道-未开户-修改    #单击修改
+    页面款道-未开户-修改-输入款道手机    1534567890A    #手机号异常，包含字母
+    页面款道-未开户-修改-确定    #click
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '请输入正确的手机号'    单击浮层OK
+    ...    ELSE    测试失败    修改款道手机错误，请查看日志
+
+开户管理_未开户_修改_款道手机-不能为空
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--修改--输入款道手机--为空--确定
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    页面款道-未开户-修改    #单击修改
+    页面款道-未开户-修改-输入款道手机    ${EMPTY}    #手机号异常，为空
+    页面款道-未开户-修改-确定    #click
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '请输入正确的手机号'    单击浮层OK
+    ...    ELSE    测试失败    修改款道手机错误，请查看日志
+
+开户管理_未开户_开户_记录查询
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--开户--OK--验证未开户页这条记录不存在了--验证已开户页存在此条记录
+    ...    2. 校验开户后自动生成浦发会员号
+    ...    3. 校验开户后自动生成浦发虚拟号
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    流程款道-开户
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    断言页面应该不包含文本    ${MyAccountName}_${Type}_${AccountName}
+    跳转到地址    ${URL_Pay.OpenAccount}    #已开户
+    流程款道-已开户-搜索    ${MyAccountName}_${Type}_${AccountName}
+    断言页面应该包含文本    ${MyAccountName}_${Type}_${AccountName}
+    Comment    判断是否自动生成了浦发会员号
+    ${Temp}    获取元素文本    xpath=//*[@id="dynamic-table"]//tr[1]/td[2]
+    Run keyword IF    '${Temp}'=='${EMPTY}'    测试失败    浦发会员号没有自动生成
+    ...    ELSE    Log    生成的浦发会员号是：${Temp}
+    Comment    判断是否返回了浦发虚拟账号
+    ${Temp2}    获取元素文本    xpath=//*[@id="dynamic-table"]//tr[1]/td[3]
+    Run keyword IF    '${Temp2}'=='${EMPTY}'    测试失败    浦发会员号没有自动生成
+    ...    ELSE    Log    生成的浦发虚拟账号是：${Temp2}
+
+开户管理_未开户_开户_删除后保留会员号
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    流程款道-开户
+    跳转到地址    ${URL_Pay.OpenAccount}    #已开户
+    流程款道-已开户-搜索    ${MyAccountName}_${Type}_${AccountName}
+    ${Expact}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]
+    流程款道-删除
+    流程款道-未开户-搜索    ${AccountName}
+    ${Actual}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[7]
+    断言两个对象是否相等    ${Expact}    ${Actual}    删除会员后浦发会员号不应该变更
+
+开户管理_未开户_开户_批量开户_勾选开户
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    多选框勾选    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/input[1]
+    流程款道-未开户-批量开户
+    跳转到地址    ${URL_Pay.OpenAccount}    #已开户
+    流程款道-已开户-搜索    ${MyAccountName}_${Type}_${AccountName}
+    ${Expact}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr/td[7]/span    #获取此记录的开户状态
+    断言两个对象是否相等    ${Expact}    已开户    批量开户失败
+
+开户管理_已开户_删除后已开户不存在此记录
+    [Documentation]    - 已开户
+    流程款道-未开户-开户
+    流程款道-已开户-搜索    ${AccountName}
+    流程款道-删除
+    跳转到地址    ${URL_Pay.OpenAccount}    #已开户
+    流程款道-已开户-搜索    ${AccountName}
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td
+    断言两个对象是否相等    ${Expect}    没有您要搜索的内容    已开户删除后此记录还存在
+
+开户管理_已开户_会员查询_客户名称修改了
+    [Documentation]    - 已开户
+    流程款道-未开户-开户
+    流程款道-已开户-搜索    ${AccountName}
+    ${Expect2}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[7]/span    #客户状态：已开户
+    关闭当前浏览器
+    流程临时-修改客户信息    ${MyAccountName}_${Type}_${AccountName}C
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.OpenAccount}    #已开户
+    流程款道-已开户-搜索    ${AccountName}
+    页面款道-已开户-会员查询
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]    #客户名称
+    ${Expect3}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[7]/span    #点击会员查询后客户状态
+    断言两个对象是否相等    ${Expect}    ${MyAccountName}_${Type}_${AccountName}C    修改之后的客户名称没有同步到款道
+    Run Keyword If    '${Expect2}'=='${Expect3}'    测试失败    修改之后的客户名称同步到款道后状态没有更新，当前状态是：${Expect3}
+    ...    ELSE IF    '${Expect3}'=='客户名称被修改'    不操作    测试成功，状态已变更为${Expect3}
+    ...    ELSE    测试失败    未知错误：修改之后的客户名称同步到款道后状态没有更新，当前状态是：${Expect3}
+
+开户管理_已开户_会员查询_客户组织结构代码修改了
+    [Documentation]    - 已开户
+    流程款道-未开户-开户
+    流程款道-已开户-搜索    ${AccountName}
+    ${Expect2}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr/td[7]/span    #开户后的组织机构代码状态
+    关闭当前浏览器
+    流程临时-修改客户信息    ${MyAccountName}_${Type}_${AccountName}    Test组织机构代码TestC    #修改组织机构代码
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.OpenAccount}    #已开户
+    流程款道-已开户-搜索    ${AccountName}
+    页面款道-已开户-会员查询
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr/td[5]/span    #修改后的组织机构代码
+    ${Expect3}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[7]/span    #修改后的组织机构代码状态
+    断言两个对象是否相等    ${Expect}    Test组织机构代码TestC    修改后的组织机构代码没有同步到款道
+    Run Keyword If    '${Expect2}'=='${Expect3}'    测试失败    修改后的组织机构代码同步到款道后状态没有更新，当前状态是：${Expect3}
+    ...    ELSE IF    '${Expect3}'=='组织机构代码被修改'    不操作    测试成功，状态已变更为${Expect3}
+    ...    ELSE    测试失败    未知错误：修改之后的组织结构代码同步到款道后状态没有更新，当前状态是：${Expect3}
+
+开户管理_已开户_同步_手动同步
+    [Documentation]    - 已开户
+    ...    1. 创建一个客户-修改组织结构代码-会员查询--此时状态为“组织机构代码被修改”--点击同步--校验此条记录的状态由““组织机构代码被修改--变更为已开户”，则表明此记录同步到浦发成功。
+    流程款道-未开户-开户
+    关闭当前浏览器
+    流程临时-修改客户信息    ${MyAccountName}_${Type}_${AccountName}    Test组织机构代码TestC    #修改组织机构代码
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.OpenAccount}    #已开户
+    流程款道-已开户-搜索    ${AccountName}
+    页面款道-已开户-会员查询
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[7]/span    #修改后的组织机构代码状态
+    流程款道-已开户-同步
+    ${Expect2}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[7]/span    #同步后的组织机构代码状态：已开户
+    Run Keyword If    '${Expect}'=='${Expect2}'    测试失败    同步失败状态没有变更
+    ...    ELSE IF    '${Expect2}'=='已开户'    不操作    测试成功，状态已变更为${Expect2}
+    ...    ELSE    测试失败    未知错误：同步失败，同步到浦发后状态没有变更，但前状态不等于已开户，但前状态：${Expect2}
+
+开户管理_已开户_开户成功_默认值
+    [Documentation]    - 已开户
+    ...    默认展示同步、删除按钮、开户完默认状态已开户
+    流程款道-未开户-开户
+    流程款道-已开户-搜索    ${AccountName}
+    断言页面应该包含链接    同步    开户成功页面包含同步链接
+    断言页面应该包含链接    删除    开户成功页面包含删除链接
+    断言页面应该包含文本    已开户
+
+开户管理_已开户_同步所有
+    [Documentation]    - 已开户
+    ...
+    ...    记录太多还涉及到翻页，暂时不做，只做简单的弹层提示判断
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    http://kuandao.prcsteel.test:8080/kuandao/kuandao/account/index.html    #已开户Tab
+    流程款道-已开户-同步所有
+
+开户管理_同步日志_会员删除日志记录
+    [Documentation]    - 同步日志Tab
+    流程款道-未开户-开户
+    流程款道-已开户-搜索    ${AccountName}
+    流程款道-删除
+    跳转到地址    ${URL_Pay.SynchronizeLog}    #同步日志
+    流程款道-同步日志-搜索    ${AccountName}    同步成功
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[4]
+    断言两个对象是否相等    ${Expect}    会员注销    会员注销后没有产生日志
+
+开户管理_同步日志_修改客户名称同步日志
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--修改公司名--确定--点击同步--会产生日志
+    流程款道-未开户-开户
+    关闭当前浏览器
+    流程临时-修改客户信息    ${MyAccountName}_${Type}_${AccountName}C
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.OpenAccount}
+    流程款道-已开户-搜索    ${AccountName}
+    流程款道-已开户-同步
+    跳转到地址    ${URL_Pay.SynchronizeLog}    #同步日志
+    流程款道-同步日志-搜索    ${MyAccountName}_${Type}_${AccountName}C    不限
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[4]
+    断言两个对象是否相等    ${Expect}    公司名称由“${MyAccountName}_${Type}_${AccountName}”改为“${MyAccountName}_${Type}_${AccountName}C”    公司名称修改后没有产生日志
+
+开户管理_同步日志_修改组织机构代码同步日志
+    [Documentation]    - 未开户
+    ...
+    ...    1. 创建客户--未开户--修改组织结构代码--确定--点击同步--会产生日志
+    流程款道-未开户-开户
+    关闭当前浏览器
+    流程临时-修改客户信息    ${MyAccountName}_${Type}_${AccountName}    Test组织机构代码TestC    #修改组织结构代码
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.OpenAccount}
+    流程款道-已开户-搜索    ${AccountName}
+    流程款道-已开户-同步
+    跳转到地址    ${URL_Pay.SynchronizeLog}    #同步日志
+    流程款道-同步日志-搜索    ${MyAccountName}_${Type}_${AccountName}    不限
+    ${Expect}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[4]
+    断言两个对象是否相等    ${Expect}    组织机构代码由“Test组织机构代码Test”改为“Test组织机构代码TestC”    组织机构代码修改后没有产生日志

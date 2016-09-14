@@ -1,0 +1,26 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${URL}    ${browser}=ff    # URL地址|#浏览器
+    Open Browser    ${URL}    ${browser}
+
+关闭浏览器
+    Close All Browsers
+
+输入用户名
+    [Arguments]    ${username}    # 用户名输入框
+    Input Text    account    ${username}
+
+输入密码
+    [Arguments]    ${password}
+    Input Password    password    ${password}
+
+点击登录
+    Click Button    submit
+
+结束IEDriver
+    Process Close    IEDriverServer
+    Process Close    iexplore.exe

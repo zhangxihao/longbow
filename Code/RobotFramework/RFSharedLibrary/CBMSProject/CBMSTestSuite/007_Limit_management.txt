@@ -1,0 +1,69 @@
+*** Settings ***
+Resource          ../CBMSFlow/FlowInit.txt
+Resource          ../CBMSFlow/Flow.txt
+Resource          ../ProjectResource.txt
+Resource          ../CBMSFlow/Flow_LimitManager.txt
+
+*** Test Cases ***
+额度管理-添加分组
+    [Documentation]    “流程额度管理-添加分组”后面所带参数依次为：信用组名、组信用额度、公司名称、部门类型、部门名称、部门信用额度、二结余额是否自动信用额度还款/抵扣标识
+    ...
+    ...    部门类型：多部门、单部门。取值为0时，表示单部门；取值为1时，表示多部门。
+    ...    二结余额是否自动信用额度还款/抵扣：取值为1时，选择“是”；取值为0时，选择“否”；该字段默认取值为否
+    Comment    流程创建客户    注册号    注册地址    组织机构代码    买家
+    流程登录    ${URL.Login}    zhangxihao    123456
+    跳转到地址    ${URL.LimitGroup}
+    流程-添加分组    test组一    1000    买家0803    1    钢材部    100
+    ...    0
+    等待页面包含指定文本    test组一
+    关闭当前浏览器
+
+额度管理-添加客户
+    [Documentation]    “流程额度管理-添加分组”后面所带参数依次为：信用组名、公司名称、部门类型、部门名称、部门信用额度、二结余额是否自动信用额度还款/抵扣标识
+    流程登录    ${URL.Login}    zhangxihao    123456
+    跳转到地址    ${URL.LimitGroup}
+    流程-额度组添加客户    test组一    卖家0803    1    钢材部    100    1
+    等待页面包含指定文本    test组一
+    关闭当前浏览器
+
+额度管理-编辑客户
+    [Documentation]    因页面不能根据具体的客户名称，搜索显示出唯一客户额度记录，故该用例只能实现编辑额度组下的第一条客户额度记录
+    ...
+    ...    “流程额度管理-编辑客户”后面所带参数依次为：信用组名、部门信用额度、二结余额是否自动信用额度还款/抵扣标识
+    流程登录    ${URL.Login}    zhangxihao    123456
+    跳转到地址    ${URL.LimitGroup}
+    流程-编辑客户    test组一    200    1
+
+额度管理-编辑信用额度组
+    [Documentation]    “流程额度管理-编辑信用额度组”后面所带参数依次为：修改前的信用组名、修改后的信用组名、信用组额度
+    流程登录    ${URL.Login}    zhangxihao    123456
+    跳转到地址    ${URL.LimitGroup}
+    流程-编辑信用额度组    test组二    test组一    3000
+
+额度管理-删除客户额度
+    [Documentation]    因页面不能根据具体的客户名称，搜索显示出唯一客户额度记录，故该用例只能实现删除额度组下的第一条客户额度记录
+    流程登录    ${URL.Login}    zhangxihao    123456
+    跳转到地址    ${URL.LimitGroup}
+    流程-删除客户额度    test组一
+    等待页面包含指定文本    test组一
+    关闭当前浏览器
+
+额度管理-删除额度组
+    [Setup]
+    流程登录    ${URL.Login}    zhangxihao    123456
+    Comment    跳转到地址    ${URL.LimitGroup}
+    Comment    流程-删除客户额度    test组一    买家0803
+    跳转到地址    ${URL.LimitGroup}
+    流程-删除额度组    test组一
+    等待页面包含指定文本    test组一
+    关闭当前浏览器
+
+额度管理-审核额度通过
+    流程登录    ${URL.Login}    admin_cbms    123456
+    跳转到地址    ${URL.LimitManager}
+    流程-额度审核通过    test组一
+
+额度管理-审核额度不通过
+    流程登录    ${URL.Login}    admin_cbms    123456
+    跳转到地址    ${URL.LimitManager}
+    流程-额度审核不通过    test组一

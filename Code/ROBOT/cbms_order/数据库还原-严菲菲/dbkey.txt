@@ -1,0 +1,23 @@
+*** Settings ***
+Library           DatabaseLibrary
+Library           AutoItLibrary
+
+*** Keywords ***
+连接数据库
+    [Arguments]    ${db}
+    connect to database using custom params    pymysql    ${db}
+
+备份数据库
+    [Arguments]    ${way}
+    [Documentation]    mysqldump -uroot -p123456 yff > d:\yff.sql
+    run    bfsql.bat    ${way}
+
+断开数据库
+    disconnect from database
+
+还原数据库
+    [Arguments]    ${way}
+    run    hysql.bat    ${way}
+
+延迟时间
+    sleep    20s

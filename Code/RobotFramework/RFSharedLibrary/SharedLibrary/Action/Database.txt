@@ -1,0 +1,62 @@
+*** Settings ***
+Documentation     - 这里数据库指的是MySQL，需下载DBLibrary.
+...               1. \ 下载库： http://franz-see.github.io/Robotframework-Database-Library/
+...               2. \ 安装库： python setup.py install
+...               3. \ 导入库： DatabaseLibrary
+...               4. \ 安装MySQL Interface：https://github.com/PyMySQL/PyMySQL （python操作数据的接口）
+Library           DatabaseLibrary
+
+*** Keywords ***
+连接数据库
+    [Arguments]    ${dbapiModuleName}    ${db_connect_string}
+    [Documentation]    dbapiModuleName：连接数据库的类型
+    ...    db_connect_string: 连接字符串的配置
+    ...
+    ...    例子：MySQL：pymsql \ \ \ database='数据库',user='root',password='root',host='192.168.0.000',port=3306,charset='utf8'
+    Connect To Database Using Custom Params    ${dbapiModuleName}    ${db_connect_string}
+
+断开数据库
+    [Documentation]    断开数据库连接
+    Disconnect From Database
+
+执行查询
+    [Arguments]    ${selectStatement}
+    [Documentation]    selectStatement：合法SQL语句
+    @{queryResults}=    Query    ${selectStatement}
+    [Return]    @{queryResults}
+
+执行SQL语句
+    [Arguments]    ${sqlString}
+    [Documentation]    数据库的增、删、改等操作
+    Execute Sql String    ${sqlString}
+
+执行SQL文件
+    [Arguments]    ${sqlScriptFileName}
+    [Documentation]    sqlScriptFileName：执行.sql文件
+    ...
+    ...    例子：${EXECDIR}${/}resources${/}DDL-setup.sql
+    Execute Sql Script    ${sqlScriptFileName}
+
+返回记录集行数
+    [Arguments]    ${selectStatement}
+    [Documentation]    selectStatement：合法的SQL语句。
+    ...
+    ...    Return：返回查询结果的行数
+    ${count}=    Row Count    ${selectStatement}
+    [Return]    ${count}
+
+断言结果是否存在
+    [Arguments]    ${selectStatement}
+    [Documentation]    selectStatement:查询语句
+    ...
+    ...    存在返回：PASS
+    ...
+    ...    不存在返回：FAIL
+    Check If Exists In Database    ${selectStatement}
+
+断言表是否存在
+    [Arguments]    ${tableName}
+    [Documentation]    存在返回：PASS
+    ...
+    ...    不存在返回：FAIL
+    Table Must Exist    ${tableName}

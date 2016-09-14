@@ -1,0 +1,513 @@
+*** Settings ***
+Resource          ../ASSFlow/InitFlow.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../ASSProjectResource.txt
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../ASSPage/Page_WorkTable.txt
+Resource          ../ASSFlow/Flow_SystemParam.txt
+Resource          ../ASSFlow/Flow_WorkTable.txt
+
+*** Test Cases ***
+默认状态离线
+    [Documentation]    \#登录账户需使用初次登录分检系统的账户
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    跳转到地址    ${ASSURL.WorkTable}
+    等待页面包含指定元素    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[1]/div/label[3]/a
+    Element Text Should Be    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[1]/div/label[3]/a    离线
+    关闭当前浏览器
+
+离线状态，仅可以切换为上线、离开
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离线
+    单击链接    xpath=.//*[@class='mari close-box dwcl']/a    #单击当前状态，可查看当前可切换的状态
+    等待页面包含指定元素    xpath=.//*[@class='color3ecd3b']
+    Element Text Should Be    xpath=.//*[@class='color3ecd3b']    上线
+    等待页面包含指定元素    xpath=.//*[@class='coloradcff1']
+    Element Text Should Be    xpath=.//*[@class='coloradcff1']    离开
+    关闭当前浏览器
+
+离线状态，不推送需求
+    [Documentation]    \#
+    ...
+    ...    需求池不存在待分配的需求:
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程推送需求”配置自定义的user、password
+    ...
+    ...    需求池存在待分配的需求时，无需配置
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离线
+    流程推送需求
+    断言页面应该不包含文本    已分配需求单，请点击确定跳转到工作台页面
+    关闭当前浏览器
+
+离线状态，不可新开询价单
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离线
+    等待页面包含指定元素    newAddOrder    #新开询价单button
+    Element Should Be Disabled    newAddOrder
+    关闭当前浏览器
+
+离线状态，不可进入业务报表
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离线
+    单击链接    xpath=.//*[@id='sidebar']/div[1]/div[1]/ul/li[2]/ul/li[2]/a    #业务报表页面
+    等待页面包含指定元素    xpath=.//*[@id='dialogContBox']/div[1]/div
+    Element Text Should Be    xpath=.//*[@id='dialogContBox']/div[1]/div    您当前不是离开状态或有处理中的需求单，不能访问业务报表页面，将为你跳转至工作台页面。
+    关闭当前浏览器
+
+离开状态（无处理中的需求），仅可以切换为离线、上线
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（无处理中的需求）
+    单击链接    xpath=.//*[@class='mari close-box dwcl']/a    #单击当前状态，可查看当前可切换的状态
+    等待页面包含指定元素    xpath=.//*[@class='color3ecd3b']
+    Element Text Should Be    xpath=.//*[@class='color3ecd3b']    上线
+    等待页面包含指定元素    xpath=.//*[@class='color999']
+    Element Text Should Be    xpath=.//*[@class='color999']    离线
+    关闭当前浏览器
+
+离开状态（无处理中的需求），不推送需求
+    [Documentation]    \#
+    ...
+    ...    需求池不存在待分配的需求时：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程推送需求”配置自定义的user、password、未配置则使用默认值
+    ...
+    ...    需求池存在待分配的需求时，无需配置
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（无处理中的需求）
+    流程推送需求    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}
+    断言页面应该不包含文本    已分配需求单，请点击确定跳转到工作台页面
+    关闭当前浏览器
+
+离开状态（有处理中的需求），仅可以切换为上线
+    [Documentation]    \#
+    ...    当前状态空闲|当前状态离开且需求池无待分配的需求|当前状态离线且需求池无待分配的需求3种场景下时：需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程切换为离开（有处理中的需求）”配置自定义的user、password、未配置则使用默认值
+    ...
+    ...    其他场景下无需该配置
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（有处理中的需求）    ${User_EC.UsernameLogin3}    ${User_EC.PasswordLogin3}
+    单击链接    xpath=.//*[@class='mari close-box dwcl']/a    #单击当前状态，可查看当前可切换的状态
+    等待页面包含指定元素    xpath=.//*[@class='color3ecd3b']
+    Element Text Should Be    xpath=.//*[@class='color3ecd3b']    上线
+    关闭当前浏览器
+
+离开状态（有处理中的需求)，不推送需求
+    [Documentation]    \#
+    ...
+    ...    1.当前状态空闲/离开&无待分配的需求/离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程切换为离开（有处理中的需求）&“流程推送需求””配置自定义的user、password
+    ...
+    ...    2.当前状态忙碌&无待分配的需求/离开（有处理中的需求）&无待分配的需求/离开&待分配的需求1个/离线&待分配的需求1个等4种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程推送需求”配置自定义的user、password
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（有处理中的需求）
+    流程推送需求
+    断言页面应该不包含文本    已分配需求单，请点击确定跳转到工作台页面
+    关闭当前浏览器
+
+离开状态（有处理中的需求），不可新开询价单
+    [Documentation]    \#
+    ...    当前状态空闲|当前状态离开且需求池无待分配的需求|当前状态离线且需求池无待分配的需求3种场景下时：需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程切换为离开（有处理中的需求）”配置自定义的user、password、未配置则使用默认值
+    ...
+    ...    其他场景下无需该配置
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（有处理中的需求）    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}
+    等待页面包含指定元素    newAddOrder    #新开询价单button
+    Element Should Be Disabled    newAddOrder
+    关闭当前浏览器
+
+离开状态（有处理中的需求），不可进入业务报表
+    [Documentation]    \#
+    ...    当前状态空闲|当前状态离开且需求池无待分配的需求|当前状态离线且需求池无待分配的需求3种场景下时:需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程切换为离开（有处理中的需求）”配置自定义的user、password、未配置则使用默认值
+    ...
+    ...    其他场景下无需该配置
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（有处理中的需求）
+    单击链接    xpath=.//*[@id='sidebar']/div[1]/div[1]/ul/li[2]/ul/li[2]/a    #业务报表页面
+    等待页面包含指定元素    xpath=.//*[@id='dialogContBox']/div[1]/div
+    Element Text Should Be    xpath=.//*[@id='dialogContBox']/div[1]/div    您当前不是离开状态或有处理中的需求单，不能访问业务报表页面，将为你跳转至工作台页面。
+    关闭当前浏览器
+
+空闲状态，仅可切换为离开、离线
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为空闲
+    单击链接    xpath=.//*[@class='mari close-box dwcl']/a    #单击当前状态，可查看当前可切换的状态
+    等待页面包含指定元素    xpath=.//*[@class='coloradcff1']
+    Element Text Should Be    xpath=.//*[@class='coloradcff1']    离开
+    等待页面包含指定元素    xpath=.//*[@class='color999']
+    Element Text Should Be    xpath=.//*[@class='color999']    离线
+    关闭当前浏览器
+
+空闲状态，不可新开询价单
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为空闲
+    等待页面包含指定元素    newAddOrder    #新开询价单button
+    Element Should Be Disabled    newAddOrder
+    关闭当前浏览器
+
+空闲状态，不可进入业务报表
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为空闲
+    单击链接    xpath=.//*[@id='sidebar']/div[1]/div[1]/ul/li[2]/ul/li[2]/a    #业务报表页面
+    等待页面包含指定元素    xpath=.//*[@id='dialogContBox']/div[1]/div
+    Element Text Should Be    xpath=.//*[@id='dialogContBox']/div[1]/div    您当前不是离开状态或有处理中的需求单，不能访问业务报表页面，将为你跳转至工作台页面。
+    关闭当前浏览器
+
+忙碌状态，仅可切换为离开
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程切换为忙碌”配置自定义的user、password,未配置则使用默认值
+    ...
+    ...    其他场景下无需配置
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌
+    单击链接    xpath=.//*[@class='mari close-box dwcl']/a    #单击当前状态，可查看当前可切换的状态
+    等待页面包含指定元素    xpath=.//*[@class='coloradcff1']
+    Element Text Should Be    xpath=.//*[@class='coloradcff1']    离开
+    关闭当前浏览器
+
+忙碌状态，不推送需求
+    [Documentation]    \#
+    ...
+    ...    1.当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}，可为“流程切换为忙碌”/“流程推送需求”配置自定义的user、password,未配置则使用默认值
+    ...
+    ...    2.当前状态忙碌&无待分配的需求/当前状态离开（有处理中的需求）&无待分配的需求/当前状态离开&待分配的需求1个/当前状态离线&待分配的需求1个等4种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}，可为“流程推送需求”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌
+    流程推送需求    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}
+    断言页面应该不包含文本    已分配需求单，请点击确定跳转到工作台页面
+    关闭当前浏览器
+
+忙碌状态，不可新开询价单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}，可为“流程切换为忙碌”配置自定义的user、password,未配置则使用默认值
+    ...
+    ...    其他场景下无需配置
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌
+    等待页面包含指定元素    newAddOrder    #新开询价单button
+    Element Should Be Disabled    newAddOrder
+    关闭当前浏览器
+
+忙碌状态，不可进入业务报表
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}，可为“流程切换为忙碌”配置自定义的user、password,未配置则使用默认值
+    ...
+    ...    其他场景下无需配置
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌
+    单击链接    xpath=.//*[@id='sidebar']/div[1]/div[1]/ul/li[2]/ul/li[2]/a    #业务报表页面
+    等待页面包含指定元素    xpath=.//*[@id='dialogContBox']/div[1]/div
+    Element Text Should Be    xpath=.//*[@id='dialogContBox']/div[1]/div    您当前不是离开状态或有处理中的需求单，不能访问业务报表页面，将为你跳转至工作台页面。
+    关闭当前浏览器
+
+先进先出规则，推送需求
+    [Documentation]    \#
+    ...
+    ...    待分配的需求=0/1个时：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程从需求池（N>1）获取创建时间最早的需求单号”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离线    #使分检员进入不推送需求的状态
+    ${earlyRequirementCode}    流程从需求池（N>1）获取创建时间最早的需求单号    ${User_EC.UsernameLogin3}    ${User_EC.PasswordLogin3}
+    页面切换为上线    #由前步骤可推断，切换后必为忙碌状态
+    等待页面包含指定元素    xpath=.//*[@class='menuContent min-h200']/div[1]/label[2]    #获取的询价单中，询价单号元素
+    Element Should Contain    xpath=.//*[@class='menuContent min-h200']/div[1]/label[2]    ${earlyRequirementCode}    #校验获取的询价单的询价单号与最早未分配的单号一致
+    关闭当前浏览器
+
+关闭需求单_关闭理由不包含停用状态的理由
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为步骤4“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程切换为忙碌”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}
+    流程理由Tab_新增理由    关闭理由1001    1001    0
+    关闭当前浏览器
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌
+    单击按钮    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[2]/div[3]/div[2]/button[1]    #关闭按钮
+    等待页面包含指定元素    close_reason
+    单击元素    close_reason
+    断言页面应该不包含文本    关闭理由1001
+    关闭当前浏览器
+
+关闭需求单_关闭理由显示顺序
+    [Documentation]    \#
+    ...
+    ...    1.当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程切换为忙碌”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    获取启用状态的理由总数
+    Comment    ${firstReasonContent}=    Return from Keyword If    '${Count}'=='0'    流程理由Tab_（无启用理由）获取显示顺序最前的理由    关闭理由1002    1002
+    ...    关闭理由1003    1003    #请注意：配置的理由&排序不能同于已有值
+    Comment    ${firstReasonContent}=    Run Keyword And Return If    '${Count}'=='0'    流程理由Tab_（无启用理由）获取显示顺序最前的理由    关闭理由1002    1002
+    ...    关闭理由1003    1003    #请注意：配置的理由&排序不能同于已有值
+    Comment    Run Keyword If    '${Count}'=='0'    Run Keyword And Return    流程理由Tab_（无启用理由）获取显示顺序最前的理由    关闭理由1002    1002
+    ...    关闭理由1003    1003    #请注意：配置的理由&排序不能同于已有值
+    Run Keyword If    '${reasonCount}'=='0'    流程理由Tab_（无启用理由）获取显示顺序最前的理由    关闭理由1002    1002    关闭理由1003    1003
+    ...    ELSE IF    '${reasonCount}'=='1'    流程理由Tab_（启用理由1个）获取显示顺序最前的理由    关闭理由1004    1004
+    ...    ELSE IF    '${reasonCount}'>='2'    流程理由Tab_获取显示顺序最前的理由    #请注意：配置的理由&排序不能同于已有值    #请注意：配置的理由&排序不能同于已有值
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为忙碌
+    单击按钮    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[2]/div[3]/div[2]/button[1]    #关闭按钮
+    等待页面包含指定元素    close_reason
+    单击元素    close_reason    #单击关闭理由选框
+    等待页面包含指定元素    xpath=.//*[@id='close_reason']/option[1]
+    Element Text Should Be    xpath=.//*[@id='close_reason']/option[1]    ${firstReasonContent}    #校验关闭理由第1个可选内容等于firstReasonContent
+    关闭当前浏览器
+    [Teardown]
+
+暂缓需求
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程暂缓”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    获取启用状态的理由总数
+    Run Keyword If    '${reasonCount}'=='0'    流程暂缓(无启用状态的理由)    关闭理由1004    1004    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}
+    ...    ELSE IF    '${reasonCount}'!='0'    流程暂缓    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}    #请注意：配置的理由&排序不能同于已有值
+    关闭当前浏览器
+
+关闭需求
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程关闭”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    获取启用状态的理由总数
+    Run Keyword If    '${reasonCount}'=='0'    流程关闭(无启用状态的理由)    关闭理由1005    1005    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}
+    ...    ELSE IF    '${reasonCount}'!='0'    流程关闭    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}    #请注意：配置的理由&排序不能同于已有值
+    关闭当前浏览器
+
+提交询价单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程提交询价单”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    流程提交询价单    赵一    赵一买家    中厚板    Q235B    1    2
+    ...    3    厂家01    1.123    苏州市    别名中厚板    11
+    ...    备注01    总备注01
+    关闭当前浏览器
+
+（询价参数1）提交询价单后，状态离线
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程提交询价单”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    流程询价规则Tab_配置询价参数    1
+    流程提交询价单    赵一    赵一买家    中厚板    Q235B    1    2
+    ...    3    厂家01    1.123    杭州市    别名中厚板    11
+    ...    备注01    总备注01    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}
+    等待页面包含指定元素    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[1]/div/label[3]/a
+    Element Text Should Be    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[1]/div/label[3]/a    离线
+    关闭所有浏览器
+
+新开询价单
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}
+    流程新开询价单    18911111111    赵一    赵一买家    中厚板    Q235B    1
+    ...    2    3    厂家01    1.123    杭州市    别名中厚板
+    ...    11    备注01    总备注01
+    关闭当前浏览器
+
+共发起询价不统计用户需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程客服工作台_获取共发起询价”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    ${countRequirementValue}    流程客服工作台_获取共发起询价
+    ${contract_mobile}    页面客服工作台_获取联系电话
+    流程超市提交回执需求    ${contract_mobile}    123456    #这里password请配置该用户对应的密码
+    选择浏览器    ${Browser.AliasASS}
+    刷新
+    ${countRequirement}    页面客服工作台_获取共发起询价
+    Should Be Equal    ${countRequirement}    ${countRequirementValue}    #校验用户新增需求单，不统计共发起询价
+    关闭当前浏览器
+
+共发起询价不统计用户“暂缓”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程客服工作台_获取共发起询价”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    ${countRequirementValue}    流程客服工作台_获取共发起询价
+    ${contract_mobile}    页面客服工作台_获取联系电话
+    ${count}    根据联系电话获取用户待分配状态的需求单总数    ${contract_mobile}
+    Run Keyword If    '${count}'=='0'    Run Keywords    流程超市提交回执需求    ${contract_mobile}    123456
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    页面暂缓需求单
+    ${countValue}    获取待分配状态的需求单总数
+    : FOR    ${index}    IN RANGE    ${countValue}+1
+    \    ${contract_mobile_check}    页面客服工作台_获取联系电话
+    \    Run Keyword If    '${contract_mobile_check}'!='${contract_mobile}'    Run Keywords    页面暂缓需求单
+    \    ...    AND    Continue For Loop
+    \    ${countRequirement}    页面客服工作台_获取共发起询价
+    \    Exit For Loop
+    Should Be Equal    ${countRequirement}    ${countRequirementValue}    #校验用户“暂缓”状态的需求单，不统计共发起询价
+    关闭当前浏览器
+
+共发起询价统计用户“已关闭”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程客服工作台_获取共发起询价”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    ${countRequirementValue}    流程客服工作台_获取共发起询价
+    ${contract_mobile}    页面客服工作台_获取联系电话
+    ${count}    页面汇总分析_询价汇总_根据联系电话获取用户待分配状态的需求单总数    ${contract_mobile}
+    Run Keyword If    '${count}'=='0'    Run Keywords    流程超市提交回执需求    ${contract_mobile}    123456
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    页面关闭需求单
+    ${countRequirement}    Evaluate    ${countRequirementValue}+1
+    ${countValue}    页面汇总分析_询价汇总_获取待分配状态的需求单总数
+    : FOR    ${index}    IN RANGE    ${countValue}+1
+    \    ${contract_mobile_check}    页面客服工作台_获取联系电话
+    \    Run Keyword If    '${contract_mobile_check}'!='${contract_mobile}'    Run Keywords    页面暂缓需求单
+    \    ...    AND    Continue For Loop
+    \    ${countRequirementValue}    页面客服工作台_获取共发起询价
+    \    Exit For Loop
+    Should Be Equal As Strings    ${countRequirement}    ${countRequirementValue}    #校验用户“已关闭”状态的需求单，会统计到共发起询价    #用该关键字断言，是由于countRequirement为Integer类型、而countRequirementValue为String类型
+    关闭当前浏览器
+
+共发起询价统计用户“已处理”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程客服工作台_获取共发起询价”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    流程询价规则Tab_配置询价参数    \    #使询价参数为0，为后续提交询价单后仍停留在客服工作台且仍为上线状态
+    ${countRequirementValue}    流程客服工作台_获取共发起询价
+    ${contract_mobile}    页面客服工作台_获取联系电话
+    ${count}    根据联系电话获取用户待分配状态的需求单总数    ${contract_mobile}
+    Run Keyword If    '${count}'=='0'    Run Keywords    流程超市提交回执需求    ${contract_mobile}    123456
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    页面提交询价单    赵一    赵一买家    中厚板    Q235B    1    2
+    ...    3    厂家01    1.123    苏州市    别名中厚板    11
+    ...    备注01    总备注01
+    ${countRequirement}    Evaluate    ${countRequirementValue}+1
+    ${countValue}    获取待分配状态的需求单总数
+    : FOR    ${index}    IN RANGE    ${countValue}+1
+    \    ${contract_mobile_check}    页面客服工作台_获取联系电话
+    \    Run Keyword If    '${contract_mobile_check}'!='${contract_mobile}'    Run Keywords    页面暂缓需求单
+    \    ...    AND    Continue For Loop
+    \    ${countRequirementValue}    页面客服工作台_获取共发起询价
+    \    Exit For Loop
+    Should Be Equal As Strings    ${countRequirement}    ${countRequirementValue}    #校验用户“已关闭”状态的需求单，会统计到共发起询价    #用该关键字断言，是由于countRequirement为Integer类型、而countRequirementValue为String类型
+    关闭当前浏览器
+
+生成询价单不统计用户“暂缓”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程客服工作台_获取共发起询价”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    ${countInquiryValue}    流程获取生成询价单
+    ${contract_mobile}    页面客服工作台_获取联系电话
+    ${count}    根据联系电话获取用户待分配状态的需求单总数    ${contract_mobile}
+    Run Keyword If    '${count}'=='0'    Run Keywords    流程超市提交回执需求    ${contract_mobile}    123456
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    页面暂缓需求单
+    ${countValue}    获取待分配状态的需求单总数
+    : FOR    ${index}    IN RANGE    ${countValue}+1
+    \    ${contract_mobile_check}    页面客服工作台_获取联系电话
+    \    Run Keyword If    '${contract_mobile_check}'!='${contract_mobile}'    Run Keywords    页面暂缓需求单
+    \    ...    AND    Continue For Loop
+    \    ${countInquiry}    页面获取生成询价单
+    \    Exit For Loop
+    Should Be Equal    ${countInquiry}    ${countInquiryValue}    #校验用户“暂缓”状态的需求单，，不统计生成询价单
+    关闭当前浏览器
+
+生成询价单不统计用户“已关闭”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程客服工作台_获取共发起询价”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    ${countInquiryValue}    流程获取生成询价单
+    ${contract_mobile}    页面客服工作台_获取联系电话
+    ${count}    根据联系电话获取用户待分配状态的需求单总数    ${contract_mobile}
+    Run Keyword If    '${count}'=='0'    Run Keywords    流程超市提交回执需求    ${contract_mobile}    123456
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    页面关闭需求单
+    ${countValue}    获取待分配状态的需求单总数
+    : FOR    ${index}    IN RANGE    ${countValue}+1
+    \    ${contract_mobile_check}    页面客服工作台_获取联系电话
+    \    Run Keyword If    '${contract_mobile_check}'!='${contract_mobile}'    Run Keywords    页面暂缓需求单
+    \    ...    AND    Continue For Loop
+    \    ${countInquiry}    页面获取生成询价单
+    \    Exit For Loop
+    Should Be Equal    ${countInquiry}    ${countInquiryValue}    #校验用户“关闭”状态的需求单，不统计生成询价单
+    关闭当前浏览器
+
+生成询价单统计用户“已处理”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程客服工作台_获取共发起询价”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameJiaoyiyuan}    ${ASSUser.PasswordJiaoyiyuan}    firefox    ${Browser.AliasASS}
+    流程询价规则Tab_配置询价参数    \    #使询价参数为0，为后续提交询价单后仍停留在客服工作台且仍为上线状态
+    ${countInquiryValue}    流程获取生成询价单
+    ${contract_mobile}    页面客服工作台_获取联系电话
+    ${count}    根据联系电话获取用户待分配状态的需求单总数    ${contract_mobile}
+    Run Keyword If    '${count}'=='0'    Run Keywords    流程超市提交回执需求    ${contract_mobile}    123456
+    ...    AND    选择浏览器    ${Browser.AliasASS}
+    页面提交询价单    赵一    赵一买家    中厚板    Q235B    1    2
+    ...    3    厂家01    1.123    苏州市    别名中厚板    11
+    ...    备注01    总备注01
+    ${countInquiry}    Evaluate    ${countInquiryValue}+1
+    ${countValue}    获取待分配状态的需求单总数
+    : FOR    ${index}    IN RANGE    ${countValue}+1
+    \    ${contract_mobile_check}    页面客服工作台_获取联系电话
+    \    Run Keyword If    '${contract_mobile_check}'!='${contract_mobile}'    Run Keywords    页面暂缓需求单
+    \    ...    AND    Continue For Loop
+    \    ${countInquiryValue}    页面获取生成询价单
+    \    Exit For Loop
+    Should Be Equal As Strings    ${countInquiry}    ${countInquiryValue}    #校验用户“已处理”状态的需求单，会统计到生成询价单    #用该关键字断言，是由于countRequirement为Integer类型、而countRequirementValue为String类型
+    关闭当前浏览器

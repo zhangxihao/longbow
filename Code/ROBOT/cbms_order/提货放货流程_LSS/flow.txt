@@ -1,0 +1,61 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          Action.txt
+Library           AutoItLibrary
+
+*** Keywords ***
+登录cbms
+    [Arguments]    ${url}    ${browser}    ${username}    ${pwd}
+    打开浏览器    ${url}    ${browser}
+    浏览器最大化
+    输入用户名    ${username}
+    输入密码    ${pwd}
+    点击登录按钮
+    等待时间
+
+进入交易单管理页面
+    [Arguments]    ${locator}    ${url}
+    点击交易管理    ${locator}
+    点击交易单管理    ${url}
+
+进入待提货tab
+    [Arguments]    ${locator}    ${url}
+    点击待提货tab    ${locator}
+    点击录入提货单    ${url}
+
+输入提货信息
+    [Arguments]    ${item}    ${value}    ${locator}    ${text}
+    选择提货方式    ${item}    ${value}
+    输入车船号    ${locator}    ${text}
+    输入司机姓名    ${locator}    ${text}
+    输入联系方式    ${locator}    ${text}
+
+上传图片及确认提交
+    [Arguments]    ${locator}    ${strTitle}    ${strControl}    ${strControlText}    ${strText}    ${strButton}
+    点击选择文件    ${locator}
+    激活窗口    ${strTitle}
+    上传图片    ${strControl}    ${strControlText}
+    点击确认    ${strText}    ${strButton}
+
+确认提交及退出
+    [Arguments]    ${locator}
+    确认提交    ${locator}
+    log out
+
+进入待放货tab
+    [Arguments]    ${locator}    ${url}
+    点击待放货tab    ${locator}
+    点击打印放货单    ${url}
+
+打印放货单
+    [Arguments]    ${locator}    ${strTitle}    ${strTitle}    ${strText}    ${strButton}    ${strTitle}
+    ...    ${locator}
+    点击打印    ${locator}
+    激活对话框    ${strTitle}
+    点击取消    ${strTitle}    ${strText}    ${strButton}
+    关闭对话框    ${strTitle}
+    点击返回    ${locator}
+
+退出登录
+    log out
+    关闭浏览器

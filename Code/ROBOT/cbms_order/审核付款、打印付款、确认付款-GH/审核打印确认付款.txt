@@ -1,0 +1,30 @@
+*** Settings ***
+Resource          业务流程.txt
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Variables ***
+${url}            http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas
+${browser}        FF
+
+*** Test Cases ***
+服总审核付款
+    登录系统    ${url}    ${browser}    zhangxihao    123456
+    进入交易单管理页面    http://sim-cbms.prcsteel.com/common/menu/order-view/order-query-index-page.html
+    进入审核付款页    http://sim-cbms.prcsteel.com/order/query/detail.html?orderid=23925&menu=payment
+    审核付款通过
+    退出系统
+
+核算会计打印付款申请单
+    登录系统    ${url}    ${browser}    shandongdong    gtxhsdd
+    进入交易单管理页面    http://sim-cbms.prcsteel.com/common/menu/order-view/order-query-index-page.html
+    进入打印付款申请单页    http://sim-cbms.prcsteel.com/order/query/detail.html?orderid=23925&menu=printpendingpayapply
+    打印付款申请单    http://sim-cbms.prcsteel.com/account/payment/paymentrequest.html?id=23925&print=true    打印    确定    Button10
+    退出系统
+
+总出纳确认已付款
+    登录系统    ${url}    ${browser}    yanfeifei    123456
+    进入交易单管理页面    http://sim-cbms.prcsteel.com/common/menu/order-view/order-query-index-page.html
+    进入确认已付款页    http://sim-cbms.prcsteel.com/order/query/detail.html?orderid=http://sim-cbms.prcsteel.com/account/payment/paymentrequest.html?id=23925&print=true&menu=confirmpayment
+    订单确认已付款
+    退出系统

@@ -1,0 +1,111 @@
+*** Settings ***
+Resource          ../ASSFlow/InitFlow.txt
+Resource          ../ASSFlow/Flow_SummaryAnalysis.txt
+Resource          ../ASSFlow/EC2.0Flow.txt
+Resource          ../ASSProjectResource.txt
+Resource          ../ASSFlow/Flow_WorkTable.txt
+
+*** Test Cases ***
+今日实时数据_总需求量统计超市需求单
+    [Documentation]    \#
+    ...
+    ...    该用例需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}    firefox    ${Browser.AliasASS}
+    ${requirementCountValue}    流程今日实时数据_获取总需求量
+    流程超市提交回执需求    ${User_EC.UsernameLogin1}    ${User_EC.PasswordLogin1}
+    ${requirementCount}    Evaluate    ${requirementCountValue}+1
+    选择浏览器    ${Browser.AliasASS}
+    ${requirementCountValue}    流程今日实时数据_获取总需求量
+    Should Be Equal As Strings    ${requirementCountValue}    ${requirementCount}    #校验今日超市需求单，统计到总需求量    #用该关键字断言，是由于requirementCount为Integer类型、而$requirementCountValue为String类型
+    关闭当前浏览器
+
+今日实时数据_总需求量统计新开询价单
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}
+    ${requirementCountValue}    流程今日实时数据_获取总需求量
+    流程新开询价单    18911111111    赵一    赵一买家    中厚板    Q235B    1
+    ...    2    3    厂家01    1.123    杭州市    别名中厚板
+    ...    11    备注01    总备注01
+    ${requirementCount}    Evaluate    ${requirementCountValue}+1
+    ${requirementCountValue}    流程今日实时数据_获取总需求量
+    Should Be Equal As Strings    ${requirementCountValue}    ${requirementCount}    #校验今日新开询价单，统计到总需求量    #用该关键字断言，是由于requirementCount为Integer类型、而$requirementCountValue为String类型
+    关闭当前浏览器
+
+今日实时数据_处理单数不统计"暂缓"状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程暂缓”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}    firefox    ${Browser.AliasASS}
+    ${countProcessValue}    流程今日实时数据_获取处理单数
+    流程暂缓    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}
+    ${countProcess}    流程今日实时数据_获取处理单数
+    Should Be Equal    ${countProcess}    ${countProcessValue}    #校验今日暂缓需求单，不统计到处理单数
+    关闭当前浏览器
+
+今日实时数据_处理单数统计“已关闭”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程关闭”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}    firefox    ${Browser.AliasASS}
+    ${countProcessValue}    流程今日实时数据_获取处理单数
+    流程关闭    ${User_EC.UsernameLogin3}    ${User_EC.PasswordLogin3}
+    ${countProcess}    Evaluate    ${countProcessValue}+1
+    ${countProcessValue}    流程今日实时数据_获取处理单数
+    Should Be Equal As Strings    ${countProcessValue}    ${countProcess}    #校验今日关闭需求单，会统计到处理单数    #用该关键字断言，是由于requirementCount为Integer类型、而requirementCountValue为String类型
+    关闭当前浏览器
+
+今日实时数据_处理单数统计“已处理”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程提交询价单”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}    firefox    ${Browser.AliasASS}
+    ${countProcessValue}    流程今日实时数据_获取处理单数
+    流程提交询价单    赵一    赵一买家    中厚板    Q235B    1    2
+    ...    3    厂家01    1.123    杭州市    别名中厚板    11
+    ...    备注01    总备注01
+    ${countProcess}    Evaluate    ${countProcessValue}+1
+    ${countProcessValue}    流程今日实时数据_获取处理单数
+    Should Be Equal As Strings    ${countProcessValue}    ${countProcess}    #校验今日提交询价单，会统计到处理单数    #用该关键字断言，是由于requirementCount为Integer类型、而requirementCountValue为String类型
+    关闭所有浏览器
+
+今日实时数据_处理成功数不统计“暂缓”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程暂缓”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}    firefox    ${Browser.AliasASS}
+    ${countInquiryValue}    流程今日实时数据_获取处理成功数
+    流程暂缓    ${User_EC.UsernameLogin2}    ${User_EC.PasswordLogin2}
+    ${countInquiry}    流程今日实时数据_获取处理成功数
+    Should Be Equal    ${countInquiry}    ${countInquiryValue}    #校验今日暂缓需求单，不统计到处理成功数
+    关闭当前浏览器
+
+今日实时数据_处理成功数不统计“已关闭”状态的需求单
+    [Documentation]    \#
+    ...
+    ...    当前状态空闲/当前状态离开&无待分配的需求/当前状态离线&无待分配的需求3种场景下：
+    ...    需要为“流程登录”配置浏览器别名${Browser.AliasASS}
+    ...    可为“流程关闭”配置自定义的user、password,未配置则使用默认值
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}    firefox    ${Browser.AliasASS}
+    ${countInquiryValue}    流程今日实时数据_获取处理成功数
+    流程关闭    ${User_EC.UsernameLogin3}    ${User_EC.PasswordLogin3}
+    ${countInquiry}    流程今日实时数据_获取处理成功数
+    Should Be Equal    ${countInquiry}    ${countInquiryValue}    #校验今日关闭需求单，不统计到处理成功数
+    关闭当前浏览器
+
+今日实时数据_处理成功数统计“已处理”状态的需求单
+    流程登录    ${ASSURL.Login}    ${ASSUser.UsernameAdmin}    ${ASSUser.PasswordAdmin}    firefox    ${Browser.AliasASS}
+    ${countInquiryValue}    流程今日实时数据_获取处理成功数
+    流程提交询价单    赵一    赵一买家    中厚板    Q235B    1    2
+    ...    3    厂家01    1.123    杭州市    别名中厚板    11
+    ...    备注01    总备注01
+    ${countInquiry}    Evaluate    ${countInquiryValue}+1
+    ${countInquiryValue}    流程今日实时数据_获取处理成功数
+    Should Be Equal As Strings    ${countInquiryValue}    ${countInquiry}    #校验今日提交询价单，会统计到处理成功数    #用该关键字断言，是由于countInquiry为Integer类型、而countInquiryValue为String类型
+    关闭所有浏览器

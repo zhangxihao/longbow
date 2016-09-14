@@ -1,0 +1,103 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../EC2.0Flow/Flow_Market.txt
+Resource          ../ProjectResource_2.0.txt
+Resource          ../EC2.0Flow/FlowNormal_EC2.0.txt
+
+*** Test Cases ***
+超市搜索-搜索资源
+    [Setup]
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Market}
+    流程超市-搜索资源    花纹板    xpath=//*[@id="showLayer_material"]//a[text()="HQ235B"]    xpath=//*[@id="showLayer_factory"]//a[text()="安钢"]    xpath=//*[@id="showLayer_spec1"]//a[text()="1.8"]    xpath=//*[@id="showLayer_spec2"]//a[text()="1200"]    xpath=//*[@id="showLayer_spec3"]//a[text()="6000"]
+
+超市搜索-单一条件搜索
+    [Documentation]    一、用例3-5：验证不输入任何搜索条件进行搜索的场景；
+    ...
+    ...    二、用例6-9：验证只输入品名搜索，无法搜索的场景；
+    ...
+    ...    三、用例10-14：验证只输入品名、材质搜索，无法搜索的场景；
+    ...
+    ...    四、用例15-21：验证只输入品名、厂家搜索，无法搜索的场景。
+    [Setup]
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Market}
+    页面超市-点击搜索    #验证不输入搜索
+    ${Temp}    获取元素文本    xpath=//div[@class="err-c none"]//span[text()="请选择需购买的品名"]
+    Run Keyword If    '${Temp}' != '请选择需购买的品名'    刷新
+    页面超市-选择品名    花纹板    #验证只输入品名搜索
+    页面超市-点击搜索
+    ${Temp}    获取元素文本    xpath=//div[@class="err-c none"]//span[text()="请选择需购买的材质"]
+    Run Keyword If    '${Temp}' != '请选择需购买的材质'    刷新
+    页面超市-选择品名    花纹板    #验证只输入品名、材质搜索
+    页面超市-选择材质    xpath=//*[@id="showLayer_material"]//a[text()="HQ235B"]
+    页面超市-点击搜索
+    ${Temp}    获取元素文本    xpath=//div[@class="err-c none"]//span[text()="请选择需购买的厂家"]
+    Run Keyword If    '${Temp}' != '请选择需购买的厂家'    刷新
+    页面超市-选择品名    花纹板    #验证只输入品名、厂家搜索
+    单击元素    xpath=//*[@id="material"]
+    单击按钮    xpath=//*[@id="showLayer_material"]/div[3]/button[1]
+    页面超市-选择厂家    xpath=//*[@id="showLayer_factory"]//a[text()="安钢"]
+    页面超市-点击搜索
+    ${Temp}    获取元素文本    xpath=//div[@class="err-c none"]//span[text()="请选择需购买的材质"]
+    Run Keyword If    '${Temp}' != '请选择需购买的材质'    测试失败
+    关闭当前浏览器
+
+超市需求-提交空需求
+    [Setup]    Run Keywords    流程登录正常
+    跳转到地址    ${URL.Market}
+    流程超市-提交空需求    xpath=//*[@id="shopcart"]//li[@class="findLink"]
+    页面超市-发送需求-点击钢为帮我找
+    ${Temp}    获取元素文本    xpath=//*[@id="shopcart"]//div[@class="find-content"]//span[text()="需求提交太频繁"]
+    Run Keyword If    '${Temp}' != '需求提交太频繁'    测试失败
+    关闭当前浏览器
+
+超市需求-提交文字需求
+    [Setup]    Run Keywords    流程登录正常
+    跳转到地址    ${URL.Market}
+    流程超市-提交文字需求    要求要求要求    xpath=//*[@id="shopcart"]//li[@class="findLink"]
+    关闭当前浏览器
+
+超市需求-提交文件需求
+    [Setup]    Run Keywords    流程登录正常
+    跳转到地址    ${URL.Market}
+    流程超市-提交文件需求    ${testFiles.NormalPic}    xpath=//*[@id="shopcart"]//li[@class="findLink"]
+    关闭当前浏览器
+
+超市需求-提交不符要求文件
+    [Setup]    Run Keywords    流程登录正常
+    跳转到地址    ${URL.Market}
+    页面超市-点击帮我找    xpath=//*[@id="shopcart"]//li[@class="findLink"]
+    页面超市-点击帮我找-上传文件（中间+）    ${testFiles.OverLarge}
+    ${Temp}    获取元素文本    xpath=//*[@id="shopcart"]//div[@class="find-content"]//span[text()="文件超过2M"]
+    Run Keyword If    '${Temp}' != '文件超过2M'    测试失败
+    页面超市-点击帮我找-上传文件（中间+）    ${testFiles.AbnormalFormat}
+    ${Temp}    获取元素文本    xpath=//*[@id="shopcart"]//div[@class="find-content"]//span[text()="文件格式有误"]
+    Run Keyword If    '${Temp}' != '文件格式有误'    测试失败
+    页面超市-点击帮我找-上传文件（中间+）    ${testFiles.IllegalFormat}
+    ${Temp}    获取元素文本    xpath=//*[@id="shopcart"]//div[@class="find-content"]//span[text()="非法上传文件"]
+    Run Keyword If    '${Temp}' != '非法上传文件'    测试失败
+    关闭当前浏览器
+
+超市需求-发送文件超过5个
+    [Setup]    Run Keywords    流程登录正常
+    跳转到地址    ${URL.Market}
+    页面超市-点击帮我找    xpath=//*[@id="shopcart"]//li[@class="findLink"]
+    页面超市-点击帮我找-上传文件（中间+）    ${testFiles.NormalPng}
+    页面超市-点击帮我找-上传文件（左下+）    ${testFiles.NormalTxt}
+    页面超市-点击帮我找-上传文件（左下+）    ${testFiles.NormalDocx}
+    页面超市-点击帮我找-上传文件（左下+）    ${testFiles.NormalXlsx}
+    页面超市-点击帮我找-上传文件（左下+）    ${testFiles.NormalDoc}
+    页面超市-点击帮我找-上传文件（左下+）    ${testFiles.NormalPng}
+    ${Temp}    获取元素文本    xpath=//*[@id="shopcart"]//div[@class="find-content"]//span[text()="最多上传5个文件"]
+    Run Keyword If    '${Temp}' != '最多上传5个文件'    测试失败
+    关闭当前浏览器
+
+超市购物车-资源加入购物车
+    [Setup]    Run Keywords    流程登录正常
+    跳转到地址    ${URL.Market}
+    流程超市-加入购物车    xpath=//*[@id="data-area"]/li[1]/button    100
+    流程超市-购物车提交询价    url=${URL.Mycart}

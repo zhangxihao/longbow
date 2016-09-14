@@ -1,0 +1,45 @@
+*** Settings ***
+Resource          ../CBMSFlow/Flow_CustomerTransfer.txt
+Library           Selenium2Library
+Resource          ../ProjectResource.txt
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+
+*** Test Cases ***
+客户管理_客户划转_搜索
+    流程客户划转-登录    ${URL.Login}    cbadmin    123456
+    流程客户划转-进入客户划转    http://cbmstest.com:8090/account/transfer/customertransfer.html
+    流程客户划转-搜索    铁碎牙公司    杭州服务中心
+    关闭当前浏览器
+
+客户管理_客户划转_划转
+    流程客户划转-登录    ${URL.Login}    cbadmin    123456
+    流程客户划转-进入客户划转    http://cbmstest.com:8090/account/transfer/customertransfer.html
+    流程客户划转-服务中心划转    长沙服务中心
+    关闭当前浏览器
+
+客户管理_客户划转_查看历史
+    流程客户划转-登录    ${URL.Login}    cbadmin    123456
+    流程客户划转-进入客户划转    http://cbmstest.com:8090/account/transfer/customertransfer.html
+    流程客户划转-划转历史查看    http://cbmstest.com:8090/account/accountAssign/viewaccountassignlog.html
+    关闭当前浏览器
+
+客户管理-客户划转-客户划转历史-搜索
+    流程客户划转历史-登录    ${URL.Login}    cbadmin    123456
+    流程客户划转历史-进入客户划转历史    http://cbmstest.com:8090/account/accountAssign/viewaccountassignlog.html
+    流程客户划转历史-搜索    铁碎牙公司    杭州服务中心
+    关闭当前浏览器
+
+客户管理-客户划转-客户划转历史-返回
+    流程客户划转历史-登录    ${URL.Login}    cbadmin    123456
+    流程客户划转历史-进入客户划转历史    http://cbmstest.com:8090/account/accountAssign/viewaccountassignlog.html
+    流程客户划转历史-返回
+    关闭当前浏览器
+
+客户管理_客户划转_客户划转历史-查看是否成功划转
+    流程客户划转-登录    ${URL.Login}    cbadmin    123456
+    流程客户划转-进入客户划转    http://cbmstest.com:8090/account/transfer/customertransfer.html
+    流程客户划转-服务中心划转    天津服务中心
+    流程客户划转-划转历史查看    http://cbmstest.com:8090/account/accountAssign/viewaccountassignlog.html
+    ${Temp}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[3]
+    run keyword if    '${Temp}'=='长沙服务中心'    刷新    else    测试失败    划转客户失败

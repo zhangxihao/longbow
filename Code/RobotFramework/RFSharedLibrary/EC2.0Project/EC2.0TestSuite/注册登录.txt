@@ -1,0 +1,217 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../EC2.0Flow/Flow_EC2.0.txt
+Resource          ../ProjectResource_2.0.txt
+Resource          ../EC2.0Flow/FlowNormal_EC2.0.txt
+
+*** Test Cases ***
+注册-手机号为空或异常
+    [Documentation]    验证三种情况：
+    ...
+    ...    1.手机号为空
+    ...
+    ...    2.输入手机号少于11位
+    ...
+    ...    3.输入手机号含字母
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Register}
+    comment    不输入手机号直接点击注册    #验证手机号为空情况
+    页面注册-立即注册
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="用户手机不能为空"]
+    Run Keyword If    '${Temp}' == '用户手机不能为空'    刷新
+    ...    ELSE    测试失败    注册错误，请查看日志
+    页面注册-注册手机号    1580000000    #验证手机号少于11位
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码格式不正确"]
+    Run Keyword If    '${Temp}' == '手机号码格式不正确'    刷新
+    ...    ELSE    测试失败    注册错误，请查看日志
+    页面注册-注册手机号    1580000000A    #验证输入手机号含字母
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码格式不正确"]
+    Run Keyword If    '${Temp}' != '手机号码格式不正确'    测试失败
+    关闭当前浏览器
+
+注册-验证码为空或异常
+    [Documentation]    验证四种情况：
+    ...
+    ...    1.验证码为空
+    ...
+    ...    2.输入验证码少于4位
+    ...
+    ...    3.输入错误验证码
+    ...
+    ...    4.60秒内点击获取验证码多次
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Register}
+    ${ContactTel}    生成全局唯一值手机号    #验证第一种情况
+    页面注册-注册手机号    ${ContactTel}
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码可用"]
+    页面注册-立即注册
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码不能为空"]
+    Run Keyword If    '${Temp}' == '验证码不能为空'    刷新
+    ...    ELSE    测试失败    注册错误，请查看日志
+    ${ContactTel}    生成全局唯一值手机号    #验证第二种情况
+    页面注册-注册手机号    ${ContactTel}
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码可用"]
+    页面注册-获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程注册-输入信息注册    112    123456    123456
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    ...    ELSE    测试失败    注册错误，请查看日志
+    ${ContactTel}    生成全局唯一值手机号    #验证第三种情况
+    页面注册-注册手机号    ${ContactTel}
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码可用"]
+    页面注册-获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程注册-输入信息注册    0000    123456    123456
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    ...    ELSE    测试失败    注册错误，请查看日志
+    ${ContactTel}    生成全局唯一值手机号    #验证第四种情况
+    页面注册-注册手机号    ${ContactTel}
+    Comment    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码可用"]
+    页面注册-获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    Run Keyword If    '${Temp}' == '验证码发送成功'    刷新
+    ${ContactTel}    生成全局唯一值手机号
+    页面注册-注册手机号    ${ContactTel}
+    Comment    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="手机号码可用"]
+    页面注册-获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送太频繁"]
+    Run Keyword If    '${Temp}' != '验证码发送太频繁'    测试失败
+    关闭当前浏览器
+
+注册-密码为空或异常
+    [Documentation]    验证三种情况：
+    ...
+    ...    1.密码为空
+    ...
+    ...    2.输入密码少于6位
+    ...
+    ...    3.输入两次密码不一致
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Register}
+    ${ContactTel}    生成全局唯一值手机号    #验证第一种情况
+    页面注册-注册手机号    ${ContactTel}
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码可用"]
+    页面注册-获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程注册-查询验证码
+    页面注册-输入验证码    ${smsCodeNumber}
+    页面注册-立即注册
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="用户密码不能为空"]
+    Run Keyword If    '${Temp}' == '用户密码不能为空'    刷新
+    ${ContactTel}    生成全局唯一值手机号    #验证第二种情况
+    页面注册-注册手机号    ${ContactTel}
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码可用"]
+    页面注册-获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程注册-查询验证码
+    页面注册-输入验证码    ${smsCodeNumber}
+    页面注册-设置密码    12345
+    页面注册-立即注册
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="用户密码不能少于6位"]
+    Run Keyword If    '${Temp}' == '用户密码不能少于6位'    刷新
+    ${ContactTel}    生成全局唯一值手机号    #验证第二种情况
+    页面注册-注册手机号    ${ContactTel}
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码可用"]
+    页面注册-获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程注册-查询验证码
+    流程注册-输入信息注册    ${smsCodeNumber}    123456    111111
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="两次密码不一致"]
+    Run Keyword If    '${Temp}' != '两次密码不一致'    测试失败
+    关闭当前浏览器
+
+注册-正常注册
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Register}
+    ${ContactTel}    生成全局唯一值手机号
+    页面注册-注册手机号    ${ContactTel}
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]/span[text()="手机号码可用"]
+    页面注册-获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    等待页面包含指定元素    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程注册-查询验证码
+    流程注册-输入信息注册    ${smsCodeNumber}    ${User.PasswordRegister}    ${User.PasswordRegister}
+
+密码登录-手机或密码为空
+    [Documentation]    验证三种情况：
+    ...
+    ...    1.手机号或密码都为空
+    ...
+    ...    2.输入手机号，密码为空
+    ...
+    ...    3.输入密码，手机号为空
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Login}
+    页面登录-密码登录-输入手机号    ${EMPTY}    #手机号为空
+    页面登录-密码登录-输入密码    ${EMPTY}    #密码为空
+    页面登录-密码登录-点击登录
+    ${Temp}    获取元素文本    xpath=//*[@id="userLogin"]//p[@class="form-err"]
+    Run Keyword If    '${Temp}' == '手机号码不能为空'    刷新
+    ...    ELSE    测试失败    登录错误，请查看日志
+    comment    #验证第1种情况
+    页面登录-密码登录-输入手机号    ${User.UsernameLogin}
+    页面登录-密码登录-输入密码    ${EMPTY}    #密码为空
+    页面登录-密码登录-点击登录
+    ${Temp}    获取元素文本    xpath=//*[@id="userLogin"]//span[text()="用户密码不能为空"]
+    Run Keyword If    '${Temp}' == '用户密码不能为空'    刷新
+    ...    ELSE    测试失败    登录错误，请查看日志
+    comment    #验证第2种情况
+    页面登录-密码登录-输入手机号    ${EMPTY}    #手机号为空
+    页面登录-密码登录-输入密码    ${User.PasswordLogin}
+    页面登录-密码登录-点击登录
+    ${Temp}    获取元素文本    xpath=//*[@id="userLogin"]//span[text()="手机号码不能为空"]
+    Run Keyword If    '${Temp}' == '手机号码不能为空'    刷新
+    ...    ELSE    测试失败    登录错误，请查看日志
+    comment    #验证第3种情况
+    关闭当前浏览器
+
+密码登录-登录手机异常
+    [Documentation]    验证两种情况：
+    ...
+    ...    1.手机号少于11位
+    ...
+    ...    2.输入手机号含字母
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Login}
+    页面登录-密码登录-输入手机号    1580000000    #手机号异常，输入位数10位
+    页面登录-密码登录-输入密码    ${User.PasswordLogin}
+    ${Temp}    获取元素文本    xpath=//*[@id="userLogin"]//span[text()="手机号码格式不正确"]
+    Run Keyword If    '${Temp}' == '手机号码格式不正确'    刷新
+    ...    ELSE    测试失败    登录错误，请查看日志
+    页面登录-密码登录-输入手机号    1580000000A    #手机号异常，输入含字母
+    页面登录-密码登录-输入密码    ${User.PasswordLogin}
+    ${Temp}    获取元素文本    xpath=//*[@id="userLogin"]//span[text()="手机号码格式不正确"]
+    Run Keyword If    '${Temp}' != '手机号码格式不正确'    测试失败
+    关闭当前浏览器
+
+密码登录-登录密码异常
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Login}
+    页面登录-密码登录-输入手机号    ${User.UsernameLogin}
+    页面登录-密码登录-输入密码    12345    #密码异常，输入少于6位
+    页面登录-密码登录-点击登录
+    ${Temp}    获取元素文本    xpath=//*[@id="userLogin"]//span[text()="用户密码不能少于6位"]
+    Run Keyword If    '${Temp}' != '用户密码不能少于6位'    测试失败
+    关闭当前浏览器
+
+密码登录-正常登录
+    流程首页    ${URL.Web}
+    流程登录-密码登录    ${URL.Login}    ${User.UsernameLogin}    ${User.PasswordLogin}
+    ${Temp}    获取元素文本    xpath=//*[@id="gtxh_uame"]
+    Run Keyword If    '${Temp}' != '15200000000'    测试失败
+    关闭当前浏览器
+
+密码登录-验证码登录
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Login}
+    单击元素    xpath=//*[@id="loginbox"]//ul[@class="login-tab"]//li[text()="手机验证登录"]
+    页面登录-验证码登录-输入手机号    ${User.UsernameLogin}
+    页面登录-验证码登录-获取验证码    xpath=//*[@id="userLogin2"]//span[@class="sms_btn"]
+    等待页面包含指定元素    xpath=//*[@id="userLogin2"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程登录-查询验证码
+    流程登录-输入验证码进行登录    ${smsCodeNumber}
+    关闭当前浏览器

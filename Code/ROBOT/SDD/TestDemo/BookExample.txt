@@ -1,0 +1,50 @@
+*** Settings ***
+Resource          BookExampleSource.txt
+Library           Selenium2Library
+
+*** Variables ***
+${val1}           value    # 单值变量
+@{listVal1}       abc    def    123
+
+*** Test Cases ***
+Case-2-8-1
+    Log    ${val1}
+    Log Many    @{listVal1}
+
+Variable
+    ${value2}    Set Variable    abcd
+    ${valueIf}    Set Variable If    '${value2}'=='abcd'    efgh    ace
+    ${getValue1}    Get Length    ${value2}
+    ${getValue2}    Get Time
+    ${cal1}    Set Variable    123
+    ${cal2}    Evaluate    ${cal1} + 2
+    ${cal3}    Set Variable    '123'
+    ${cal4}    Evaluate    int(${cal3}) + 2
+    @{value3}    Set Variable    1    2    3
+    @{listValue3}    Create List    3    2    1
+
+UserKeywords
+    随机字符    arg1value
+
+TestLogin
+    Open Browser    http://localhost:7272/html/    chrome
+    Input Text    name=username_field    demo
+    Input Password    name=password_field    mode
+    Click Button    name=login_button
+    Comment    Press Key    name=login_button    \\13
+    sleep    1s
+    Page Should Contain    Login succeeded
+    Page Should Contain Link    logout
+    Close Browser
+
+SwitchBrowser
+    Open Browser    https://www.baidu.com/    chrome    baidu
+    ${title1}    Get Title
+    Open Browser    http://www.csdn.net/    chrome    csdn
+    ${title2}    Get Title
+    Switch Browser    baidu
+    ${title1}    Get Title
+    Switch Browser    csdn
+    ${title2}    Get Title
+    Comment    Click Link    博客
+    Close All Browsers

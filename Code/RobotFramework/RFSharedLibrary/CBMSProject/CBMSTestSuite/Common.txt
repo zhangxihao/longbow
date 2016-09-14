@@ -1,0 +1,17 @@
+*** Settings ***
+Documentation     * 这里是一些相对比较独立的功能，放在这里可以做单独模块的回归
+...               * 公用的或单独的小模块，例如搜索。
+...               * 设置
+Resource          ../CBMSFlow/Flow.txt
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource.txt
+
+*** Test Cases ***
+Search
+    [Documentation]    * 搜索功能，相对独立回归的时候直接运行此用例即可，当有多个模块都修改了此功能，只需要传多个URL.XXX。而且可以使用循环的方式进行测试测试系统的相应时间，使用Date方法计算每次搜索的耗时。
+    [Setup]    Run Keywords    结束ChromeDriver
+    ...    AND    流程登录    http://ssotest.com:8080/cas/login?service=http://cbmstest.com:8090/order/shiro-cas    cbadmin    123456    # 这里不能使用"运行多个关键字"关键字
+    跳转到地址    ${URL.AllOrder}    #全部订单Tab
+    流程搜索    \    斯坦索姆    \    现金支付    2016-05-06

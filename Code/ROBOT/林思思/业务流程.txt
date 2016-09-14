@@ -1,0 +1,21 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          脚本关键字.txt
+
+*** Keywords ***
+登录cbms
+    [Arguments]    ${url}    ${browser}    ${username}    ${pwd}
+    打开浏览器    ${url}    ${browser}
+    浏览器最大化
+    输入用户名    ${username}
+    输入密码    ${pwd}
+    点击登录按钮
+    等待时间
+
+打开银票管理页面
+    Click Element    id=sidebar
+    go to    http://cbmstest.com:8019/web/acceptdraft/list.html    #进入银票管理
+
+打开银票清单页面
+    Click Element    id=sidebar
+    go to    http://cbmstest.com:8019/web/acceptdraft/taelsList.html    #进入银票清单

@@ -1,0 +1,7 @@
+*** Variables ***
+&{URL}            Web=${Domain}/web/    Register=${Domain}/web/user/register    Login=${Domain}/web/user/login    ResetPassword=${Domain}/web/user/resetpassword    Market=${Domain}/web/market/    Mycart=${Domain}/web/cart/mycart    Member=${Domain}/web/member
+...               Resetpassword=${Domain}/web/user/resetpassword    Modifypassword=${Domain}/web/member/modifypassword    Resetphone=${Domain}/web/member/resetphone    #超市首页，注册页面，登录页面，忘记密码，超市页面，我的购物车页面，会员中心页面，重置密码页面，修改密码页面，修改绑定手机页面
+&{User}           UsernameRegister=18318500000    PasswordRegister=123456    UsernameLogin=15200000000    PasswordLogin=123456    UsernameResetPhone=15520000000    PasswordResetPhone=123456    #注册账号密码，登录账号密码，修改账号和密码
+&{testFiles}      OverLarge=${CURDIR}${/}\DataBase${/}water.jpg    AbnormalFormat=${CURDIR}${/}\DataBase${/}Account.pptx    IllegalFormat=${CURDIR}${/}\DataBase${/}新建 Microsoft Word 文档.docx    NormalPic=${CURDIR}${/}\DataBase${/}2.jpg    NormalPng=${CURDIR}${/}\DataBase${/}44.png    NormalTxt=${CURDIR}${/}\DataBase${/}新建文本文档.txt    NormalDocx=${CURDIR}${/}\DataBase${/}11.docx
+...               NormalXlsx=${CURDIR}${/}\DataBase${/}22.xlsx    NormalDoc=${CURDIR}${/}\DataBase${/}超市管理PRD文档.doc    LargeXls=${CURDIR}${/}\DataBase${/}11111111111111111111111111111111111111111111111111111111111111111111111111.xls    #大于2M的文件，异常格式的文件，大小为0的文件，正常.pic图片，正常.png图片，正常.txt文档，正常.docx文件，正常.xlsx表格，正常.doc文件，过长名.xls表格
+${Domain}         http://market.prcsteel.test:8081    #域名

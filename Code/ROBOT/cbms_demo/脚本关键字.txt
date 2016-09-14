@@ -1,0 +1,34 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${url}    ${browser_type}
+    open browser    ${url}    ${browser_type}
+
+浏览器最大化
+    Maximize Browser Window
+
+输入用户名
+    [Arguments]    ${user}
+    input text    id=username    ${user}
+
+输入密码
+    [Arguments]    ${pwd}
+    input password    id=password    ${pwd}
+
+点击登录按钮
+    click button    xpath=//button[text()='登录']
+
+等待时间
+    set browser implicit wait    3
+
+买家联系人错误
+    click button    xpath=//button[@type='button' and @data-bb-handler='ok']
+
+待处理--提交订单时联系人信息异常判断
+    sleep    2
+    ${var}    get text    xpath=//div[text()='该联系人不属于当前买家公司。']
+    ${varls}    run keyword if    ${var}=='该联系人不属于当前买家公司。'    买家联系人错误    else    set variable    联系人信息错误
+    ...    else    set variable    提交成功
+    log    ${varls}

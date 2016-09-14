@@ -1,0 +1,63 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          业务流程.txt
+Library           AutoItLibrary
+
+*** Variables ***
+${url}            http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas
+${browser}        firefox
+
+*** Test Cases ***
+交易员登录系统
+    登录cbms    ${url}    ${browser}    yangbin    Oct.2015
+
+进入交易单管理
+    进入交易单管理页面
+
+进入待提货tab
+    click link    href=/order/query/pickup.html
+    click link    href=/order/pickup/order/23856/create.html
+
+输入提货信息
+    Select From List    deliveryType
+    ${value}    Get Selected List Value    deliveryType
+    Select From List By Value    deliveryType    CAR
+    input text    name=validCode    12345
+    input text    name=name    张三
+    input text    name=mobile    15811225522
+
+上传图片
+    Click Element    id=pic
+    Win Activate    文件上传
+    Control Set Text    \    \    Edit1    C:\\Users\prcsteel\Desktop\pics\\1.jpg
+    Comment    sleep    3s
+    Control Click    \    打开(&O)    Button1
+
+确认提交
+    Comment    sleep    3s
+    click button    id=submit
+
+内勤登录系统
+    登录cbms    ${url}    ${browser}    gonghuan    gtxh123
+
+进入交易单页面
+    进入交易单管理页面
+
+进入待放货tab
+    click button    id=myTab4
+    click button    id=dynamic-table
+
+打印放货单
+    click button    id=prints
+    click button    id=print-header
+    click button    id=back
+
+检验状态
+
+lgout
+    click element    xpath=.//*[@id='navbar-container']/div[3]/ul/li/a
+    sleep    0.5
+    click element    xpath=.//*[@id='logout']
+
+关闭浏览器
+    close browser

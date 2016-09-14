@@ -1,0 +1,5 @@
+ID,seller,nsort_sort,nsortid,material,spec,factory,province,city,warehouse,quantity,weight,weightConcept,dealPrice,costPrice
+1,testSellerAccount,"xpath=//*[@id=""showLayer_nsortName""]/div[1]/ul/li[3]/a","xpath=//*[@id=""showLayer_nsortName""]/div[4]/div[1]/div[2]/div[1]/span[3]/a",10010,0.9*0.2,≤‚ ‘≥ßº“1,11,78,≤‚ ‘≤÷ø‚1,9,9,"xpath=//*[@id=""table_resource""]/tbody/tr[last()]/td[11]/select/option[2]",20,10
+2,testSellerAccount,"xpath=//*[@id=""showLayer_nsortName""]/div[1]/ul/li[3]/a","xpath=//*[@id=""showLayer_nsortName""]/div[4]/div[1]/div[2]/div[1]/span[3]/a",10086,1.9*1.2,≤‚ ‘≥ßº“2,11,81,≤‚ ‘≤÷ø‚2,10,20,"xpath=//*[@id=""table_resource""]/tbody/tr[last()]/td[11]/select/option[3]",15,8
+3,,,,,,,,,,,,,,
+4,,,,,,,,,,,,,,

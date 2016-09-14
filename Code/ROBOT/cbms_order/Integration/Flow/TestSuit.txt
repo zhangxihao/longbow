@@ -1,0 +1,99 @@
+*** Settings ***
+Resource          ../Search_Assert/Flow.txt
+Resource          ../开单、审核/新开交易单.txt
+Resource          ../待关联、待申请付款页面_冷梨/flow.txt
+Resource          ../审核付款、打印付款、确认付款-GH/业务流程_GH.txt
+Resource          ../提货放货流程_LSS/flow.txt
+Resource          ../待二次结算-石艳/业务流程.txt
+Library           MyLibs/ReadWriteCSV.py
+Library           AutoItLibrary
+
+*** Variables ***
+${picture}        ${CURDIR}\\logo.png    # 测试图片
+@{login_id}       1    2    # 需要读取测试数据的行数
+${fileLogin}      ${CURDIR}\\DataBase\\login.csv    # 登录测试数据
+${fileorder}      ${CURDIR}\\DataBase\\order_data.csv    # 新开单数据
+${testBuyerAccount}    testBuyerAccount    # 根据客户名称进行搜索查找
+${OrderCode}      GetOrderCode    # 订单号，没法通过${GetOrderCode}引用变量，后面在研究
+
+*** Test Cases ***
+TestCase
+    : FOR    ${id_value}    IN    @{login_id}
+    \    ${result}    my_r_csv    ${fileLogin}    ID    ${id_value}    URL
+    \    ...    username    password
+    \    ${login}    stringToArray    ${result}
+    \    登录流程_SDD    ${login[0]}    ${login[1]}    ${login[2]}
+    \    sleep    2S
+    \    关闭浏览器_SDD
+
+Create_order
+    login    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    yangbin    Oct.2015    http://sim-cbms.prcsteel.com/order/create.html
+    goto    http://sim-cbms.prcsteel.com/order/create.html
+    录入买家
+    : FOR    ${id_va}    IN    @{login_id}
+    \    ${result}    my_r_csv    ${fileorder}    ID    ${id_va}    seller
+    \    ...    nsort_sort    nsortid    material    spec    factory
+    \    ...    province    city    warehouse    quantity    weight
+    \    ...    weightConcept    dealPrice    costPrice
+    \    ${order}    stringToArray    ${result}
+    \    新开单    ${order[0]}    ${order[1]}    ${order[2]}    ${order[3]}    ${order[4]}
+    \    ...    ${order[5]}    ${order[6]}    ${order[7]}    ${order[8]}    ${order[9]}
+    \    ...    ${order[10]}    ${order[11]}    ${order[12]}    ${order[13]}
+    点击按钮-提交审核
+    login    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    zhangxihao    123456    http://sim-cbms.prcsteel.com/order/query/approval.html
+    sleep    3
+    审核新建订单    ${testBuyerAccount}
+
+关联-申请付款
+    打开浏览器_SDD    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    firefox
+    关联合同流程    zhangxihao    123456    http://sim-cbms.prcsteel.com/reward/showreward.html    yangbin    Oct.2015    http://sim-cbms.prcsteel.com/account/buyer.html
+    ...    ${testBuyerAccount}    http://sim-cbms.prcsteel.com/order/query/associate.html    12    ${testBuyerAccount}
+    log    ${picture}
+    申请付款流程    http://sim-cbms.prcsteel.com/order/query/applypayment.html    GWHD123456    ${picture}    ${testBuyerAccount}
+
+审核-打印-确认付款
+    登录流程_SDD    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    zhangxihao    123456
+    进入审核付款页    http://sim-cbms.prcsteel.com/order/query/payment.html    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[1]/a    ${testBuyerAccount}
+    审核付款通过
+    登录流程_SDD    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    shandongdong    gtxhsdd    firefox
+    进入打印付款申请单页    http://sim-cbms.prcsteel.com/order/query/printpendingpayapply.html    xpath=//*[@id="dynamic-table"]/tbody/tr[last()]/td[1]/a    ${testBuyerAccount}
+    打印付款申请单
+    登录流程_SDD    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    yanfeifei    123456
+    进入确认已付款页    http://sim-cbms.prcsteel.com/order/query/confirmpayment.html    xpath=//*[@id="dynamic-table"]/tbody/tr[last()]/td[1]/a    ${testBuyerAccount}
+    订单确认已付款
+
+提货-放货
+    登录流程_SDD    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    yangbin    Oct.2015    firefox
+    输入提货信息    http://sim-cbms.prcsteel.com/order/query/pickup.html    xpath=//*[@id="dynamic-table"]/tbody/tr/td[last()]/a[text()='录入提货单'][1]    ${picture}    凭车船号提货    浙AX8181    ${testBuyerAccount}
+    ...    杨斌测试    13145201314
+    登录流程_SDD    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    gonghuan    gtxh123    firefox
+    进行放货操作    http://sim-cbms.prcsteel.com/order/query/fillup.html    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[last()]/a[last()]    ${testBuyerAccount}
+
+待二次结算
+    登录流程_SDD    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    yangbin    Oct.2015
+    检查有“交易管理”菜单_SY
+    进入待二次结算tab页
+    给相应的交易单录入实提量    ${testBuyerAccount}    1    1    2    2
+    关闭浏览器
+    登录流程_SDD    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    gonghuan    gtxh123
+    进入待二次结算tab页
+    给相应的交易单录入实提量    ${testBuyerAccount}    1    1    2    2
+    进行二次结算
+
+TestTemp
+    [Documentation]    临时做测试的用例
+    Comment    : FOR    ${id_va}    IN    @{login_id}
+    Comment    \    ${order}    my_r_csv    order_data.csv    ID    ${id_va}
+    ...    buyer    contact    contact_tel    seller    nsort_sort    nsortid
+    ...    material    spec    factory    province    city    warehouse
+    ...    quantity    weight    weightConcept1    weightConcept2    dealPrice    costPrice
+    Comment    \    Log    ${order}
+    Comment    \    login    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    yangbin    Oct.2015    http://sim-cbms.prcsteel.com/order/create.html
+    Comment    \    sleep    2
+    Comment    \    新开单    ${order[0]}    ${order[1]}    ${order[2]}    ${order[3]}
+    ...    ${order[4]}    ${order[5]}    ${order[6]}    ${order[7]}    ${order[8]}    ${order[9]}
+    ...    ${order[10]}    ${order[11]}    ${order[12]}    ${order[13]}    ${order[14]}    ${order[15]}
+    ...    ${order[16]}    ${order[17]}
+    Comment    \    login    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    zhangxihao    123456    http://sim-cbms.prcsteel.com/order/query/approval.html
+    Comment    \    sleep    3
+    Comment    \    审核新建订单    ${testBuyerAccount}

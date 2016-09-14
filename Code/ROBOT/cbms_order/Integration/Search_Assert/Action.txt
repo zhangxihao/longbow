@@ -1,0 +1,48 @@
+*** Settings ***
+Documentation     1. 动作应该是固定不变的，具体动作需要操作的元素通过页面定位后参数传入
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+打开浏览器_SDD
+    [Arguments]    ${URL}    ${browser}=chrome    # URL地址|#浏览器
+    Open Browser    ${URL}    ${browser}
+    Maximize Browser Window
+    sleep    1
+
+关闭浏览器_SDD
+    Close All Browsers
+
+输入用户名_SDD
+    [Arguments]    ${element}    ${username}    # 用户名输入框
+    Input Text    ${element}    ${username}
+
+输入密码_SDD
+    [Arguments]    ${element}    ${password}
+    Input Password    ${element}    ${password}
+
+点击Button_SDD
+    [Arguments]    ${element}
+    Click Button    ${element}
+
+结束IEDriver_SDD
+    Process Close    IEDriverServer
+    Process Close    iexplore.exe
+
+输入字符串_SDD
+    [Arguments]    ${element}    ${value}
+    Input Text    ${element}    ${value}
+
+下拉选择_SDD
+    [Arguments]    ${element}    ${value}=
+    Select From List    ${element}    ${value}
+
+点击Link_SDD
+    [Arguments]    ${element}
+    [Documentation]    点击Table中的第一条记录
+    等待控件为可见_SDD    ${element}
+    Click Link    ${element}
+
+等待控件为可见_SDD
+    [Arguments]    ${element}
+    Wait Until Element Is Visible    ${element}

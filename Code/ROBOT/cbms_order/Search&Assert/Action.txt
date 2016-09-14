@@ -1,0 +1,36 @@
+*** Settings ***
+Documentation     1. 动作应该是固定不变的，具体动作需要操作的元素通过页面定位后参数传入
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${URL}    ${browser}=ff    # URL地址|#浏览器
+    Open Browser    ${URL}    ${browser}
+
+关闭浏览器
+    Close All Browsers
+
+输入用户名
+    [Arguments]    ${element}    ${username}    # 用户名输入框
+    Input Text    ${element}    ${username}
+
+输入密码
+    [Arguments]    ${element}    ${password}
+    Input Password    ${element}    ${password}
+
+点击Button
+    [Arguments]    ${element}
+    Click Button    ${element}
+
+结束IEDriver
+    Process Close    IEDriverServer
+    Process Close    iexplore.exe
+
+输入字符串
+    [Arguments]    ${element}    ${value}
+    Input Text    ${element}    ${value}
+
+下拉选择
+    [Arguments]    ${element}    ${value}=
+    Select From List    ${element}    ${value}

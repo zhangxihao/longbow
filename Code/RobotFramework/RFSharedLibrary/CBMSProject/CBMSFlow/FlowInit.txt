@@ -1,0 +1,62 @@
+*** Settings ***
+Resource          FlowNormal.txt
+Resource          Flow_KuandaoPay.txt
+
+*** Keywords ***
+流程创建客户
+    [Arguments]    ${LicenseCode}    ${RegAddress}    ${OrgCode}    ${Type}    ${IsConsign}=临    ${MyAccountName}=TEST
+    ...    ${ServiceCenter}=杭州服务中心
+    [Documentation]    - 创建客户流程（客户名称：${MyAccountName}_${Type}_${AccountName}）
+    ...
+    ...    LicenseCode=营业执照注册号
+    ...
+    ...    RegAddress=企业注册地址
+    ...
+    ...    OrgCode=组织机构代码(建议填写，因为创建的时候可以为空，但是编辑的时候不能为空，如果非要为空请传${EMPTY})
+    ...
+    ...    Type=客户类型: 买家, 卖家, 仓库, 运输, 加工,买卖家
+    ...
+    ...    IsConsign=是否是代运营客户，默认'临'，如果传'代'，则是代运营客户
+    ...
+    ...    ServiceCenter=默认杭州服务中心，*如果选择卖家需要传此参数*
+    ...
+    ...    MyAccountName：客户名称默认以TEST开头
+    ...
+    ...    *创建完的客户后续流程如果需要使用可以直接在用例里面引入客户名称变量*
+    ${Temp}    生成全局唯一值
+    Set Global Variable    ${MyAccountName}
+    Set Global Variable    ${Type}
+    Set Global Variable    ${AccountName}    ${Temp}
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL.CompanyList}
+    单击按钮    xpath=//*[@id="addUser"]    #添加
+    Comment    #公司名称
+    输入文本    xpath=//*[@id="acountName"]    ${MyAccountName}_${Type}_${AccountName}    #客户名称
+    多选框勾选取消    xpath=//*[@id="step_one_div"]//input[@type="checkbox" and @value="1"]    #取消勾选买家,通过观察可以发现属性value可以定位唯一元素
+    Run Keyword If    '${Type}' == '买家'    多选框勾选    xpath=//*[@id="step_one_div"]//input[@type="checkbox" and @value="1"]
+    ...    ELSE IF    '${Type}' == '卖家'    流程临时-勾选卖家    ${ServiceCenter}
+    ...    ELSE IF    '${Type}' == '仓库'    多选框勾选    xpath=//*[@id="step_one_div"]//input[@type="checkbox" and @value="16"]
+    ...    ELSE IF    '${Type}' == '运输'    多选框勾选    xpath=//*[@id="step_one_div"]//input[@type="checkbox" and @value="32"]
+    ...    ELSE IF    '${Type}' == '加工'    多选框勾选    xpath=//*[@id="step_one_div"]//input[@type="checkbox" and @value="64"]
+    ...    ELSE IF    '${Type}' == '买卖家'    临时-勾选买卖家    ${ServiceCenter}
+    ...    ELSE    测试失败    测试失败:请选择客户类型
+    Comment    姓名
+    执行同步JavaScript    document.getElementById("contactName").value="${MyAccountName}_${Type}_${AccountName}钢材部联系人1";
+    Comment    手机号
+    ${ContactTel}    生成全局唯一值手机号
+    执行同步JavaScript    document.getElementById("contactTel").value="${ContactTel}";
+    单击按钮    xpath=//*[@id="nextStepBtn"]    #单击下一步
+    单选框    cardRadio    threeCard    #三证
+    输入文本    xpath=//*[@id="licenseCode"]    ${LicenseCode}    #营业执照注册号
+    输入文本    xpath=//*[@id="regAddress"]    ${RegAddress}    #企业注册地址
+    输入文本    xpath=//*[@id="orgCode"]    ${OrgCode}    #组织机构代码
+    选择文件    xpath=//*[@id="picLicense"]    ${testPicture}    #营业执照
+    Log    ${testPicture}
+    选择文件    xpath=//*[@id="picTaxReg"]    ${testPicture}    #税务登记本(副本)
+    选择文件    xpath=//*[@id="picOrgCode"]    ${testPicture}    #组织机构代码证
+    Run Keyword If    '${IsConsign}' == '代'    选择文件    xpath=//*[@id="picConsignContract"]    ${testPicture}
+    ...    ELSE IF    '${IsConsign}' == '临'    不操作
+    ...    ELSE    测试失败    测试失败:IsConsign参数错误，必需传'代'或'临'
+    单击按钮    xpath=//*[@id="saveInfoBtn"]
+    等待元素为可见    xpath=//*[@id="step3"]/a[text()="返回我的客户"]
+    关闭当前浏览器

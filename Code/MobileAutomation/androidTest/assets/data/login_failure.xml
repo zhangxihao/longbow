@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE testcases
+	[
+		<!ENTITY expectmessage "用户名或密码错误">
+	]
+
+>
+
+<testcases id="login">
+
+	<testcase description="用户名密码全填写错误">
+		<id>TC001</id>
+		<username>admin</username>
+		<password>123456</password>
+		<expect>用户名或密码错误</expect>
+	</testcase>
+
+	<testcase description="用户名错误">
+		<id>TC002</id>
+		<username>errorusername</username>
+		<password>123456</password>
+		<expect>用户名或密码错误</expect>
+	</testcase>
+
+	<testcase description="密码错误">
+		<id>TC003</id>
+		<username>testbuyer</username>
+		<password>1</password>
+		<expect>用户名或密码错误</expect>
+	</testcase>
+
+	<testcase description="用户名第一位是空格">
+		<id>TC004</id>
+		<username> testbuyer</username>
+		<password>123456</password>
+		<expect>该用户在数据库不存在</expect>
+	</testcase>
+
+	<testcase description="密码错误最后一位是空格">
+		<id>TC005</id>
+		<username>testbuyer</username>
+		<password>123456 </password>
+		<expect>用户名或密码错误</expect>
+	</testcase>
+
+	<testcase description="用户名中间包含空格">
+		<id>TC006</id>
+		<username>test buyer</username>
+		<password>123456</password>
+		<expect>用户名或密码错误</expect>
+	</testcase>
+
+	<testcase description="密码中间包含空格">
+		<id>TC007</id>
+		<username>testbuyer</username>
+		<password>123 456</password>
+		<expect>用户名或密码错误</expect>
+	</testcase>
+
+
+</testcases>

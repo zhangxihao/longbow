@@ -1,0 +1,106 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+断言两个对象是否相等
+    [Arguments]    ${first}    ${second}    ${msg}=断言失败
+    [Documentation]    - 用于判断两个对象是否相等。
+    ...
+    ...    msg：断言失败的提示信息。默认为空，如果为空断言失败的结果格式为<first> != <second>；如果不为空断言失败的结果格式为<msg>: <first> != <second>.
+    Should Be Equal    ${first}    ${second}    ${msg}
+
+断言页面应该包含文本
+    [Arguments]    ${Text}    ${LogLevel}=INFO
+    [Documentation]    验证当前页面是否包含指定的文本
+    ...
+    ...    Text：文本
+    ...
+    ...    LogLevel:日志等级 DEBUG, INFO (default), WARN, and NONE.
+    Page Should Contain    ${Text}    ${LogLevel}
+
+断言页面应该不包含文本
+    [Arguments]    ${Text}    ${LogLevel}=INFO
+    [Documentation]    验证当前页面是否包含指定的文本
+    ...
+    ...    Text：文本
+    ...
+    ...    LogLevel:日志等级 DEBUG, INFO (default), WARN, and NONE.
+    Page Should Not Contain    ${Text}    ${LogLevel}
+
+断言页面应该包含链接
+    [Arguments]    ${Locator}    ${message}    ${LogLevel}=INFO
+    [Documentation]    验证当前页面是否包含指定的文本
+    ...
+    ...    Locator:选择器
+    ...
+    ...    message：自定义错误信息，会写入测试报告
+    ...
+    ...    LogLevel:日志等级 DEBUG, INFO (default), WARN, and NONE.
+    ...
+    ...
+    ...    范例： 验证当前页面是否包含指定链接 \ \ id=logout \ \ 当前页面不包含id=logout的元素，测试失败 \ \
+    Page Should Contain Link    ${Locator}    ${message}    ${LogLevel}
+
+断言页面应该不包含链接
+    [Arguments]    ${Locator}    ${message}    ${LogLevel}=INFO
+    [Documentation]    验证当前页面是否包含指定的文本
+    ...
+    ...    Locator:选择器
+    ...
+    ...    message：自定义错误信息，会写入测试报告
+    ...
+    ...    LogLevel:日志等级 DEBUG, INFO (default), WARN, and NONE.
+    ...
+    ...
+    ...    范例： 验证当前页面是否包含指定链接 \ \ id=logout \ \ 当前页面不包含id=logout的元素，测试失败 \ \
+    Page Should Not Contain Link    ${Locator}    ${message}    ${LogLevel}
+
+断言页面应该包含元素
+    [Arguments]    ${Locator}    ${message}    ${LogLevel}=INFO
+    [Documentation]    验证当前页面是否包含指定的元素
+    ...
+    ...    Locator:选择器
+    ...
+    ...    message：自定义错误信息，会写入测试报告
+    ...
+    ...    LogLevel:日志等级 DEBUG, INFO (default), WARN, and NONE.
+    ...
+    ...
+    ...    范例： 验证当前页面是否包含指定链接 \ \ id=logout \ \ 当前页面不包含id=logout的元素，测试失败 \ \
+    Page Should Contain Element    ${Locator}    ${message}    ${LogLevel}
+
+断言页面应该不包含元素
+    [Arguments]    ${Locator}    ${message}    ${LogLevel}=INFO
+    [Documentation]    验证当前页面是否包含指定的元素
+    ...
+    ...    Locator:选择器
+    ...
+    ...    message：自定义错误信息，会写入测试报告
+    ...
+    ...    LogLevel:日志等级 DEBUG, INFO (default), WARN, and NONE.
+    ...
+    ...
+    ...    范例： 验证当前页面是否包含指定链接 \ \ id=logout \ \ 当前页面不包含id=logout的元素，测试失败 \ \
+    Page Should Not Contain Element    ${Locator}    ${message}    ${LogLevel}
+
+断言页面应该包含勾选框
+    [Arguments]    ${Locator}    ${message}    ${LogLevel}=INFO
+    [Documentation]    验证当前页面是否包含勾选框
+    ...
+    ...    Locator:选择器
+    ...
+    ...    message：自定义错误信息，会写入测试报告
+    ...
+    ...    LogLevel:日志等级 DEBUG, INFO (default), WARN, and NONE.
+    Page Should Contain Checkbox    ${Locator}    ${message}    ${LogLevel}
+
+断言页面应该不包含勾选框
+    [Arguments]    ${Locator}    ${message}    ${LogLevel}=INFO
+    [Documentation]    验证当前页面是否包含勾选框
+    ...
+    ...    Locator:选择器
+    ...
+    ...    message：自定义错误信息，会写入测试报告
+    ...
+    ...    LogLevel:日志等级 DEBUG, INFO (default), WARN, and NONE.
+    Page Should Not Contain Checkbox    ${Locator}    ${message}    ${LogLevel}

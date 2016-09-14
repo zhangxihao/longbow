@@ -1,0 +1,6 @@
+*** Settings ***
+Library           AutoItLibrary
+
+*** Keywords ***
+结束ChromeDriver
+    Process Close    chromedriver.exe

@@ -1,0 +1,20 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../ASSFlow/Flow_WorkTable.txt
+Resource          ../ASSPage/Page_ReportBusiness.txt
+Resource          ../ASSProjectResource.txt
+
+*** Keywords ***
+流程今日实时数据_获取处理单数
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（无处理中的需求）    #只有该状态，才可进入业务报表
+    跳转到地址    ${ASSURL.ReportBusiness}
+    ${countProcess}    页面今日实时数据_获取处理单数
+    [Return]    ${countProcess}
+
+流程今日实时数据_获取处理成功数
+    跳转到地址    ${ASSURL.WorkTable}
+    流程切换为离开（无处理中的需求）    #只有该状态，才可进入业务报表
+    跳转到地址    ${ASSURL.ReportBusiness}
+    ${countInquiry}    页面今日实时数据_获取处理成功数
+    [Return]    ${countInquiry}

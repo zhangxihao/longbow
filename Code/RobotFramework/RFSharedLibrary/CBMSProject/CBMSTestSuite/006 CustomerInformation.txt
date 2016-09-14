@@ -1,0 +1,69 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../ProjectResource.txt
+Resource          ../CBMSFlow/Flow__CustomerInformation.txt
+
+*** Test Cases ***
+客户管理_客户资料_搜索
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-搜索    铁碎牙公司
+    关闭当前浏览器
+
+客户管理_客户资料_年度采购协议状态筛选
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-年度采购协议-二审未通过
+    关闭当前浏览器
+
+客户管理_客户资料_卖家代运营协议状态筛选
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-卖家代运营协议-二审未通过
+    关闭当前浏览器
+
+客户管理_客户资料_证件资料状态筛选
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-证件资料-通过
+    关闭当前浏览器
+
+客户管理_客户资料_开票资料状态筛选
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-开票资料-通过
+    关闭当前浏览器
+
+客户管理_客户资料_打款资料状态筛选
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-打款资料-通过
+    关闭当前浏览器
+
+客户管理_客户资料_年度采购协议-撤销通过
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-搜索    铁碎牙公司
+    流程客户资料-年度采购协议-撤销通过
+    关闭当前浏览器
+
+客户管理_客户资料_卖家代运营协议-撤销通过
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-搜索    铁碎牙公司
+    流程客户资料-卖家代运营协议-撤销通过
+    关闭当前浏览器
+
+客户管理_客户资料_证件资料-撤销通过
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-搜索    铁碎牙公司
+    流程客户资料-证件资料-撤销通过
+    关闭当前浏览器
+
+客户管理_客户资料_开票资料-撤销通过
+    流程客户资料-登录    ${URL.Login}    cbadmin    123456
+    流程客户资料-进入客户资料    http://cbmstest.com:8090/account/company/tocustinfolist.html
+    流程客户资料-搜索    铁碎牙公司
+    流程客户资料-开票资料-撤销通过
+    关闭当前浏览器

@@ -1,0 +1,49 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../EC2.0Page/Page_Market.txt
+Resource          ../ProjectResource_2.0.txt
+
+*** Keywords ***
+流程超市-搜索资源
+    [Arguments]    ${NsortName}    ${locator1}    ${locator2}    ${locator3}    ${locator4}    ${locator5}
+    页面超市-选择品名    ${NsortName}
+    页面超市-选择材质    ${locator1}
+    页面超市-选择厂家    ${locator2}
+    页面超市-选择规格1    ${locator3}
+    页面超市-选择规格2    ${locator4}
+    页面超市-选择规格3    ${locator5}
+    页面超市-点击搜索
+
+流程超市-提交空需求
+    [Arguments]    ${locator}
+    页面超市-点击帮我找    ${locator}
+    页面超市-发送需求-点击钢为帮我找
+    页面超市-发送需求成功-点击我知道了
+
+流程超市-提交文字需求
+    [Arguments]    ${locator}    ${value}
+    页面超市-点击帮我找    ${locator}
+    页面超市-点击帮我找-输入文本    ${value}
+    页面超市-发送需求-点击钢为帮我找
+    页面超市-发送需求成功-点击我知道了
+
+流程超市-提交文件需求
+    [Arguments]    ${locator}    ${FilePath}
+    页面超市-点击帮我找    ${locator}
+    页面超市-点击帮我找-上传文件（中间+）    ${FilePath}
+    页面超市-发送需求-点击钢为帮我找
+    页面超市-发送需求成功-点击我知道了
+
+流程超市-加入购物车
+    [Arguments]    ${locator}    ${value}
+    页面超市-点击加入购物车    ${locator}
+    页面超市-输入采购重量    ${value}
+    页面超市-点击按钮
+
+流程超市-购物车提交询价
+    [Arguments]    ${locator}
+    页面超市-点击购物车
+    页面超市-点击去购物车    ${locator}
+    页面超市-点击提交询价
+    页面超市-点击我知道了

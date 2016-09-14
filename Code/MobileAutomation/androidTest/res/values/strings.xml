@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 断言公共提示 -->
+    <string name="assert_message">提示消息没有发现可能出现bug！</string>
+
+</resources>

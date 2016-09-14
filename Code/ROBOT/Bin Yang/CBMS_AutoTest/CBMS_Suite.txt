@@ -1,0 +1,17 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          Browser_Open.txt
+
+*** Variables ***
+@{Para}           ${Url}    ${Search}    ${Title}    ${TextBox_ID}    ${Button_ID}
+
+*** Test Cases ***
+CBMS_Login
+    ${Title}    ${Text}    Set Variable    title    excel
+    ${TextBox_ID}    ${Button}    Set Variable    kw    su
+    Browser Open    ${Text}    ${Title}    ${TextBox_ID}    ${Button}
+
+CBMS_Login_Test
+    login
+
+*** Keywords ***

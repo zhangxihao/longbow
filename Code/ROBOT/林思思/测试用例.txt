@@ -1,0 +1,60 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          业务流程.txt
+
+*** Variables ***
+${url}            http://cbmstest.com:8019/web/index.html
+${username}       jiaoyiyuan8
+${pwd}            123456
+${browser}        Firefox
+
+*** Test Cases ***
+login
+    登录cbms    ${url}    ${browser}    ${username}    ${pwd}
+
+进入银票管理
+    打开银票管理页面
+
+筛选搜索
+    input text    id=stimefrom    2016-3-1
+    input text    id=stimeto    Today
+    input text    id=accountName    sy卖家
+    ${value}    Get Selected List Value    status
+    Select From List By Value    status    CHARGED
+    click button    id=search
+
+显示条数
+    Select From List    forShow_length    第一个元素
+    ${label}    Get Selected List Label    forShow_length
+    ${value}    Get Selected List Value    forShow_length
+    Select From List By Value    forShow_length    50
+
+输入银票信息
+    打开银票管理页面
+
+提交审核
+    打开银票管理页面
+
+进入银票清单
+    打开银票清单页面
+
+输入票号及日期
+    input text    id=code    1234
+    input text    id=startTime    2015-12-15
+    input text    id=endTime    2016-03-15
+
+点击搜索
+    click element    id=search
+
+选择显示条数
+    Input Text    id=forShow_length    显示
+    ${value}    Get Value    forShow_length
+    Select From List By Value    selectdemo    item1
+
+lgout
+    click element    xpath=.//*[@id='navbar-container']/div[3]/ul/li/a
+    sleep    0.5
+    click element    xpath=.//*[@id='logout']
+
+关闭浏览器
+    close browser

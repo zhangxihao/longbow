@@ -1,0 +1,39 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource.txt
+
+*** Keywords ***
+页面客户管理-页面搜索
+    [Arguments]    ${AccountTag}    ${AccountName}    ${PurchaseStatus}    ${ConsignStatus}    ${CardStatus}    ${InvoiceStatus}
+    ...    ${PayStatus}
+    [Documentation]    根据所传入的可选参数执行相应的动作：
+    ...
+    ...    accountTag=客户性质
+    ...
+    ...    accountName=公司名称
+    ...
+    ...    purchaseStatus=年度采购协议状态
+    ...
+    ...    consignStatus=卖家代运营状态
+    ...
+    ...    cardStatus=证件资料状态
+    ...
+    ...    invoiceStatus=开票资料状态
+    ...
+    ...    payStatus=打款资料状态
+    comment    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+    comment    下拉选择    xpath=//*[@id="accountTag"]    ${AccountTag}    #客户性质
+    comment    输入文本    xpath=//*[@id="accountName"]    ${AccountName}    #公司名称
+    comment    下拉选择    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[1]    ${PurchaseStatus}    #年度采购协议状态
+    comment    下拉选择    xpath=//*[@id="consignStatus"]    ${ConsignStatus}    #卖家代运营协议状态
+    comment    下拉选择    xpath=//*[@id="cardStatus"]    ${CardStatus}    #证件资料状态
+    comment    下拉选择    xpath=//*[@id="invoiceStatus"]    ${InvoiceStatus}    #开票资料状态
+    comment    下拉选择    xpath=//*[@id="payStatus"]    ${PayStatus}    #打款资料状态
+    comment    单击按钮    xpath=//*[@id="searchBtn"]    #搜索按钮
+    comment    Comment    等待页面不包含指定文本    Bitte warten...
+    comment    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+
+页面我的客户tab
+    [Arguments]    ${url}
+    跳转到地址    ${url}

@@ -1,0 +1,24 @@
+*** Settings ***
+Documentation     登录测试套件
+Force Tags
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../CBMSFlow/Flow.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../ProjectResource.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+
+*** Test Cases ***
+testLoginSuccess
+    [Documentation]    测试登录成功
+    [Setup]    结束ChromeDriver
+    流程登录    ${URL.Login}    cbadmin    123456
+    断言页面应该包含链接    xpath=//*[@id="logout"]    当前页面不包含退出链接，测试失败
+
+testLoginFailure
+    [Documentation]    测试登录失败：
+    ...    1. 用户名错误登录失败
+    ...    2. 密码错误登录失败
+    [Setup]    结束ChromeDriver
+    流程登录    ${URL.Login}    cbadmin    1234567
+    断言页面应该包含文本    Invalid credentials.

@@ -1,0 +1,97 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource_2.0.txt
+Resource          ../../SharedLibrary/Action/Database.txt
+
+*** Keywords ***
+页面忘记密码-输入手机号
+    [Arguments]    ${value}
+    输入文本    xpath=//*[@id="userPhonetellogin"]    ${value}
+
+页面忘记密码-点击获取验证码
+    [Arguments]    ${locator1}
+    单击元素    ${locator1}
+
+页面忘记密码-连接数据库
+    连接数据库    pymysql    database='ec2.0',user='root',password='root',host='192.168.0.199',port=3306,charset='utf8'
+    ${queryResults}=    执行查询    SELECT * FROM base_sms_valid_code ORDER BY id DESC;
+    Set Global Variable    ${smsCodeNumber}    ${queryResults[0][4]}
+    断开数据库
+
+页面忘记密码-输入验证码
+    [Arguments]    ${smsCodeNumber}
+    输入文本    xpath=//*[@id="smsCodeNumber"]    ${smsCodeNumber}
+
+页面忘记密码-点击下一步
+    单击按钮    xpath=//*[@id="Stepgo"]
+
+页面忘记密码-设置密码
+    [Arguments]    ${userPwd}
+    输入文本    xpath=//*[@id="userPwd"]    ${userPwd}
+
+页面忘记密码-确认密码
+    [Arguments]    ${afterPwd}
+    输入文本    xpath=//*[@id="afterPwd"]    ${afterPwd}
+
+页面忘记密码-点击确定
+    单击按钮    xpath=//*[@id="bindNewPhone"]
+
+页面重置密码-点击重置密码
+    单击链接    xpath=//div[@class="member-info"]//a[text()="重置密码"]
+
+页面重置密码-点击获取验证码
+    [Arguments]    ${locator1}
+    单击元素    ${locator1}
+    comment    xpath=//*[@id="getCode"]
+
+页面重置密码-输入验证码
+    [Arguments]    ${oldCode}
+    输入文本    xpath=//*[@id="oldCode"]    ${oldCode}
+
+页面重置密码-点击下一步
+    单击按钮    xpath=//*[@id="Stepgo"]
+
+页面重置密码-设置密码
+    [Arguments]    ${userPwd}
+    输入文本    xpath=//*[@id="userPwd"]    ${userPwd}
+
+页面重置密码-确认密码
+    [Arguments]    ${afterPwd}
+    输入文本    xpath=//*[@id="afterPwd"]    ${afterPwd}
+
+页面重置密码-点击确定
+    单击按钮    xpath=//*[@id="bindNewPhone"]
+
+页面修改绑定手机-点击修改绑定手机
+    单击链接    xpath=//div[@class="member-info"]//a[text()="修改绑定手机号"]
+
+页面修改绑定手机-点击获取验证码
+    单击元素    xpath=//*[@id="getCode"]
+
+页面修改绑定手机-连接数据库
+    连接数据库    pymysql    database='ec2.0',user='root',password='root',host='192.168.0.199',port=3306,charset='utf8'
+    ${queryResults}=    执行查询    SELECT * FROM base_sms_valid_code ORDER BY id DESC;
+    Set Global Variable    ${oldCode}    ${queryResults[0][4]}
+    断开数据库
+
+页面修改绑定手机-输入验证码
+    [Arguments]    ${oldCode}
+    输入文本    xpath=//*[@id="oldCode"]    ${oldCode}
+
+页面修改绑定手机-点击下一步
+    单击按钮    xpath=//*[@id="Stepgo"]
+
+页面修改绑定手机-输入新手机号
+    [Arguments]    ${userPhonetellogin}
+    输入文本    xpath=//*[@id="userPhonetellogin"]    ${userPhonetellogin}
+
+页面修改绑定手机-获取新验证码
+    单击元素    xpath=//*[@id="getNewCode"]
+
+页面修改绑定手机-输入新验证码
+    [Arguments]    ${smsCodeNumber}
+    输入文本    xpath=//*[@id="smsCodeNumber"]    ${smsCodeNumber}
+
+页面修改绑定手机-点击立即绑定
+    单击按钮    xpath=//*[@id="bindNewPhone"]

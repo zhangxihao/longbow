@@ -1,0 +1,17 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          脚本关键字.txt
+
+*** Keywords ***
+登录cbms
+    [Arguments]    ${url}    ${browser}    ${username}    ${pwd}
+    打开浏览器    ${url}    ${browser}
+    浏览器最大化
+    输入用户名    ${username}
+    输入密码    ${pwd}
+    点击登录按钮
+    等待时间
+
+进入交易单管理页面
+    Click Element    id=sidebar
+    go to    http://sim-cbms.prcsteel.com/common/menu/order-view/order-query-index-page.html    #进入交易单管理

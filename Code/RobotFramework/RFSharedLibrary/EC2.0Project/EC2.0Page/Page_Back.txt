@@ -1,0 +1,27 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource_2.0.txt
+
+*** Keywords ***
+页面会员中心-点击手机号
+    [Arguments]    ${locator1}
+    单击链接    ${locator1}    #进入会员中心
+
+页面会员中心-输入文本
+    [Arguments]    ${value}
+    输入文本    xpath=//*[@id="textarea"]    ${value}
+
+页面会员中心-上传文件中间（+）
+    [Arguments]    ${FilePath}
+    选择文件    xpath=//*[@id="uploadFile1"]    ${FilePath}
+
+页面会员中心-上传文件左下（+）
+    [Arguments]    ${FilePath}
+    选择文件    xpath=//*[@id="uploadFile2"]    ${FilePath}
+
+页面会员中心-点击钢为帮我找
+    单击按钮    xpath=//div[@class="find-content"]/input[@class="helpme-btn"]
+
+页面会员中心-点击我知道了
+    单击链接    xpath=//*[@id="dialogContBox"]//div[@class="succ-link"]//a[text()="我知道了"]

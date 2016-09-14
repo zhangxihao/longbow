@@ -1,0 +1,16 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+
+*** Keywords ***
+页面登录
+    [Arguments]    ${UserName}    ${PassWord}    # 用户名；密码
+    [Documentation]    * 登录页面：
+    ...
+    ...    UserName：用户名
+    ...
+    ...    PassWord：密码
+    输入文本    xpath=//*[@id="username"]    ${UserName}
+    输入文本    xpath=//*[@id="password"]    ${PassWord}
+    Comment    #通过故意修改为错误的选择器可以发现每过5秒“等待关键字运行成功”的效果，是2分钟内每次过5秒触发一次事件，可以缓解对象识别时的元素渲染问题
+    Comment    输入文本    xpath=//*[@id="username1"]    ${UserName}
+    单击按钮    xpath=//*[@id="fm1"]/button    #索引从1开始

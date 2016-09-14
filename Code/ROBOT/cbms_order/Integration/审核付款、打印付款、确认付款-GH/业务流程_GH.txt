@@ -1,0 +1,79 @@
+*** Settings ***
+Resource          脚本关键字.txt
+Library           Selenium2Library
+Library           AutoItLibrary
+Resource          ../Search_Assert/Page.txt
+
+*** Keywords ***
+登录系统
+    [Arguments]    ${url}    ${browser}    ${username}    ${password}
+    打开浏览器_GH    ${url}    ${browser}
+    输入用户名_GH    ${username}
+    输入密码_GH    ${password}
+    点击登录按钮_GH
+    等待时间
+
+进入交易单管理页面
+    [Arguments]    ${url}
+    点击交易管理
+    点击交易单管理    ${url}
+
+进入审核付款页
+    [Arguments]    ${url}    ${element}    ${testBuyerAccount}
+    Comment    点击待审核付款tab
+    Comment    点击审核按钮    ${url}
+    goto    ${url}
+    执行搜索    \    ${testBuyerAccount}
+    sleep    2s
+    Wait Until Element Is Visible    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[1]/a
+    Click Link    ${element}
+
+审核付款通过
+    Wait Until Element Is Visible    order_payaudit_accept
+    点击审核付款通过
+    点击确定通过
+    sleep    1S
+    Close Browser
+
+进入打印付款申请单页
+    [Arguments]    ${url}    ${element}    ${testBuyerAccount}
+    Comment    点击待打印付款申请tab
+    Comment    点击打印处理按钮    ${url}
+    goto    ${url}
+    执行搜索    \    ${testBuyerAccount}
+    sleep    2s
+    Wait Until Element Is Visible    xpath=//*[@id="dynamic-table"]/tbody/tr[last()]/td[1]/a
+    Click Link    ${element}
+
+打印付款申请单
+    点击打印付款申请单
+    点击打印按钮
+    Comment    激活打印窗口    ${Title}
+    Comment    点击取消_GH    ${Text}    ${Button}
+    Win Activate    打印
+    Control Click    \    取消    Button11
+    Comment    Wait Until Element Is Visible    xpath=//*[@id="print-header"]/div/button[2]
+    Comment    Click Button    xpath=//*[@id="print-header"]/div/button[2]
+    sleep    1s
+    Close Browser
+
+进入确认已付款页
+    [Arguments]    ${url}    ${LastElement}    ${testBuyerAccount}
+    Comment    点击待确认已付款tab
+    go to    ${url}
+    Wait Until Element Is Visible    queryBtn
+    执行搜索    \    ${testBuyerAccount}
+    sleep    2s
+    Wait Until Element Is Visible    xpath=//*[@id="dynamic-table"]/tbody/tr[last()]/td[1]/a
+    Click Link    ${LastElement}
+    sleep    2s
+
+订单确认已付款
+    点击确认已付款
+    点击确定完成
+    sleep    1s
+    Close Browser
+
+退出系统
+    退出登录_GH
+    关闭浏览器_GH

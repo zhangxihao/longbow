@@ -1,0 +1,218 @@
+*** Settings ***
+Documentation     - 交易单管理正常流程
+Resource          ../ProjectResource.txt
+Resource          ../CBMSFlow/Flow.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../CBMSFlow/FlowNormal.txt
+
+*** Test Cases ***
+testCreateOrder
+    [Documentation]    - 开单流程
+    ...
+    ...    *返回订单号直接使用“${OrderID}”即可*
+    [Setup]    Run Keywords    流程登录正常    # Run Keywords | 结束ChromeDriver | AND | 流程登录 | http://ssotest.com:8080/cas/login?service=http://cbmstest.com:8090/order/shiro-cas | jiaoyiyuan | 123456
+    流程新开交易单-录入买家信息    ${Account.BuyerName}    ${Account.BuyerDepartment}    ${Account.BuyerContant}    ${Account.BuyerContantTel}
+    流程新开交易单-录入资源信息    ${Account.SellerName}    ${Account.BuyerDepartment}    ${Account.SellerContant}    中厚板    Q235A    1100*1200*1300
+    ...    测试厂家1    湖北省    武汉市    测试仓库1    1    1
+    ...    抄码    1    1    无
+    单击链接    xpath=//*[@id="table_resource"]/tbody/tr[last()]//a[@copy="copy"]    #复制
+    单击按钮    xpath=//*[@id="manualAdd"]    #手动添加
+    流程新开交易单-录入资源信息    ${Account.SellerName}    ${Account.BuyerDepartment}    ${Account.SellerContant}    中厚板    Q235B    1200*1200*1300
+    ...    测试厂家2    浙江省    杭州市    测试仓库2    2    2
+    ...    磅计    2    2    无
+    Comment    单击按钮    xpath=//*[@id="searchAdd"]    #搜索添加
+    流程新开交易单-录入交提货信息    \    2222-11-11    \    \    自动化测试执行合同签订地    #交提货信息
+    Comment    单击按钮    xpath=//*[@id="submit"]    #提交审核，这个操作上面可能会有很多组合流程，所以放测试用例里面执行
+    Comment    流程获取新开单后的交易单号
+    Comment    Comment    #断言页面是否包含开单时候的订单号
+    Comment    断言页面应该包含文本    ${OrderID}
+    Comment    Comment    关闭当前浏览器
+
+testApprovalOrderForPass
+    [Documentation]    - 总经理，审核订单
+    ...    审核通过
+    [Setup]    Run Keywords    流程开单正常
+    流程登录    ${URL.Login}    hangzhouowner    123456
+    流程交易单管理-待审核Tab-审核
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待审核Tab-审核通过    自动化测试执行-待审核备注信息
+    流程交易单管理-交易关闭Tab
+
+testApprovalOrderForOrderClose
+    [Documentation]    - 总经理，审核订单
+    ...
+    ...    审核不通过，直接关闭订单
+    [Setup]    Run Keywords    流程开单正常
+    流程登录    ${URL.Login}    hangzhouowner    123456
+    流程交易单管理-待审核Tab-审核
+    流程交易单管理-待审核Tab-审核不通过    自动化测试执行-待审核-审核不通过备注信息    自动化测试执行-待审核-审核不通过理由
+    Comment    #断言页面是否包含开单时候的订单号，正常情况应该是断言当前页面是否包含审核不通过时填写的不通过理由文案的.    #现在是通过订单号去做校验，或者也可以通过备注校验
+    流程交易单管理-交易关闭Tab    #交易关闭Tab
+    等待页面包含指定元素    xpath=//*[@id="order_note"]
+    断言页面应该包含文本    自动化测试执行-待审核-审核不通过备注信息
+
+testAssociateOrderForPass
+    [Documentation]    - 关联订单
+    ...
+    ...    关联流程
+    [Setup]    Run Keywords    流程审核正常
+    流程登录    ${URL.Login}    jiaoyiyuan    123456
+    流程交易单管理-待关联Tab
+    Comment    这里根据业务需求选择是否勾选二结、信用额度
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待关联Tab-关联
+
+testAssociateOrderForApplyClose
+    [Documentation]    - 关联订单
+    ...
+    ...    申请关闭流程，未完待续
+    [Setup]    Run Keywords    流程审核正常
+    流程登录    ${URL.Login}    jiaoyiyuan    123456
+    流程交易单管理-待关联Tab
+    Comment    申请关闭流程
+
+testApplyPaymentForPass
+    [Documentation]    - 申请付款
+    ...    申请付款流程
+    [Setup]    Run Keywords    流程关联正常
+    流程登录    ${URL.Login}    jiaoyiyuan    123456
+    流程交易单管理-待申请付款Tab
+    Comment    这里根据业务需求选择是否修改银行、金额
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    ${CurrentSec}    获取当前秒数
+    流程交易单管理-待申请付款Tab-申请付款    ${testPicture}    ${CurrentSec}
+
+testApplyPaymentForApplyClose
+    [Documentation]    - 申请付款
+    ...
+    ...    申请关闭流程，未完待续
+    [Setup]    Run Keywords    流程关联正常
+    流程登录    ${URL.Login}    jiaoyiyuan    123456
+    流程交易单管理-待申请付款Tab
+    Comment    申请关闭流程
+
+testAuditPaymentForPass
+    [Documentation]    - 待审核付款
+    ...    审核通过流程
+    [Setup]    Run Keywords    流程申请付款正常
+    流程登录    ${URL.Login}    hangzhouowner    123456
+    流程交易单管理-待审核付款Tab
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待审核付款Tab-通过
+
+testAuditPaymentForPassNo
+    [Documentation]    - 待审核付款
+    ...
+    ...    审核不通过，订单回到申请付款。
+    [Setup]    Run Keywords    流程申请付款正常
+    流程登录    ${URL.Login}    hangzhouowner    123456
+    流程交易单管理-待审核付款Tab
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待审核付款Tab-不通过    自动化测试执行-审核付款-不通过
+    Comment    #不通过后返回到申请付款页校验数据是否正确
+    流程登录    ${URL.Login}    jiaoyiyuan    123456
+    流程交易单管理-待申请付款Tab
+    Comment    #断言页面是否包含开单时候的订单号，正常情况应该是断言当前页面是否包含审核不通过时填写的不通过理由文案的.    #现在是通过订单号去做校验，或者也可以通过输入的合同编号
+    断言页面应该包含文本    ${OrderID}
+    关闭当前浏览器
+
+testPrintPendingPayapplyForPrint
+    [Documentation]    - 待打印付款申请
+    ...    打印付款申请单流程
+    [Setup]    Run Keywords    流程审核付款正常
+    流程登录    ${URL.Login}    kuaiji    123456
+    流程交易单管理-待打印付款申请Tab    #进入待打印付款申请Tab
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待打印付款申请Tab-打印付款申请单
+    断言页面应该包含文本    已打印
+    关闭当前浏览器
+
+testPrintPendingPayapplyForFightback
+    [Documentation]    - 待打印付款申请
+    ...    打回流程
+
+testPrintPendingPayapplyForOrderClose
+    [Documentation]    - 待打印付款申请
+    ...
+    ...
+    ...    直接关闭订单
+
+testConfirmPaymentForPass
+    [Documentation]    - 待确认已付款
+    ...    确认已付款
+    [Setup]    Run Keywords    流程打印付款正常
+    流程登录    ${URL.Login}    zongchuna    123456
+    流程交易单管理-待确认已付款Tab
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待确认已付款Tab-确认已付款
+
+testConfirmPaymentForOrderClose
+    [Documentation]    - 待确认已付款
+    ...
+    ...    直接关闭订单
+    [Setup]    Run Keywords    流程打印付款正常
+
+testPickupForCar
+    [Documentation]    - 待提货流程
+    ...
+    ...    提货流程的前置条件是申请付款后的所有流程中均可介入，我这里是'流程确认付款正常'确认付款后在做的，可根据业务需求自行修改Setup中的参数。
+    ...
+    ...    1. 车船号方式提货
+    [Setup]    Run keywords    流程确认付款正常    # 提货流程的前置条件是申请付款后的所有流程中均可介入
+    流程登录    ${URL.Login}    jiaoyiyuan    123456
+    流程交易单管理-待提货Tab
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待提货Tab-确认提交    浙A12345    ${testPicture}
+
+testFillupForPrint
+    [Documentation]    - 待放货流程
+    ...
+    ...    打印放货单
+    [Setup]    Run Keywords    流程提货正常
+    流程登录    ${URL.Login}    neiqin    123456
+    流程交易单管理-待放货Tab
+    Comment    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待放货Tab-打印放货单
+    流程搜索    ${OrderID}
+    断言页面应该包含文本    放货单已全打印
+
+testFillupForView
+    [Documentation]    - 待放货流程
+    ...
+    ...    查看放货单
+    [Setup]    Run Keywords    流程提货正常
+
+testSecondSettlementMatchSuccess
+    [Documentation]    - 待二次结算
+    ...
+    ...    1. 匹配成功流程，双敲成功
+    [Setup]    Run Keywords    流程放货正常
+    流程登录    ${URL.Login}    jiaoyiyuan    123456
+    流程交易单管理-待二次结算Tab
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待二次结算Tab-录入实提量    1    1
+    关闭当前浏览器
+    流程登录    ${URL.Login}    neiqin    123456
+    流程交易单管理-待二次结算Tab
+    断言页面应该包含文本    ${OrderID}    \    #断言页面是否包含开单时候的订单号
+    流程交易单管理-待二次结算Tab-录入实提量    1    1
+    断言页面应该包含元素    xpath=//*[@id="secondary"]    当前页面不包含二次结算按钮，无法j进行二次结算
+    单击按钮    xpath=//*[@id="secondary"]    #二次结算
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary"]    #单击浮层OK
+    关闭当前浏览器
+
+testSecondSettlementMatchFailure
+    [Documentation]    - 待二次结算
+    ...
+    ...    1. 匹配流程，双敲失败
+    [Setup]    Run Keywords    流程放货正常
+
+testInvoice
+    [Documentation]    - 已二结流程
+    [Setup]    Run Keywords    流程二次结算正常
+    流程登录    ${URL.Login}    neiqin    123456
+    流程交易单管理-已二结Tab
+    comment    查看二结订单信息
+    断言页面应该包含文本    待开票申请
+    关闭当前浏览器

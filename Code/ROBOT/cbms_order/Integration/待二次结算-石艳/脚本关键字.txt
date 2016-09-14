@@ -1,0 +1,61 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+打开浏览器_SY
+    [Arguments]    ${url}
+    open browser    ${url}
+
+输入用户名_Sy
+    [Arguments]    ${username}
+    input text    id=username    ${username}
+
+输入密码_SY
+    [Arguments]    ${password}
+    input password    id=password    ${password}
+
+点击登录_SY
+    click button    xpath=//button[@class='btn_blue']
+
+检查登录成功
+    page should contain image    xpath=//div[@class='pull-left']/a/img
+
+关闭浏览器_SY
+    close browser
+
+最大化浏览器窗口_SY
+    Maximize Browser Window
+
+进入菜单页面_SY
+    [Arguments]    ${menu}
+    go to    ${menu}
+
+检查有“交易管理”菜单_SY
+    page should contain element    xpath=//span[@class='menu-text']    交易管理
+
+根据买家全称进行搜索_SY
+    [Arguments]    ${buyer}
+    input text    accountName    ${buyer}
+    click button    queryBtn
+    sleep    3
+
+进入录入实提单页面_SY
+    Click Link    xpath=//*[@id='dynamic-table']/tbody/tr/td[12]/a
+    Wait Until Element Is Visible    xpath=//*[@id='main-container']/div[2]/div/div[2]/div[2]/table/thead/tr/th[2]/button
+    click element    xpath=//*[@id='main-container']/div[2]/div/div[2]/div[2]/table/thead/tr/th[2]/button
+
+录入实提量_SY
+    [Arguments]    ${number1}    ${weight1}    ${number2}    ${weight2}    # 录入实提量，目前没有好的解决方案，无法获取总行数
+    input text    xpath=//*[@id='editTable']/tbody/tr/td[9]/input    ${number1}
+    input text    xpath=//*[@id='editTable']/tbody/tr/td[10]/input    ${weight1}
+    input text    xpath=//*[@id='editTable']/tbody/tr[2]/td[9]/input    ${number2}
+    input text    xpath=//*[@id='editTable']/tbody/tr[2]/td[10]/input    ${weight2}
+    click element    commit
+    sleep    3
+    Comment    wait until page contains element
+    click element    xpath=/html/body/div[4]/div[2]/div/div[2]/button
+
+退出登录_SY
+    click element    xpath=//div[@id='navbar-container']/div[3]/ul/li/a/i
+    sleep    1
+    click element    xpath=//*[@id='logout']

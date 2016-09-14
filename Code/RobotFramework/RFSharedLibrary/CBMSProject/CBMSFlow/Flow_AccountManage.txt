@@ -1,0 +1,65 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../CBMSPage/Page.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource.txt
+Resource          ../CBMSPage/Page_AccountManage.txt
+Resource          Flow.txt
+Resource          ../../SharedLibrary/Action/CBMSGloble.txt
+
+*** Keywords ***
+流程登录-客户管理页
+    [Arguments]    ${URL}    ${UserName}    ${PassWord}    ${Browser}=chrome    ${Alias}=${None}
+    打开浏览器并最大化    ${URL}    ${Browser}    ${Alias}
+    页面登录    ${UserName}    ${PassWord}
+
+流程搜索-客户管理页
+    [Arguments]    ${AccountTag}=${empty}    ${AccountName}=${empty}    ${PurchaseStatus}=${empty}    ${ConsignStatus}=${empty}    ${CardStatus}=${empty}    ${InvoiceStatus}=${empty}
+    ...    ${PayStatus}=${empty}
+    [Documentation]    根据所传入的可选参数执行相应的动作：
+    ...
+    ...    accountTag=客户性质
+    ...
+    ...    accountName=公司名称
+    ...
+    ...    purchaseStatus=年度采购协议状态
+    ...
+    ...    consignStatus=卖家代运营状态
+    ...
+    ...    cardStatus=证件资料状态
+    ...
+    ...    invoiceStatus=开票资料状态
+    ...
+    ...    payStatus=打款资料状态
+    comment    页面客户管理-页面搜索    ${AccountTag}    ${AccountName}    ${PurchaseStatus}    ${ConsignStatus}    ${CardStatus}
+    ...    ${InvoiceStatus}    ${PayStatus}
+    comment    Comment    sleep    1s    \    #执行完搜索后其实正常情况有个页面重载的过程，应该等待页面加载完毕
+    comment    运行关键字并判断    '${AccountTag}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+    comment    运行关键字并判断    '${AccountName}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[text()="${AccountName}"]
+    comment    运行关键字并判断    '${PurchaseStatus}' != '${empty}'    等待元素为可见    xpath=//*[@id="purchaseStatus"]//input[@li class="all"]
+    comment    运行关键字并判断    '${ConsignStatus}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+    comment    运行关键字并判断    '${CardStatus}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+    comment    运行关键字并判断    '${InvoiceStatus}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+    comment    运行关键字并判断    '${PayStatus}' != '${empty}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+
+流程锁定客户
+    [Arguments]    ${locator}
+    单击链接    ${locator}
+    单击浮层确定
+
+流程解锁客户
+    [Arguments]    ${locator}
+    单击链接    ${locator}
+    单击浮层确定
+
+流程锁定全部客户
+    [Arguments]    ${locator1}    ${locator2}
+    多选框勾选    ${locator1}
+    单击按钮    ${locator2}
+    单击浮层确定
+
+流程解锁全部客户
+    [Arguments]    ${locator1}    ${locator2}
+    多选框勾选    ${locator1}
+    单击按钮    ${locator2}
+    单击浮层确定

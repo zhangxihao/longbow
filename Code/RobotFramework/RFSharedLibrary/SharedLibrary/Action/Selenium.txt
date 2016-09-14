@@ -1,0 +1,301 @@
+*** Settings ***
+Documentation     1. 动作应该是固定不变的，具体动作需要操作的元素通过页面定位后参数传入.
+Library           Selenium2Library
+Resource          ../Config/GlobalConfig.txt
+Resource          ../Action/AutoIt.txt
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${URL}    ${Browser}=chrome    ${Alias}=${None}    # URL:浏览器地址;Browser:浏览器
+    [Documentation]    *打开浏览器*
+    ...
+    ...    URL:浏览器地址
+    ...    Browser：浏览器
+    ...    Alias:给浏览器起一个别名，配合switch Browser关键字使用
+    结束ChromeDriver
+    Open Browser    ${URL}    ${Browser}    ${Alias}
+    Comment    Location Should Be    ${URL}    #验证当前URL是一个正确URL,如果用的file:///则会Fail
+    Comment    跳转地址会有超时500的错误后期加入异常处理
+
+最大化浏览器
+    Maximize Browser Window
+
+打开浏览器并最大化
+    [Arguments]    ${URL}    ${Browser}=chrome    ${Alias}=${None}
+    [Documentation]    打开浏览器后最大化
+    ...
+    ...    URL:浏览器地址
+    ...
+    ...    Browser：浏览器，默认谷歌(chrome)，火狐(firefox)
+    打开浏览器    ${URL}    ${Browser}    ${Alias}
+    最大化浏览器
+
+关闭当前浏览器
+    [Documentation]    1. 关闭浏览器之后结束chromedriver
+    Close Browser
+
+关闭所有浏览器
+    [Documentation]    关闭所有由RF创建的浏览器
+    Close All Browsers
+    [Teardown]    结束ChromeDriver
+
+输入文本
+    [Arguments]    ${Locator}    ${Value}
+    [Documentation]    Locator:选择器
+    ...
+    ...    Value：输入的值
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${Locator}
+    InputText    ${Locator}    ${Value}
+    ${VarifyValue}    Get Value    ${Locator}    #验证输入的值
+
+跳转到地址
+    [Arguments]    ${URL}
+    Go to    ${URL}
+    Comment    刷新
+    Comment    跳转地址会有超时500的错误后期加入异常处理
+
+后退
+    Go Back
+
+选择浏览器
+    [Arguments]    ${alias}    # 给浏览器起的别名
+    [Documentation]    Switch Browser:选择浏览器，参数是打开浏览器的顺序index或者alias别名。
+    ...
+    ...    例如：选择第一次打开的浏览器 Switch Browser \ 1
+    ...    \ \ \ \ \ 选择别名为alias的浏览器 Switch Browser \ alias
+    Switch Browser    ${alias}
+
+选择窗口
+    [Arguments]    ${Locator}
+    [Documentation]    根据Locator选择匹配出的窗口，并返回当前窗口句柄。如果匹配多个默认选中第一个匹配的窗口。
+    ...
+    ...    Locator：可以是任意的name, title, url, window handle。
+    Select Window    ${Locator}
+
+刷新
+    Reload Page
+
+模拟键盘事件
+    [Arguments]    ${Locator}    ${Value}
+    [Documentation]    模拟键盘按键：
+    ...    \ ${Element}: 元素
+    ...    Value：键盘值
+    ...
+    ...    参考：
+    ...    回车：\\13
+    ...    Esc: {Esc}
+    ...    F12:{F12}
+    Press Key    ${Locator}    ${Value}
+
+模拟发送按键
+    [Arguments]    ${strSendText}    ${nMode}=0
+    Send    ${strSendText}    ${nMode}
+
+为元素添加临时ID
+    [Arguments]    ${Locator}    ${MyIdValue}
+    [Documentation]    给一个没有ID的元素临时添加一个ID值：
+    ...    MyIdValue：自定义ID值
+    ...    （不建议使用此关键字）
+    Assign Id To Element    ${Locator}    ${MyIdValue}
+
+执行同步JavaScript
+    [Arguments]    @{Code}
+    [Documentation]    执行异步JavaScript
+    Execute Javascript    @{Code}
+
+执行异步JavaScript
+    [Arguments]    @{Code}
+    [Documentation]    *不建议被使用*因为脚本都是按照顺序执行，这个会发起异步请求，可以理解为多线程并行
+    Execute Async Javascript    @{Code}
+
+截图
+    [Arguments]    ${Path}    ${FileName}
+    [Documentation]    RF提供的只能截取当前浏览器，存在一定的不足，如浏览器挂了就无法截图。后续我会使用python实现桌面截图，这里暂时先用这个。
+    Set Screenshot Directory    ${Path}    False    #设置截图路径
+    Capture Page Screenshot    ${FileName}    #自定义文件名，最好采用当前时间，还需要改善
+
+等待关键字运行成功
+    [Arguments]    ${retry}    ${retryInterval}    ${MyKeyword}    @{arguments}
+    [Documentation]    运行指定的关键字，如果失败，则重试。
+    ...
+    ...    retry：重试时间
+    ...
+    ...    retry_interval：重试间隔
+    ...
+    ...    name：关键字
+    ...
+    ...    argument：关键字参数
+    ...
+    ...    例子：Wait Until Keyword Succeeds \ \ 2 min \ \ 5 sec \ \ 打开浏览器 \ \ http://www.baidu.com \ \ ff
+    Comment    后续优化对当前页404，500等错误进行异常处理
+    Wait Until Keyword Succeeds    ${retry}    ${retryInterval}    ${MyKeyword}    @{arguments}
+
+等待页面包含指定元素
+    [Arguments]    ${Locator}    ${TimeOut}=${Timeout.retry}    ${Error}=${None}
+    Wait Until Page Contains Element    ${Locator}    ${TimeOut}    ${Error}
+
+等待页面不包含指定元素
+    [Arguments]    ${Locator}    ${TimeOut}=${Timeout.retry}    ${Error}=${None}
+    Wait Until Page Does Not Contain Element    ${Locator}    ${TimeOut}    ${Error}
+
+等待页面包含指定文本
+    [Arguments]    ${Text}    ${LogLervel}=INFO
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Page Should Contain    ${Text}    ${LogLervel}
+
+等待页面不包含指定文本
+    [Arguments]    ${Text}    ${LogLervel}=INFO
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Wait Until Page Does Not Contain    ${Text}    ${LogLervel}
+
+等待元素为可见
+    [Arguments]    ${Locator}    ${TimeOut}=${Timeout.retry}    ${Error}=${None}
+    [Documentation]    * 这里还可以优化为自定义超时方式，暂时先用RF提供的超时参数方式。
+    ...    (另一种方式：通过For死循环去寻找元素，直到找到元素，如果在设定时间没找到调用内置关键字Fail，强制脚本停止运行并抓取Log和图片。)
+    Wait Until Page Contains Element    ${Locator}    ${TimeOut}    ${Error}
+    Wait Until Element Is Visible    ${Locator}    ${TimeOut}    ${Error}
+
+等待元素为不可见
+    [Arguments]    ${Locator}    ${TimeOut}=${Timeout.retry}    ${Error}=${None}
+    Wait Until Element Is Not Visible    ${Locator}    ${TimeOut}    ${Error}
+
+获取元素属性
+    [Arguments]    ${locator@attribute}    # @前面写元素的定位，后面写元素的属性
+    [Documentation]    返回元素的值。 使用采用固定格式 Xx@Xx
+    ...
+    ...    @前面 的是这个元素的 Locator 定位
+    ...    @后面 的是这个元素的属性名
+    Get Element Attribute    ${locator@attribute}
+
+下拉选择
+    [Arguments]    ${Locator}    ${Values}
+    [Documentation]    Select From List关键字会根据传入的值自动调用相应的关键字，使用Select From List关键字首先会判断值是否在列表中，不再就认为使用 Index选择，如果在列表里，那么就会Value来选择，如果在找不到就会用Labale来选择，通过帮助文档可以发现使用这中会降低效率。不建议使用。
+    ...
+    ...    By Index： 从0开始
+    ...
+    ...    By Value： 源码中option的值
+    ...
+    ...    By Lable： 列表里你看得到的文字
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${Locator}
+    Wait Until Element Contains    ${Locator}    ${Values}
+    单击元素    ${Locator}
+    Run keyword If    '${Values}' != '${EMPTY}'    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Select From List By Label    ${Locator}
+    ...    ${Values}
+    Comment    Run keyword If    '${Values}' != '${EMPTY}'    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Select From List By Label
+    ...    ${Locator}    ${Values}
+    Comment    Run keyword If    '${Values}' != '${Values}'    Log    传过来的值与选择的值不同
+    Comment    ...
+    ...    ELSE    Log    传过来的值是${Values}
+
+下拉选择通过索引
+    [Arguments]    ${Locator}    @{Values}
+    [Documentation]    索引从0开始
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Select From List By Index    ${Locator}    @{Values}
+
+下拉选择通过值
+    [Arguments]    ${Locator}    @{Values}
+    [Documentation]    Values：源码中option的值
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Select From List By Value    ${Locator}    @{Values}
+
+下拉选择通过文案
+    [Arguments]    ${Locator}    @{Values}
+    [Documentation]    标签中的文案
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Select From List By Label    ${Locator}    @{Values}
+
+多选框勾选
+    [Arguments]    ${Locator}
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Select Checkbox    ${Locator}
+
+多选框勾选取消
+    [Arguments]    ${Locator}
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Unselect Checkbox    ${Locator}
+
+多选框勾选全部
+    [Arguments]    ${Locator}
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Select All From List    ${Locator}
+
+单选框
+    [Arguments]    ${ElementName}    ${Value}
+    [Documentation]    单选框一般没有ID，可以通过name和value结合使用来定位
+    ...
+    ...    ElementName： 控件的name
+    ...
+    ...    Value： 控件的值
+    ...
+    ...    例子：女<input type="radio" name="Sex" value="female" /> <br />
+    ...    Select Radio Button \ \ \ Sex \ \ \ \ female
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${ElementName}
+    Select Radio Button    ${ElementName}    ${Value}
+
+单击按钮
+    [Arguments]    ${Locator}
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${Locator}
+    ${VarifyValue}    GetText    ${Locator}    #验证按钮上的文本
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Click Button    ${Locator}
+    Comment    Run Keyword If    '${Locator}' !== 'None'    Click Button    ${Locator}
+    Comment    Click Button    ${Locator}
+
+单击元素
+    [Arguments]    ${Locator}
+    [Documentation]    * 不建议被使用，效率较低。当开发使用的控件是自定义的方式可以用此方法
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${Locator}
+    Log    ${Locator}
+    ${VarifyValue}    GetText    ${Locator}    #验证按钮上的文本
+    Click Element    ${Locator}
+
+单击图片
+    [Arguments]    ${Locator}
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${Locator}
+    Click Image    ${Locator}
+
+单击链接
+    [Arguments]    ${Locator}
+    [Documentation]    链接的id，name，href，或者直接写链接中的文案
+    等待页面包含指定元素    ${Locator}
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout. retryInterval}    等待元素为可见    ${Locator}
+    ${VarifyValue}    GetText    ${Locator}    #验证元素上的文本
+    Click Link    ${Locator}
+
+双击元素
+    [Arguments]    ${Locator}
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${Locator}
+    Double Click Element    ${Locator}
+
+选择文件
+    [Arguments]    ${Locator}    ${FilePath}
+    [Documentation]    选择文件：用于上传图片。（这个关键字貌似不太好用，还需要进行在研究，如果用不了建议用AutoIt库操作）
+    ...
+    ...    例子：Choose File \ \ file \ \ ${CURDIR}${/}text.jpg
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    Choose File    ${Locator}    ${FilePath}
+    Comment    判断文件是否上传成功    需要先定位到a连接的rel="lightbox"属性，然后定位下面的src属性，解析src属性?key=是否有值，有值才算是ajax回调成功。
+    Comment    Get Element Attribute    src="/account/common/getfile.html?key=img/account/9822//1467863138072.png"
+    Comment    或者使用JS的onload方法，此方法会在图片加载完后执行一些操作
+    Comment    执行同步JavaScript    img1.onload = function() { }
+
+获取元素文本
+    [Arguments]    ${Locator}
+    [Documentation]    * Get Text用于获取按钮上的文本信息
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${Locator}
+    ${TextValue}    Get Text    ${Locator}
+    Set Global Variable    ${Text}    ${TextValue}
+    [Return]    ${Text}
+
+获取元素值
+    [Arguments]    ${Locator}
+    [Documentation]    * GetValue用于获取输入框中的值
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    ${Locator}
+    ${TextValue}    Get Value    ${Locator}
+    Set Global Variable    ${InputValue}    ${TextValue}
+    [Return]    ${InputValue}
+
+单击弹层按钮
+    [Documentation]    1. 定位弹层的方法，先通过定位到弹层的div，定位到弹层后里面所有的内容都可以通过//先对定位拿到。
+    ...
+    ...    例子：
+    ...
+    ...    通过按钮class定位：//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]
+    ...
+    ...    通过按钮文本定位：//*[@class="modal-content"]//button[text()="确定"]
+    ...
+    ...    通过按钮文本定位：//*[@class="modal-content"]//button[text()="OK"]
+    Comment    这里只是提供一种思路
+    Comment    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+    Comment    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary"]    #单击浮层OK

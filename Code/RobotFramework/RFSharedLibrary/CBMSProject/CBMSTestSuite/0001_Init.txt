@@ -1,0 +1,76 @@
+*** Settings ***
+Documentation     * 用于初始化的套件，创建客户、充值、分配权限。
+...
+...               *暂时只是做测试用，仅供参考*
+...
+...               未完待续。。。
+Force Tags
+Library           Selenium2Library
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../CBMSFlow/Flow.txt
+Resource          ../ProjectResource.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../CBMSFlow/FlowInit.txt
+
+*** Test Cases ***
+创建买家
+    [Documentation]    - 创建买家
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+
+创建卖家_临采
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    卖家
+
+创建卖家_代运营
+    Comment    #图片虽然上传了，但是后续审核流程还需要添加
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    卖家    代
+    流程临时-审核代运营协议    ${AccountName}
+
+创建卖家_仓库
+    Comment    #图片虽然上传了，但是后续审核流程还需要添加
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    仓库
+
+创建卖家_运输
+    Comment    #图片虽然上传了，但是后续审核流程还需要添加
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    运输
+
+创建卖家_加工
+    Comment    #图片虽然上传了，但是后续审核流程还需要添加
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    加工
+
+银票充值给指定客户
+    [Documentation]    注意：定位审核按钮需要按照银票票号进行定位，先找到指定银票票号所在的行，然后在找这一行的审核按钮。
+    ...    范例：xpath=//*[@id="forShow"]/tbody[1]/tr[*]/td[text()="10001"]/following-sibling::*/a[last()]，在当天表中查找所有的行里面列中包含10001的文本，然后找到这个单元格后在找其兄弟元素单元格里面的a链接，然后定位到最后一个a连接，也就是我们的审核按钮。
+    [Setup]    Run Keywords    结束ChromeDriver
+    ...    AND    流程登录    http://ssotest.com:8080/cas/login?service=http://cbmstest.com:8090/order/shiro-cas    jiaoyiyuan    123456
+    Comment    使用交易员登录提交银票申请
+    跳转到地址    ${URL.DraftsManage}    #银票管理
+    单击链接    xpath=//*[@id="new"]    #添加新的银票
+    下拉选择    xpath=//*[@id="orgId"]    杭州服务中心
+    输入文本    xpath=//*[@id="accountName"]    ${Account.SellerName}    #充值的客户名称
+    ${CurrentSecs}    获取当前秒数
+    Set Global Variable    ${DraftsID}    ${CurrentSecs}
+    输入文本    xpath=//*[@id="form"]//input[@name="code"]    ${DraftsID}    #银票票号,后期考虑用当前时间秒数作为票据号，而且设置为全局变量，提供给审核用
+    输入文本    xpath=//*[@id="form"]//input[@name="acceptanceBankFullName"]    测试银行    #付款行全称
+    输入文本    xpath=//*[@id="amountShow"]    ${Money}    #出票金额
+    ${CurrentDate}    获取当前日期    #使用当前日期作为到帐日期
+    Comment    输入文本    xpath=//*[@id="form"]//input[@name="endDate"]    ${CurrentDate}
+    Comment    模拟键盘事件    xpath=//*[@id="form"]//input[@name="endDate"]    \\13    #使用InputText这个时间输入框不会自动收回，所以模拟了一会回车
+    执行同步JavaScript    document.getElementsByName('endDate')[0].value="${CurrentDate}";
+    输入文本    xpath=//*[@id="form"]//input[@name="discountRate"]    1    #贴现率
+    输入文本    xpath=//*[@id="form"]//input[@name="discountRateBase"]    1    #贴现率成本
+    选择文件    xpath=//*[@id="pic"]    ${testPicture}    #上传图片
+    单击按钮    xpath=//*[@id="submit"]    #提交审核
+    单击按钮    xpath=//*[@class="modal-content"]//button[text()="OK"]    #单击浮层OK
+    Comment    审核银票，由于现在交易员直接有权限，就直接用交易员审核了
+    单击链接    xpath=//*[@id="forShow"]/tbody[1]/tr[*]/td[text()="${DraftsID}"]/following-sibling::*/a[last()]    #在当前表格行中超找指定银票号行的审核按钮
+    输入文本    xpath=//*[@id="codeApprove"]    ${DraftsID}    #银票票号,后期考虑用当前时间秒数作为票据号，而且设置为全局变量，提供给审核用
+    输入文本    xpath=//*[@id="amountApprove"]    ${Money}    #出票金额
+    执行同步JavaScript    document.getElementsByName('endDateApprove')[0].value="${CurrentDate}";
+    输入文本    xpath=//*[@id="discountRate"]    1    #贴现率
+    单击按钮    xpath=//*[@id="submit"]    #提交确认
+    Comment    断言是否充值成功，两种方法，一种是直接断言当前银票号的状态是否是已完成充值,第二种是去客户里面看充值记录
+    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    xpath=//*[@id="forShow"]/tbody[1]
+    Comment    等待页面返回到上一页并且表格变为可见
+    断言页面应该包含元素    xpath=//*[@id="forShow"]/tbody[1]/tr[*]/td[text()="${DraftsID}"]/following-sibling::td[text()="已完成充值"]    充值失败，未查到开票时对应票号的充值成功记录

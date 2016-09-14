@@ -1,0 +1,98 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+打开浏览器_GH
+    [Arguments]    ${url}    ${browser}
+    open browser    ${url}    ${browser}
+    Maximize Browser Window
+
+输入用户名_GH
+    [Arguments]    ${username}
+    input text    id=username    ${username}
+
+输入密码_GH
+    [Arguments]    ${password}
+    input text    id=password    ${password}
+
+点击登录按钮_GH
+    Click Element    xpath=/html/body/div/div[2]/div[3]/form/table/tbody/tr[4]/td/button
+
+等待时间
+    set browser implicit wait    3
+
+点击交易管理
+    Click Element    xpath=/html/body/div[2]/div[1]/div[1]/div[1]/ul/li[3]/a/span
+
+点击交易单管理
+    [Arguments]    ${url}
+    go to    ${url}
+
+点击待审核付款tab
+    Click Element    xpath=/html/body/div[2]/div[2]/div/div[2]/div/div/div[1]/ul/li[6]/a
+
+点击审核按钮
+    [Arguments]    ${url}
+    go to    ${url}
+    sleep    3
+
+点击审核付款通过
+    Click Button    order_payaudit_accept
+    Sleep    2
+
+点击确定通过
+    Click Element    xpath=/html/body/div[3]/div[2]/div/div[2]/button[2]
+    Sleep    2
+
+点击待打印付款申请tab
+    Click Element    xpath=/html/body/div[2]/div[2]/div/div[2]/div/div/div[1]/ul/li[2]/a
+
+点击打印处理按钮
+    [Arguments]    ${url}
+    go to    ${url}
+    sleep    3
+
+点击打印付款申请单
+    Wait Until Element Is Visible    printpendingpayapplystrike
+    Click Button    printpendingpayapplystrike
+    Sleep    2
+    Click Element    xpath=/html/body/div[3]/div[2]/div/div[2]/button[2]
+
+点击打印按钮
+    Wait Until Element Is Visible    prints
+    Click Button    prints
+    Comment    Wait Until Page Contains Element    btncommit
+    Comment    Click Button    btncommit
+
+激活打印窗口
+    [Arguments]    ${Title}
+    Win Activate    ${Title}
+
+点击取消_GH
+    [Arguments]    ${Text}    ${Button}
+    Control Click    \    ${Text}    ${Button}
+
+点击待确认已付款tab
+    Click Element    xpath=/html/body/div[2]/div[2]/div/div[2]/div/div/div[1]/ul/li[3]/a
+
+点击确认处理按钮
+    [Arguments]    ${url}
+    go to    ${url}
+    sleep    3
+
+点击确认已付款
+    Click Element    order_pay_confirm
+    Sleep    2
+
+点击确定完成
+    Click Element    xpath=/html/body/div[3]/div[2]/div/div[2]/button[2]
+    Sleep    2
+
+退出登录_GH
+    click element    xpath=/html/body/div[1]/div/div[3]/ul/li/a/span[2]
+    sleep    2
+    click element    xpath=/html/body/div[1]/div/div[3]/ul/li/ul/li[3]/a
+
+关闭浏览器_GH
+    close browser

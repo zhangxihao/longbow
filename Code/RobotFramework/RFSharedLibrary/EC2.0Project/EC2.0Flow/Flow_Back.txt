@@ -1,0 +1,29 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../EC2.0Page/Page_Back.txt
+Resource          ../ProjectResource_2.0.txt
+
+*** Keywords ***
+流程会员中心-提交空需求
+    [Arguments]    ${locator1}    ${locator2}
+    页面会员中心-点击手机号    ${locator1}
+    选择窗口    ${locator2}
+    页面会员中心-点击钢为帮我找
+    页面会员中心-点击我知道了
+
+流程会员中心-提交文字需求
+    [Arguments]    ${locator1}    ${locator2}    ${value}
+    页面会员中心-点击手机号    ${locator1}
+    选择窗口    ${locator2}
+    页面会员中心-输入文本    ${value}
+    页面会员中心-点击钢为帮我找
+    页面会员中心-点击我知道了
+
+流程会员中心-提交文件需求
+    [Arguments]    ${locator1}    ${locator2}    ${FilePath}
+    页面会员中心-点击手机号    ${locator1}
+    选择窗口    ${locator2}
+    页面会员中心-上传文件中间（+）    ${FilePath}
+    页面会员中心-点击钢为帮我找
+    页面会员中心-点击我知道了

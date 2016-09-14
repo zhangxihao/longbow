@@ -1,0 +1,6 @@
+*** Keywords ***
+随机字符
+    [Arguments]    ${arg1}    ${arg2}=123    @{arg3}
+    log    ${arg1}
+    Log    ${arg2}
+    Log    =@{arg3}=

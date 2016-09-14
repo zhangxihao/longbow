@@ -1,0 +1,39 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../CBMSFlow/Flow.txt
+Resource          ../CBMSFlow/FlowInit.txt
+Resource          ../CBMSFlow/Flow_AccountManage.txt
+Resource          ../ProjectResource.txt
+
+*** Test Cases ***
+锁定客户
+    [Setup]
+    流程登录-客户管理页    ${URL.Login}    cbadmin    123456
+    页面我的客户tab    http://cbmstest.com:8090/account/company/list.html
+    ${Except}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[11]
+    断言两个对象是否相等    ${Except}    正常
+    流程锁定客户    xpath=//*[@id="dynamic-table"]//tr[1]/td[last()]/a[1]
+
+解锁客户
+    [Setup]
+    流程登录-客户管理页    ${URL.Login}    cbadmin    123456
+    页面我的客户tab    http://cbmstest.com:8090/account/company/list.html
+    ${Except}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[11]
+    断言两个对象是否相等    ${Except}    锁定
+    流程解锁客户    xpath=//*[@id="dynamic-table"]//tr[1]/td[last()]/a[1]
+
+锁定全选客户
+    [Setup]
+    流程登录-客户管理页    ${URL.Login}    cbadmin    123456
+    页面我的客户tab    http://cbmstest.com:8090/account/company/list.html
+    流程锁定全部客户    xpath=//*[@id="allCheck"]    xpath=//*[@id="lockUser"]
+
+解锁全选客户
+    [Setup]
+    流程登录-客户管理页    ${URL.Login}    cbadmin    123456
+    页面我的客户tab    http://cbmstest.com:8090/account/company/list.html
+    流程解锁全部客户    xpath=//*[@id="allCheck"]    xpath=//*[@id="unlockUser"]

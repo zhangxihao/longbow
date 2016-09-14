@@ -1,0 +1,89 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../EC2.0Page/Page_Reset.txt
+Resource          ../ProjectResource_2.0.txt
+
+*** Keywords ***
+流程忘记密码-进入页面
+    [Arguments]    ${Locator}
+    单击链接    xpath=//*[@id="userLogin"]//a[@class="f-fr"]    #点击忘记密码
+    选择窗口    ${Locator}
+
+流程忘记密码-输入手机号
+    [Arguments]    ${value}
+    页面忘记密码-输入手机号    ${value}
+    模拟发送按键    {TAB}
+
+流程忘记密码-点击获取验证码
+    [Arguments]    ${locator1}    ${locator2}
+    页面忘记密码-点击获取验证码    ${locator1}
+    等待页面包含指定元素    ${locator2}
+
+流程忘记密码-查询验证码
+    页面忘记密码-连接数据库
+
+流程忘记密码-输入信息修改密码
+    [Arguments]    ${smsCodeNumber}    ${userPwd}    ${afterPwd}
+    页面忘记密码-输入验证码    ${smsCodeNumber}
+    页面忘记密码-点击下一步
+    页面忘记密码-设置密码    ${userPwd}
+    页面忘记密码-确认密码    ${afterPwd}
+    页面忘记密码-点击确定
+
+流程重置密码-进入页面
+    [Arguments]    ${Locator}
+    页面重置密码-点击重置密码
+    选择窗口    ${Locator}
+
+流程重置密码-点击获取验证码
+    [Arguments]    ${locator1}    ${locator2}
+    页面重置密码-点击获取验证码    ${locator1}
+    等待页面包含指定元素    ${locator2}
+
+流程重置密码-查询验证码
+    页面忘记密码-连接数据库
+
+流程重置密码-输入信息修改密码
+    [Arguments]    ${smsCodeNumber}    ${userPwd}    ${afterPwd}
+    页面重置密码-输入验证码    ${smsCodeNumber}
+    页面重置密码-点击下一步
+    页面重置密码-设置密码    ${userPwd}
+    页面重置密码-确认密码    ${afterPwd}
+    页面重置密码-点击确定
+
+流程修改绑定手机-进入页面
+    [Arguments]    ${Locator}
+    页面修改绑定手机-点击修改绑定手机
+    选择窗口    ${Locator}
+
+流程修改绑定手机-点击获取验证码
+    [Arguments]    ${locator}
+    页面修改绑定手机-点击获取验证码
+    等待页面包含指定元素    ${locator}
+
+流程修改绑定手机-查询验证码
+    页面修改绑定手机-连接数据库
+
+流程修改绑定-输入验证码进行下一步
+    [Arguments]    ${oldCode}
+    页面修改绑定手机-输入验证码    ${oldCode}
+    页面修改绑定手机-点击下一步
+
+流程修改绑定手机-输入新手机号
+    [Arguments]    ${value}
+    页面修改绑定手机-输入新手机号    ${value}
+    模拟发送按键    {TAB}
+
+流程修改绑定手机-点击获取新验证码
+    [Arguments]    ${locator}
+    页面修改绑定手机-获取新验证码
+    等待页面包含指定元素    ${locator}
+
+流程修改绑定手机-查询新验证码
+    页面忘记密码-连接数据库
+
+流程修改绑定-输入验证码立即绑定
+    [Arguments]    ${smsCodeNumber}
+    页面修改绑定手机-输入新验证码    ${smsCodeNumber}
+    页面修改绑定手机-点击立即绑定

@@ -1,0 +1,16 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Database.txt
+
+*** Keywords ***
+获取启用状态的理由总数
+    连接数据库    pymysql    database='ass',user='root',password='root',host='192.168.0.205',port=3306,charset='utf8'
+    ${Count}    返回记录集行数    select * from base_requirement_close_reason where is_valid=1    #统计启用状态的理由数
+    断开数据库
+    Set Global Variable    ${reasonCount}    ${Count}
+
+获取显示顺序最前的理由
+    连接数据库    pymysql    database='ass',user='root',password='root',host='192.168.0.205',port=3306,charset='utf8'
+    @{contents}=    执行查询    select content from base_requirement_close_reason where is_valid=1 order by sort
+    ${firstReasonContentValue}    Set Variable    @{contents[0]}
+    Set Global Variable    ${firstReasonContent}    ${firstReasonContentValue}
+    断开数据库

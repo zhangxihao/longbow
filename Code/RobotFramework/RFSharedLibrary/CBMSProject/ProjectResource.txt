@@ -1,0 +1,20 @@
+*** Settings ***
+Documentation     * 全局资源文件，用于存储全局数据
+
+*** Variables ***
+${suite3}         suite3    # 我是全局变量，导入我即可使用(测试Temp_跨Suite调用2)
+${testURL}        file:///${CURDIR}${/}DataBase${/}testURL.html    # 临时测试页面
+${testPicture}    ${CURDIR}${/}\DataBase${/}testPicture.png    # 测试图片。${CURDIR}当前TestSuite目录；${/}路径符号(或者直接用//)；${CURDIR}..当前目录的上一级目录。
+${fileLogin}      ${CURDIR}\\DataBase\\login.csv    # 登录测试数据
+${fileorder}      ${CURDIR}\\DataBase\\order_data.csv    # 新开单数据
+&{URL}            Login=http://cbms.prcsteel.sim/order    CreateOrder=${Domain}/order/order/create.html    AllOrder=${Domain}/order/order/query/index.html    ApprovalOrder=${Domain}/order/order/query/approval.html    DraftsManage=${Domain}/order/acceptdraft/list.html    DraftsList=${Domain}/order/acceptdraft/taelsList.html    AssociateOrder=${Domain}/order/order/query/associate.html
+...               ApplyPayment=${Domain}/order/order/query/applypayment.html    AuditPaymentOrder=${Domain}/order/order/query/payment.html    TradeClose=${Domain}/order/order/query/tradeclose.html    PrintPendingPayapply=${Domain}/order/order/query/printpendingpayapply.html    ConfirmPayment=${Domain}/order/order/query/confirmpayment.html    Pickup=${Domain}/order/order/query/pickup.html    Fillup=${Domain}/order/order/query/fillup.html
+...               SecondSettlement=${Domain}/order/order/query/secondsettlement.html    Invoice=${Domain}/order/order/query/invoice.html    CompanyList=${Domain}/account/company/list.html    Tradecomplete=${Domain}/order/order/query/tradecomplete.html    Index=${Domain}/order/index.html    LimitGroup=http://cbms.prcsteel.sim/account/account/grouping/querylimitgrouping.html    LimitManager=http://cbms.prcsteel.sim/account/account/grouping/limitManager.html
+...               # 登录,创建订单,全部Tab,待审核,银票管理,银票清单,待关联,申请付款,待审核付款,交易关闭,待打印付款申请,待确认已付款,待提货,放货,待二结,已二结,我的客户,交易完成,控制台,额度管理-查看分组，额度管理-审核额度
+&{Account}        BuyerName=SDD_买家1号    SellerName=SDD_卖家1号    BuyerDepartment=钢材部    SellerDepartment=钢材部    BuyerContant=SDD_买家1号钢材部联系人1    SellerContant=SDD_卖家1号钢材部联系人1    BuyerContantTel=15606690056
+...               SellerContantTel =13145200010    # 存储了基础的客户信息(13145200001)
+${Money}          10000    # 金额，用于充值、体现、抵扣什么的，这里主要用于充值余额
+&{User}           UsernameJiaoyiyuan=jiaoyiyuan    PasswordJiaoyiyuan=123456    UsernameNeiqin=neiqin    PasswordNeiqin=123456    UsernameKuaiji=kuaiji    PasswordKuaiji=123456    UsernameHangzhouowner=hangzhouowner
+...               PasswordHangzhouowner=123456    UsernameZongchuna=zongchuna    PasswordZongchuna=123456    UsernameAdmin=cbadmin    PasswordAdmin=123456    # 登录的各个角色用户名和密码
+&{URL_Pay}        OpenAccount=${Domain}/kuandao/kuandao/account/index.html    UnOpenAccount=${Domain}/kuandao/kuandao/account/unopenaccount.html    SynchronizeLog=${Domain}/kuandao/kuandao/account/synchronizelog.html    # 款道支付:已开户，未开户，同步日志。临时变量整合之后合并URL到URL里面
+${Domain}         http:192.168.0.198:8080    # 域名

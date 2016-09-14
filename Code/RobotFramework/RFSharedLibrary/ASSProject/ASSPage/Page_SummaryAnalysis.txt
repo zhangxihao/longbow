@@ -1,0 +1,16 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Database.txt
+Resource          ../../SharedLibrary/Action/Selenium.txt
+
+*** Keywords ***
+页面今日实时数据_获取总需求量
+    ${requirementCount}    获取元素文本    xpath=.//*[@class=' text-center']/label[1]/label[1]/span
+    [Return]    ${requirementCount}
+
+页面今日实时数据_获取处理单数
+    ${countProcess}    获取元素文本    xpath=.//*[@class=' text-center']/label[2]/label[1]/span
+    [Return]    ${countProcess}
+
+页面今日实时数据_获取处理成功数
+    ${countInquiry}    获取元素文本    xpath=.//*[@class=' text-center']/label[3]/label[1]/span
+    [Return]    ${countInquiry}

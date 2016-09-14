@@ -1,0 +1,9 @@
+*** Settings ***
+Resource          Action.txt
+
+*** Keywords ***
+登录页面
+    [Arguments]    ${username}    ${password}
+    输入用户名    ${username}
+    输入密码    ${password}
+    点击登录

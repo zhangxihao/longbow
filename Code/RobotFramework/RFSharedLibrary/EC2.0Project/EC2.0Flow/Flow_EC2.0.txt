@@ -1,0 +1,80 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../EC2.0Page/Page_EC2.0.txt
+Resource          ../ProjectResource_2.0.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+
+*** Keywords ***
+流程首页
+    [Arguments]    ${URL}    ${Browser}=chrome    ${Alias}=${None}
+    打开浏览器并最大化    ${URL}    ${Browser}    ${Alias}
+
+流程注册-输入手机获取验证码
+    [Arguments]    ${userPhonetellogin}    ${locator}
+    页面注册-注册手机号    ${userPhonetellogin}
+    页面注册-获取验证码    ${locator}
+
+流程注册-查询验证码
+    页面注册-连接数据库
+
+流程注册-输入信息注册
+    [Arguments]    ${smsCodeNumber}    ${userPwd}    ${afterPwd}
+    页面注册-输入验证码    ${smsCodeNumber}
+    页面注册-设置密码    ${userPwd}
+    页面注册-确认密码    ${afterPwd}
+    页面注册-立即注册
+
+流程登录-密码登录
+    [Arguments]    ${URL}    ${userPhonetellogin1}    ${userPwd}
+    跳转到地址    ${URL}
+    页面登录-密码登录-输入手机号    ${userPhonetellogin1}
+    页面登录-密码登录-输入密码    ${userPwd}
+    页面登录-密码登录-点击登录
+
+流程需求-通过电话聊需求
+    [Arguments]    ${locator}
+    超市首页-点击我想通过电话聊    ${locator}
+    comment    执行同步JavaScript    var Val= document.getElementById("userPhonetellogin").value;
+    comment    ${Val}=    执行同步JavaScript    15200000000
+    超市首页-发送需求-点击提交
+    超市首页-需求提交成功-点击我知道了
+
+流程需求-发送采购单-空需求
+    [Arguments]    ${locator}
+    超市首页-点击我想发送采购单    ${locator}
+    comment    执行同步JavaScript    var Val= document.getElementById("userPhonetellogin").value;
+    comment    ${Val}=    执行同步JavaScript    15200000000
+    超市首页-发送需求-点击提交
+    超市首页-需求提交成功-点击我知道了
+
+流程需求-发送采购单-文字需求
+    [Arguments]    ${locator}    ${value}
+    超市首页-点击我想发送采购单    ${locator}
+    comment    执行同步JavaScript    var Val= document.getElementById("userPhonetellogin").value;
+    comment    ${Val}=    执行同步JavaScript    15200000000
+    超市首页-点击我想发送采购单-输入文本    ${value}
+    超市首页-发送需求-点击提交
+    超市首页-需求提交成功-点击我知道了
+
+流程需求-发送采购单-文件需求
+    [Arguments]    ${locator}    ${value}
+    超市首页-点击我想发送采购单    ${locator}
+    comment    执行同步JavaScript    var Val= document.getElementById("userPhonetellogin").value;
+    comment    ${Val}=    执行同步JavaScript    15200000000
+    超市首页-点击我想发送采购单-上传文件（中间+）    ${value}
+    超市首页-发送需求-点击提交
+    超市首页-需求提交成功-点击我知道了
+
+流程登录-输入手机获取验证码
+    [Arguments]    ${userPhonetellogin}    ${locator}
+    页面登录-验证码登录-输入手机号    ${userPhonetellogin}
+    页面登录-验证码登录-获取验证码    ${locator}
+
+流程登录-查询验证码
+    页面登录-连接数据库
+
+流程登录-输入验证码进行登录
+    [Arguments]    ${smsCodeNumber}
+    页面登录-验证码登录-输入验证码    ${smsCodeNumber}
+    页面登录-验证码登录-点击登录

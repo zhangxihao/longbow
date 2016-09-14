@@ -1,0 +1,59 @@
+<html>
+<head><title>RobotFramework Study</title>
+<meta charset="utf-8">
+<script typt="text/javascript">
+	var i = 0;
+</script>
+</head>
+<body>
+	<h1>这个是用于RF的临时测试页面</h1>
+	<form actioin="result.html" method="get" >
+		username:<input id="account" type="text" /><br />
+		password:<input name="password" type="password" /> <br />
+		<input id="submit" type="submit" value="submit" /> <br />
+
+		性别:男<input type="radio" name="Sex" value="male" checked="checked"/>
+		女<input type="radio" name="Sex" value="female" /> <br />
+
+
+
+		学历:<select id="selectdemo" name="slectdemo">
+			<option value="item1">大学</option>
+			<option value="item2">本科</option>
+			<option value="item3">专科</option>
+		     </select>
+		<br />
+		兴趣:<br />&nbsp;&nbsp;&nbsp;
+		     旅游:<input type="checkbox" />
+		     看书:<input type="checkbox" name="book" />
+		     睡觉:<input type="checkbox" /> <br />
+
+		
+	</form>
+
+	<p> 
+		<input id="alert" type="button" onclick="alert('我是警告框!');" value="警告框" />
+		<input id="confirm" value="confirm" type="button" onclick="confirm('are you sure?');" />
+		<input id="prompt" value="prompt" type="button" 
+		onclick="var name = prompt('输入你的名字:', '你的名字'); 
+		document.write(name)" />
+	</p>
+
+	<div id="div1">测试修改标签之间的内容</div>
+
+	<div id="div2">
+		测试修改Input中的文本:<input type="text" id="text1"></input>
+	</div>
+
+	<div id="div3">
+		<input type="file" id="selectFile" />
+	</div>
+
+	<input type="button" value="ClickMe" id="button1" onclick="document.getElementById('div4').innerHTML='你单击了 ' + ++i +' 次按钮';"></button>
+	<div id='div4'></div</div>
+	<div id='div5'><input type="file" value="上传文件">text</div</div><br />
+
+	<input id="print" type="button" value="打印" onclick="window.print()" /><br />
+
+</body>
+</html>

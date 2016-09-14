@@ -1,0 +1,101 @@
+*** Settings ***
+Documentation     RF内置关键字
+Resource          Selenium.txt
+
+*** Keywords ***
+转换为字符串
+    [Arguments]    ${str}
+    Convert To String    ${str}
+
+停止当前脚本
+    Fail
+
+停止所有脚本
+    Fatal Error
+
+执行Python
+    [Arguments]    ${expression }    # 接受一个表达式
+    Evaluate    ${expression }
+
+将中文转换为GBK
+    [Arguments]    ${chinese}
+    ${gbk}    Set Variable    ${chinese}
+    Evaluate    '${gbk}'.decode('utf-8').encode('gbk')
+
+创建文件
+    CreateFile
+
+运行关键字并返回状态
+    [Arguments]    ${MyKeyword}    @{args}
+    [Documentation]    此关键字会根据运行的关键字返回一个状态，具体要根据关键字返回的结果进行判断，一般反馈的有”True，False，None，PASS“例如校验页面元素是否存在会返回True或Fase。一般结合 Run Keyword If 使用。
+    ...
+    ...
+    ...    例子：如果返回True执行关键字
+    ...
+    ...
+    ...    ${returnValue}= \ \ 运行关键字并返回状态 \ \ MyKeyword
+    ...
+    ...    Run Keyword If \ \ ‘${returnValue}‘==’True‘ \ \ ClickButton \ \ 选择器
+    Run Keyword And Return Status    ${MyKeyword}    @{args}
+
+运行多个关键字
+    [Arguments]    @{keywords}
+    Run Keywords    @{keywords}
+
+运行关键字并判断
+    [Arguments]    ${Condition}    ${Name}    @{Args}
+    [Documentation]    * 根据条件运行关键字
+    Run Keyword If    ${Condition}    ${Name}    @{Args}
+
+获取当前日期
+    [Documentation]    获取当前日期,以年月日的格式。yyyy-yy-yy
+    Comment    获取当前日期,以年月日的格式
+    ${yyyy}    ${mm}    ${dd} =    Get Time    year,month,day
+    @{time}    Get Time    year month day hour min sec
+    ${CurrentDate}    Set Variable    ${time[0]}-${time[1]}-${time[2]}
+    [Return]    ${CurrentDate}
+
+获取当前秒数
+    ${secs}    Get Time    epoch
+    [Return]    ${secs}
+
+点击打印机窗口取消按钮
+    [Documentation]    此关键字用于单击Chrome中的打印机窗口中的取消按钮
+    Comment    执行同步JavaScript    setTimeout(function(){document.getElementsByTagName("button")[1].click();}, 1000);
+    Comment    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为可见    xpath=//*[@id="print-header"]//button[2]
+    Comment    执行同步JavaScript    document.getElementsByTagName("button")[1].click();
+    Comment    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    等待元素为不可见    xpath=//*[@id="print-header"]//button[2]
+    Comment    以上方式实现有问题，暂时用键盘事件解决
+    Comment    模拟发送按键    {Esc}
+    执行同步JavaScript    javascript:history.go(-1);
+    执行同步JavaScript    javascript:history.go(1);
+
+_定义全局变量
+    [Arguments]    ${VariableName}    @{Values}
+    [Documentation]    * 设置一个全局变量，可以用于所有TestCase和TestSuite.
+    ...    *请勿使用此关键字*
+    Set Global Variable    ${VariableName}    @{Values}
+
+生成全局唯一值
+    [Documentation]    每次调用生成一个全局唯一值，并返回给调用端,之所以不用随机数是为了为了给后面的流程用
+    ${CurrentSecs}    获取当前秒数
+    Set Global Variable    ${GlobalOnlyValue}    ${CurrentSecs}
+    [Return]    ${GlobalOnlyValue}    # 每次调用生成一个全局唯一值
+
+生成全局唯一值手机号
+    [Documentation]    返回以156开头的不重复的手机号码
+    ${Temp}    生成全局唯一值
+    ${Temp}    Evaluate    str(${Temp})
+    Set Global Variable    ${GlobalOnlyValueTel}    156${Temp[2:10]}
+    [Return]    ${GlobalOnlyValueTel}
+
+测试失败
+    [Arguments]    ${msg}    @{tags}
+    [Documentation]    - 手动触发测试失败
+    Fail    ${msg}    @{tags}
+
+不操作
+    [Arguments]    ${Msg}=${EMPTY}
+    Comment    什么都不做，占位符
+    No Operation
+    Log    ${Msg}

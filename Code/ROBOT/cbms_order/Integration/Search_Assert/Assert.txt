@@ -1,0 +1,22 @@
+*** Settings ***
+Library           Selenium2Library
+Library           Assert.py
+
+*** Keywords ***
+检查登录成功
+    Page Should Contain Link    logout
+    Comment    Page Should Contain Link    logout2
+
+检查登录失败
+    ${expect}=    Get Text    msg
+    ${actual}=    Set Variable    Invalid credentials.
+    ${msg}=    assertEquals    ${expect}    ${actual}
+    Log    ${msg}
+
+登录检查
+    [Arguments]    ${expected}
+    [Documentation]    检查是否成功：
+    ...    参数：“Pass” 检查登录成功
+    ...    参数：“Fail”检查登录失败
+    Run Keyword If    "${expected}"=="Pass"    检查登录成功
+    Run Keyword If    "${expected}"=="Fail"    检查登录失败

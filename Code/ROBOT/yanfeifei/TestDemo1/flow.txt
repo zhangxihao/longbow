@@ -1,0 +1,16 @@
+*** Settings ***
+Resource          mykeyword.txt
+Resource          page.txt
+Resource          page2.txt
+
+*** Keywords ***
+登录流程
+    [Arguments]    ${username}    ${pwd}
+    打开浏览器    http://ssotest.com:8080/cas/login?service=http://smart.com:8081/web/shiro-cas
+    登录页面    ${username}    ${pwd}
+    窗口最大化
+
+添加采购单流程
+    [Arguments]    ${tel}    ${contact}    ${buy}    ${weight}
+    打开采购单
+    添加采购单    ${tel}     ${contact}    ${buy} \     ${weight}

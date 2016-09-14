@@ -1,0 +1,18 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+检查登录成功
+    Page Should Contain Link    logout
+
+检查登录失败
+    ${msg}=    Get Alert Message
+    Should Be Equal As Strings    ${msg}    登录失败，请检查您的用户名和密码
+
+登录检查
+    [Arguments]    ${expected}
+    [Documentation]    检查是否成功：
+    ...    参数：“Pass” 检查登录成功
+    ...    参数：“Fail”检查登录失败
+    Run Keyword If    "${expected}"=="Pass"    检查登录成功
+    Run Keyword If    "${expected}"=="Fail"    检查登录失败

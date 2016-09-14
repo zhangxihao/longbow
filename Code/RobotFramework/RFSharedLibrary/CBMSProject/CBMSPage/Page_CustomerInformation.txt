@@ -1,0 +1,206 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+
+*** Keywords ***
+页面客户资料-公司名称
+    [Arguments]    ${accountName}
+    输入文本    xpath=//*[@id="accountName"]    ${accountName}
+
+页面客户资料-搜索按钮
+    单击按钮    xpath=//*[@id="searchBtn"]
+
+页面客户资料-年度采购协议-全部
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[1]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-待打印
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[2]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-待审核
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[3]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-一审通过
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[4]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-二审通过
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[5]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-已上传待审核
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[6]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-审核通过
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[7]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-审核未通过
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[8]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-一审未通过
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[9]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-二审未通过
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="purchaseStatus"]/div[2]/ul/li[10]/label/span[1]
+    单击按钮    xpath=//*[@id="purchaseStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-全部
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[1]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-待打印
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[2]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-待审核
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[3]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-一审通过
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[4]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-二审通过
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[5]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-已上传待审核
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[6]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-审核通过
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[7]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-审核未通过
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[8]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-已终止
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[9]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-一审未通过
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[10]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-卖家代运营协议-二审未通过
+    单击元素    xpath=//*[@id="consignStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="consignStatus"]/div[2]/ul/li[11]/label/span[1]
+    单击按钮    xpath=//*[@id="consignStatus"]/div[2]/div/button[1]
+
+页面客户资料-证件资料-全部
+    单击元素    xpath=//*[@id="cardStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="cardStatus"]/div[2]/ul/li[1]/label/span[1]
+    单击按钮    xpath=//*[@id="cardStatus"]/div[2]/div/button[1]
+
+页面客户资料-证件资料-未上传
+    单击元素    xpath=//*[@id="cardStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="cardStatus"]/div[2]/ul/li[2]/label/span[1]
+    单击按钮    xpath=//*[@id="cardStatus"]/div[2]/div/button[1]
+
+页面客户资料-证件资料-待审核
+    单击元素    xpath=//*[@id="cardStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="cardStatus"]/div[2]/ul/li[3]/label/span[1]
+    单击按钮    xpath=//*[@id="cardStatus"]/div[2]/div/button[1]
+
+页面客户资料-证件资料-审核未通过
+    单击元素    xpath=//*[@id="cardStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="cardStatus"]/div[2]/ul/li[4]/label/span[1]
+    单击按钮    xpath=//*[@id="cardStatus"]/div[2]/div/button[1]
+
+页面客户资料-证件资料-通过
+    单击元素    xpath=//*[@id="cardStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="cardStatus"]/div[2]/ul/li[5]/label/span[1]
+    单击按钮    xpath=//*[@id="cardStatus"]/div[2]/div/button[1]
+
+页面客户资料-开票资料-全部
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[2]/ul/li[1]/label/span[1]
+    单击按钮    xpath=//*[@id="invoiceStatus"]/div[2]/div/button[1]
+
+页面客户资料-开票资料-未上传
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[2]/ul/li[2]/label/span[1]
+    单击按钮    xpath=//*[@id="invoiceStatus"]/div[2]/div/button[1]
+
+页面客户资料-开票资料-待审核
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[2]/ul/li[3]/label/span[1]
+    单击按钮    xpath=//*[@id="invoiceStatus"]/div[2]/div/button[1]
+
+页面客户资料-开票资料-审核不通过
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[2]/ul/li[4]/label/span[1]
+    单击按钮    xpath=//*[@id="invoiceStatus"]/div[2]/div/button[1]
+
+页面客户资料-开票资料-通过
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="invoiceStatus"]/div[2]/ul/li[5]/label/span[1]
+    单击按钮    xpath=//*[@id="invoiceStatus"]/div[2]/div/button[1]
+
+页面客户资料-打款资料-全部
+    单击元素    xpath=//*[@id="payStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="payStatus"]/div[2]/ul/li[1]/label/span[1]
+    单击按钮    xpath=//*[@id="payStatus"]/div[2]/div/button[1]
+
+页面客户资料-打款资料-未上传
+    单击元素    xpath=//*[@id="payStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="payStatus"]/div[2]/ul/li[2]/label/span[1]
+    单击按钮    xpath=//*[@id="payStatus"]/div[2]/div/button[1]
+
+页面客户资料-打款资料-待审核
+    单击元素    xpath=//*[@id="payStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="payStatus"]/div[2]/ul/li[3]/label/span[1]
+    单击按钮    xpath=//*[@id="payStatus"]/div[2]/div/button[1]
+
+页面客户资料-打款资料-审核未通过
+    单击元素    xpath=//*[@id="payStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="payStatus"]/div[2]/ul/li[4]/label/span[1]
+    单击按钮    xpath=//*[@id="payStatus"]/div[2]/div/button[1]
+
+页面客户资料-打款资料-通过
+    单击元素    xpath=//*[@id="payStatus"]/div[1]/span
+    单击元素    xpath=//*[@id="payStatus"]/div[2]/ul/li[5]/label/span[1]
+    单击按钮    xpath=//*[@id="payStatus"]/div[2]/div/button[1]
+
+页面客户资料-年度采购协议-撤销通过
+    单击按钮    xpath=//*[@id="dynamic-table"]/tbody/tr/td[2]/div/button
+    单击按钮    xpath=/html/body/div[6]/div[2]/div/div[2]/button[2]
+
+页面客户资料-卖家代运营协议-撤销通过
+    单击按钮    xpath=//*[@id="dynamic-table"]/tbody/tr/td[3]/div/button
+    单击按钮    xpath=/html/body/div[6]/div[2]/div/div[2]/button[2]
+
+页面客户资料-证件资料-撤销通过
+    单击按钮    xpath=//*[@id="dynamic-table"]/tbody/tr/td[4]/div/button
+    单击按钮    xpath=/html/body/div[6]/div[2]/div/div[2]/button[2]
+
+页面客户资料-开票资料-撤销通过
+    单击按钮    xpath=//*[@id="dynamic-table"]/tbody/tr/td[5]/div/button
+    单击按钮    xpath=/html/body/div[6]/div[2]/div/div[2]/button[2]

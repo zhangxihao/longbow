@@ -1,0 +1,85 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+Resource          Action.txt
+Resource          Flow.txt
+Resource          Assert.txt
+Library           DatabaseLibrary
+Resource          Template.txt
+
+*** Variables ***
+
+*** Test Cases ***
+LoginDemo
+    Open Browser    http://localhost:8080/robot/index.html    ie
+    Input Text    account    123
+    Sleep    1s
+    Input Password    password    123
+    Sleep    1s
+    Click Button    submit
+
+LoginXpath
+    Open Browser    http://localhost:8080/robot/index.html    firefox
+    Input Text    xpath=/html/body/form/input[1]    bob
+    Input Password    xpath=//input[2]    123456
+    Close Browser
+
+LoginRadio
+    Open Browser    http://localhost:8080/robot/index.html    chrome
+    Input Text    xpath=//input[@id='account']    bob
+    Select Radio Button    Sex    female
+    Select From List    xpath=//select    本科
+    Select Checkbox    xpath=/html/body/form/input[6]
+    Select Checkbox    book
+
+TestAlert
+    t    file:///D:/RobotFramework/Study/index.html
+    Click Button    alert
+    ${message}=    Get Alert Message
+    Log    ${message}
+    Comment    Choose Cancel On Next Confirmation
+    Comment    Comment    Click Button    confirm
+    Comment    Comment    ${msg}=    Confirm Action
+    Comment    ClickButton    prompt
+    Comment    Send    test123
+    Comment    Sleep    2s
+    Comment    Choose Ok On Next Confirmation
+    Comment    Confirm Action
+
+LoginVer1
+    [Setup]    结束IEDriver
+    登录流程    admin    123456
+    登录检查    Pass
+    关闭浏览器
+
+TestDB
+    [Tags]    DB
+    Connect To Database Using Custom Params    pymysql    database='steel_cbms_smart', user='root', password='root', host='192.168.0.199', port=3306
+    ${queryResults}    Query    SELECT * FROM steel_cbms_smart.acl_user where login_id = 'hzjiaoyiyuan'
+    Log    ${queryResults[0][1]}, ${queryResults[0][0]}
+    Disconnect from database
+
+TestArgs
+    [Template]    登录测试
+    [Timeout]
+    张三    123456    Pass
+    admin    123455    Pass
+    123    12321    Fail
+
+TestFor
+    @{List}=    set variable    2    3    4    5
+    : FOR    ${var}    IN    @{list}
+    \    Exit For Loop If    ${var} == 5
+    \    Log    ${var}
+
+CBMS_OpenOrder
+    打开浏览器    http://ssotest.com:8080/cas/login?service=http://smart.com:8081/web/shiro-cas
+    Input Text    username    hzjiaoyiyuan
+    Input Password    password    123456
+    Click Button    xpath=//*[@id="fm1"]/button
+    Maximize Browser Window
+    Go To    http://smart.com:8081/web/order/create.html
+    Click Button    manualAdd
+    sleep    3s
+    ${message}=    Get Text    xpath=/html/body/div[3]/div[2]/div/div[1]/div
+    Log    ${message}

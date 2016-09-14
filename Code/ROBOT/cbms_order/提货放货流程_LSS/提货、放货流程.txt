@@ -1,0 +1,45 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          flow.txt
+Library           AutoItLibrary
+
+*** Variables ***
+${url}            http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas
+${browser}        FF
+
+*** Test Cases ***
+交易员进入待提货页面
+    登录cbms    ${url}    ${browser}    yangbin    Oct.2015
+    进入交易单管理页面    id=sidebar    http://sim-cbms.prcsteel.com/common/menu/order-view/order-query-index-page.html    #进入交易单管理
+    进入待提货tab    待提货    http://sim-cbms.prcsteel.com/order/pickup/order/23858/create.html    #录入提货单
+
+输入提货信息
+    选择提货方式    deliveryType    CAR
+    输入车船号    name=validCode    12345
+    输入司机姓名    name=name    张三
+    输入联系方式    name=mobil    15811225522
+
+上传图片
+    点击选择文件    id=pic
+    激活窗口    文件上传
+    上传图片    Edit1    C:\\Users\\prcsteel\\Desktop\\pics\\1.jpg
+    点击确认    打开(&O)    Button1
+
+确认及退出
+    确认提交    id=submit
+    log out
+
+内勤进入待放货页面
+    登录cbms    ${url}    ${browser}    gonghuan    gtxh123
+    进入交易单管理页面    id=sidebar    http://sim-cbms.prcsteel.com/common/menu/order-view/order-query-index-page.html    #进入交易单管理
+    进入待放货tab    待放货    http://sim-cbms.prcsteel.com/order/pickup/delivery/order/23858/showprint.html    #打印放货单
+
+打印放货单
+    点击打印    id=prints
+    激活对话框    打印
+    点击取消    打印    取消    Button11
+    关闭对话框    title=打印
+    点击返回    id=back
+
+退出登录
+    退出登录

@@ -1,0 +1,146 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+
+*** Keywords ***
+页面切换为离线
+    单击链接    xpath=.//*[@class='mari close-box dwcl']/a    #当前状态locator
+    单击链接    xpath=.//*[@class='color999']    #离线状态locator
+
+页面切换为离开
+    单击链接    xpath=.//*[@class='mari close-box dwcl']/a    #当前状态locator
+    单击链接    xpath=.//*[@class='coloradcff1']    #离开状态locator
+
+页面切换为上线
+    单击链接    xpath=.//*[@class='mari close-box dwcl']/a    #当前状态locator
+    单击链接    xpath=.//*[@class='color3ecd3b']    #上线状态locator
+
+页面获取新开询价单元素的disabled属性
+    ${disabled_newAddOrder}=    Get Element Attribute    newAddOrder@disabled    #newAddOrder新开询价单Locator；disabled属性
+    [Return]    ${disabled_newAddOrder}
+
+页面暂缓需求单
+    单击按钮    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[2]/div[3]/div[2]/button[1]    #单击关闭按钮
+    单选框    check    STAY
+    单击按钮    xpath=.//*[@id='dialogContBox']/div/button[2]    #单击关闭-确定按钮
+    单击按钮    xpath=html/body/div[6]/div[2]/div/div[2]/button    #单击提示成功框按钮
+
+页面关闭需求单
+    单击按钮    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[2]/div[3]/div[2]/button[1]    #单击关闭按钮
+    单击按钮    xpath=.//*[@id='dialogContBox']/div/button[2]    #单击关闭-确定按钮
+    单击按钮    xpath=html/body/div[6]/div[2]/div/div[2]/button    #单击提示成功框按钮
+
+页面提交询价单
+    [Arguments]    ${contract_info}    ${account_info}    ${nsortName}    ${material}    ${inputspec1}    ${inputspec2}
+    ...    ${inputspec3}    ${factory}    ${weight}    ${city_info}    ${alias}=${EMPTY}    ${quantity}=${EMPTY}
+    ...    ${remark}=${EMPTY}    ${total_remark}=${EMPTY}
+    [Documentation]    \#
+    ...
+    ...    contract_info：联系人
+    ...    account_info：买家全称
+    ...    nsortName：品名
+    ...    material：材质
+    ...    inputspec1：规格1
+    ...    inputspec2：规格2
+    ...    inputspec3：规格3
+    ...    factory：厂家
+    ...    weight：重量
+    ...    city_info：交货地
+    ...    alias：别名
+    ...    quantity：数量
+    ...    remark：询价明细行备注
+    ...    total_remark：总备注
+    输入文本    contract_info    ${contract_info}    #联系人
+    输入文本    account_info    ${account_info}    #买家全称
+    输入文本    xpath=.//*[@id='m-search']/table/tbody/tr/td/div[1]/label[2]/input    ${alias}    #别名
+    输入文本    nsortName    ${nsortName}    #品名
+    单击元素    dropdown    #因品名提交的内容必须为选择的内容
+    执行同步JavaScript    document.getElementById('material').removeAttribute('readonly');    #通过JS将材质不可输入输入框变为可输入框
+    输入文本    material    ${material}    #材质
+    执行同步JavaScript    document.getElementById('inputspec1').removeAttribute('readonly');    #通过JS将规格1不可输入输入框变为可输入框
+    输入文本    inputspec1    ${inputspec1}    #规格1
+    执行同步JavaScript    document.getElementById('inputspec2').removeAttribute('readonly');    #通过JS将规格2不可输入输入框变为可输入框
+    输入文本    inputspec2    ${inputspec2}    #规格2
+    执行同步JavaScript    document.getElementById('inputspec3').removeAttribute('readonly');    #通过JS将规格3不可输入输入框变为可输入框
+    输入文本    inputspec3    ${inputspec3}    #规格3
+    执行同步JavaScript    document.getElementById('factory').removeAttribute('readonly');    #通过JS将厂家不可输入输入框变为可输入框
+    输入文本    factory    ${factory}    #厂家
+    输入文本    quantity    ${quantity}    #数量
+    输入文本    weight    ${weight}    #重量
+    输入文本    xpath=//*[@id='m-search']//input[@class='width225 remark_item height-b']    ${remark}    #采购明细行备注
+    Comment    下拉选择通过值    xpath=//*[@class=' width255 selectVal height-b city_item']    ${city_info}    #选择交货地
+    输入文本    city_info    ${city_info}    #交货地
+    单击元素    dropdown    #因交货地提交的内容必须为选择的内容
+    输入文本    total_remark    ${total_remark}    #备注
+    单击按钮    xpath=.//*[@class='btn btn-primary btn-sm treeBtnBar mg-t-35 submitYes']    #提交按钮
+    单击按钮    xpath=.//*[@id='dialogContBox']/div/button[2]    #确认提交的确认按钮
+    单击按钮    xpath=.//*[@class='btn btn-primary']    #提示成功框按钮
+    Comment    单击按钮    xpath=html/body/div[6]/div[2]/div/div[2]/button    #提示成功框按钮
+
+页面新开询价单
+    [Arguments]    ${requirementMobile}    ${contract_info}    ${account_info}    ${nsortName}    ${material}    ${inputspec1}
+    ...    ${inputspec2}    ${inputspec3}    ${factory}    ${weight}    ${city_info}    ${alias}=${EMPTY}
+    ...    ${quantity}=${EMPTY}    ${remark}=${EMPTY}    ${total_remark}=${EMPTY}
+    [Documentation]    \#
+    ...
+    ...    requirementMobile：联系电话
+    ...    contract_info：联系人
+    ...    account_info：买家全称
+    ...    nsortName：品名
+    ...    material：材质
+    ...    inputspec1：规格1
+    ...    inputspec2：规格2
+    ...    inputspec3：规格3
+    ...    factory：厂家
+    ...    weight：重量
+    ...    city_info：交货地
+    ...    alias：别名
+    ...    quantity：数量
+    ...    remark：询价明细行备注
+    ...    total_remark：总备注
+    输入文本    requirementMobile    ${requirementMobile}    #联系电话
+    输入文本    contract_info    ${contract_info}    #联系人
+    输入文本    account_info    ${account_info}    #买家全称
+    输入文本    xpath=.//*[@id='m-search']/table/tbody/tr/td/div[1]/label[2]/input    ${alias}    #别名
+    输入文本    nsortName    ${nsortName}    #品名
+    单击元素    dropdown    #因品名提交的内容必须为选择的内容
+    执行同步JavaScript    document.getElementById('material').removeAttribute('readonly');    #通过JS将材质不可输入输入框变为可输入框
+    输入文本    material    ${material}    #材质
+    执行同步JavaScript    document.getElementById('inputspec1').removeAttribute('readonly');    #通过JS将规格1不可输入输入框变为可输入框
+    输入文本    inputspec1    ${inputspec1}    #规格1
+    执行同步JavaScript    document.getElementById('inputspec2').removeAttribute('readonly');    #通过JS将规格2不可输入输入框变为可输入框
+    输入文本    inputspec2    ${inputspec2}    #规格2
+    执行同步JavaScript    document.getElementById('inputspec3').removeAttribute('readonly');    #通过JS将规格3不可输入输入框变为可输入框
+    输入文本    inputspec3    ${inputspec3}    #规格3
+    执行同步JavaScript    document.getElementById('factory').removeAttribute('readonly');    #通过JS将厂家不可输入输入框变为可输入框
+    输入文本    factory    ${factory}    #厂家
+    输入文本    quantity    ${quantity}    #数量
+    输入文本    weight    ${weight}    #重量
+    输入文本    xpath=//*[@id='m-search']//input[@class='width225 remark_item height-b']    ${remark}    #采购明细行备注
+    输入文本    city_info    ${city_info}    #交货地
+    单击元素    dropdown    #因交货地提交的内容必须为选择的内容
+    输入文本    total_remark    ${total_remark}    #备注
+    单击按钮    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div[2]/div/div[4]/button[2]    #提交按钮
+    单击按钮    xpath=.//*[@id='dialogContBox']/div/button[2]    #确认提交的确认按钮
+    单击按钮    xpath=.//*[@class='btn btn-primary']    #提示成功框按钮
+
+页面点击新开询价单
+    单击按钮    newAddOrder    #新开询价单按钮
+
+页面获取状态
+    ${status}    获取元素文本    xpath=.//*[@class='mari close-box dwcl']/a    #客服状态locator
+    [Return]    ${status}
+
+页面已分配需求单，请点击确定跳转到工作台页面
+    单击按钮    xpath=html/body/div[3]/div[2]/div/div[2]/button
+
+页面客服工作台_获取联系电话
+    ${contract_mobile}    获取元素文本    contract_mobile
+    [Return]    ${contract_mobile}
+
+页面客服工作台_获取共发起询价
+    ${countRequirement}    获取元素文本    countRequirement
+    [Return]    ${countRequirement}
+
+页面获取生成询价单
+    ${countInquiry}    获取元素文本    countInquiry
+    [Return]    ${countInquiry}

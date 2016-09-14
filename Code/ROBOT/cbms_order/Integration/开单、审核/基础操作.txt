@@ -1,0 +1,55 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+浏览器开启_YB
+    [Arguments]    ${url}
+    open browser    ${url}
+
+输入文本_YB
+    [Arguments]    ${id}    ${text}
+    input text    ${id}    ${text}
+
+输入密码_YB
+    [Arguments]    ${pw_id}    ${text}
+    input password    ${pw_id}    ${text}
+
+浏览器跳转_YB
+    [Arguments]    ${goto}
+    go to    ${goto}
+
+点击登录_YB
+    click button    xpath=//*[@id="form1"]/table/tbody/tr[4]/td/button
+
+选择品类_YB
+    [Arguments]    ${xpath}
+    click element    ${xpath}
+
+下拉列表选择_YB
+    [Arguments]    ${ddlist_id}    ${ddlist_index}
+    Select From List By Value    ${ddlist_id}    ${ddlist_index}
+
+输入文本-Xpath_YB
+    [Arguments]    ${path}    ${text}
+    input text    ${path}    ${text}
+
+选择品类-Xpath_YB
+    [Arguments]    ${xpath}
+    click element    ${xpath}
+
+点击按钮-ID_YB
+    [Arguments]    ${button_id}
+    click button    ${button_id}
+
+点击按钮-Xpath_YB
+    [Arguments]    ${xpath}
+    click element    ${xpath}
+
+点击按钮-提交审核
+    点击按钮-ID_YB    submit    #点击提交按钮
+    sleep    6
+    Comment    goto    http://sim-cbms.prcsteel.com/order/query/approval.html
+    Comment    Wait Until Element Is Visible    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[1]/a
+    Comment    ${GetOrderCode}=    Set Variable    Get Text    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[1]/a
+    Comment    Log    ${GetOrderCode}    #没法将这个变量传递给其他case用
+    close browser

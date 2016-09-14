@@ -1,0 +1,17 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          脚本关键字.txt
+
+*** Keywords ***
+登录cbms
+    [Arguments]    ${url}    ${browser_type}    ${user}    ${pwd}
+    打开浏览器    ${url}    ${browser_type}
+    浏览器最大化
+    输入用户名    ${user}
+    输入密码    ${pwd}
+    点击登录按钮
+    等待时间
+
+打开新建交易单页面
+    Click Element    xpath=//span[text()=' 交易管理 ']
+    go to    http://cbmstest.com:8019/web/order/create.html    #进入新开交易单页面

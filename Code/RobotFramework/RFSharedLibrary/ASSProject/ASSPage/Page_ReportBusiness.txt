@@ -1,0 +1,11 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+
+*** Keywords ***
+页面今日实时数据_获取处理单数
+    ${countProcess}    获取元素文本    countRequirement
+    [Return]    ${countProcess}
+
+页面今日实时数据_获取处理成功数
+    ${countInquiry}    获取元素文本    countInquiry
+    [Return]    ${countInquiry}

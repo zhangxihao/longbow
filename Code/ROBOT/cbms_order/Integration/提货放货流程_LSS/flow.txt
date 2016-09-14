@@ -1,0 +1,79 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          Action.txt
+Library           AutoItLibrary
+Resource          ../Search_Assert/Flow.txt
+
+*** Keywords ***
+登录cbms
+    [Arguments]    ${url}    ${browser}    ${username}    ${pwd}
+    打开浏览器    ${url}    ${browser}
+    浏览器最大化
+    输入用户名    ${username}
+    输入密码    ${pwd}
+    点击登录按钮
+    等待时间
+
+进入交易单管理页面
+    [Arguments]    ${url}
+    Comment    点击交易管理    ${locator}
+    点击交易单管理    ${url}
+
+输入提货信息
+    [Arguments]    ${URL}    ${element}    ${filename}    ${deliveryType}    ${validCode}    ${testBuyerAccount}
+    ...    ${name}=    ${mobil}=
+    goto    ${URL}
+    Wait Until Element Is Visible    queryBtn
+    执行搜索    \    ${testBuyerAccount}
+    sleep    1s
+    Wait Until Element Is Visible    ${element}    #点击找到的文本为“录入提货单”第一行最后一个连接“
+    Click Link    ${element}
+    Wait Until Element Is Visible    submit
+    选择提货方式    deliveryType    ${deliveryType}
+    输入车船号    name=validCode    ${validCode}
+    输入司机姓名    name=name    ${name}
+    输入联系方式    name=mobil    ${mobil}
+    上传图片及确认提交    ${filename}
+    确认提交及退出
+
+上传图片及确认提交
+    [Arguments]    ${filename}
+    点击选择文件    pic
+    Win Activate    文件上载
+    Control Set Text    \    \    Edit1    ${filename}
+    Control Click    \    打开(&O)    Button1
+
+确认提交及退出
+    确认提交    submit
+    Comment    sleep    7S
+    close Browser
+
+进行放货操作
+    [Arguments]    ${url}    ${element}    ${testBuyerAccount}
+    goto    ${url}
+    执行搜索    \    ${testBuyerAccount}
+    sleep    1s
+    Wait Until Element Is Visible    ${element}
+    Click Link    ${element}
+    Wait Until Element Is Visible    prints
+    打印放货单
+
+打印放货单
+    点击打印    prints
+    激活对话框    打印
+    点击取消    打印    取消    Button11
+    关闭对话框    title=打印
+    点击返回    id=back
+    sleep    1s
+    Close Browser
+
+退出登录
+    log out
+    关闭浏览器
+
+进入提货单详情页
+    [Arguments]    ${url}    ${FirstElement}
+    goto    ${url}
+    执行搜索    \    斯坦索姆
+    sleep    2s
+    点击第一条记录    ${FirstElement}

@@ -1,0 +1,32 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          业务流程.txt
+Resource          脚本关键字.txt
+
+*** Test Cases ***
+正确输入用户名和密码登录系统，进入首页
+    登录系统    http://ssotest.com:8080/cas/login?service=http://cbmstest.com:8019/web/shiro-cas    cbadmin    123456
+    检查有“交易管理”菜单
+    关闭浏览器
+
+输入错误的用户名或密码，登录失败
+    登录系统    http://ssotest.com:8080/cas/login?service=http://cbmstest.com:8019/web/shiro-cas    cbadmin    654321
+    检查登录失败
+    关闭浏览器
+
+成功登录系统，进入新开交易单页面成功提交订单
+    登录系统    http://ssotest.com:8080/cas/login?service=http://cbmstest.com:8019/web/shiro-cas    jiaoyiyuan5    123456
+    进入新增交易单页面    http://cbmstest.com:8019/web/order/create.html
+    输入买家信息    sy买家
+    选择付款期限
+    输入卖家及交易资源信息    sy卖家
+    选择交提货信息
+    提交订单
+    退出登录
+
+审核新开的交易单
+    登录系统    http://ssotest.com:8080/cas/login?service=http://cbmstest.com:8019/web/shiro-cas    beijingowner    123456
+    进入菜单页面    http://cbmstest.com:8019/web/order/query/approval.html
+    根据卖家全称进行搜索    sy卖家
+    进入新开交易单的审核页面
+    审核新开交易单

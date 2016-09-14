@@ -1,0 +1,15 @@
+*** Settings ***
+Resource          ../../EC2.0Project/EC2.0Flow/Flow_EC2.0.txt
+Resource          ../ASSProjectResource.txt
+Resource          ../../SharedLibrary/Action/Selenium.txt
+
+*** Keywords ***
+流程超市提交回执需求
+    [Arguments]    ${user}    ${password}
+    [Documentation]    user:登录用户手机号
+    ...
+    ...    password：登录用户密码
+    流程首页    ${URL_EC.Home}    firefox    ${Browser.AliasEC}
+    流程登录-密码登录    ${URL_EC.Login}    ${user}    ${password}
+    流程需求-通过电话聊需求    xpath=.//*[@id='mmain']/div[1]/div[2]/div[4]/ul/li[5]
+    关闭当前浏览器

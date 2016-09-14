@@ -1,0 +1,60 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../ASSPage/Page_SystemParam.txt
+Resource          ../../SharedLibrary/Action/Database.txt
+Resource          ../ASSProjectResource.txt
+Resource          ../DataBase/base_requirement_close_reason.txt
+
+*** Keywords ***
+流程理由Tab_新增理由
+    [Arguments]    ${content}    ${sort}    ${value}=1    ${remark}=${EMPTY}
+    [Documentation]    \#
+    ...
+    ...    content：理由
+    ...
+    ...    sort：显示顺序
+    ...
+    ...    value：0代表停用、1代表启用
+    ...
+    ...    remark：备注
+    跳转到地址    ${ASSURL.SystemParam}
+    页面理由Tab_点击新增
+    页面理由Tab_新增    ${content}    ${sort}    ${value}    ${remark}
+
+流程理由Tab_（无启用理由）获取显示顺序最前的理由
+    [Arguments]    ${content1}    ${sort1}    ${content2}    ${sort2}
+    [Documentation]    \#
+    ...
+    ...    content：理由
+    ...
+    ...    sort：显示顺序
+    流程理由Tab_新增理由    ${content1}    ${sort1}
+    流程理由Tab_新增理由    ${content2}    ${sort2}
+    获取显示顺序最前的理由
+
+流程理由Tab_（启用理由1个）获取显示顺序最前的理由
+    [Arguments]    ${content}    ${sort}
+    [Documentation]    \#
+    ...
+    ...    content：理由
+    ...
+    ...    sort：显示顺序
+    流程理由Tab_新增理由    ${content}    ${sort}
+    获取显示顺序最前的理由
+
+流程理由Tab_获取显示顺序最前的理由
+    Comment    ${Count}    获取启用状态的理由总数
+    Comment    Run Keyword If    '${Count}'=='0'    Run Keywords    流程理由Tab_新增理由    ${content1}    ${sort1}
+    ...    AND    流程理由Tab_新增理由    ${content2}    ${sort2}
+    ...    ELSE IF    '${Count}'=='1'    流程理由Tab_新增理由    ${content1}    ${sort1}
+    获取显示顺序最前的理由
+
+流程询价规则Tab_配置询价参数
+    [Arguments]    ${value}=0
+    [Documentation]    \#
+    ...    value=0:询价单提交后返回分检工作台页面
+    ...
+    ...    value=1：询价单提交后跳转至智能找货报价页面
+    跳转到地址    ${ASSURL.SystemParam}
+    页面询价规则Tab
+    页面询价规则Tab_配置询价参数    ${value}

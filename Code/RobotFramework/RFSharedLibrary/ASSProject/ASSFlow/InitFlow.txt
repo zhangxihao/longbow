@@ -1,0 +1,20 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../ASSPage/InitPage.txt
+
+*** Keywords ***
+流程登录
+    [Arguments]    ${URL}    ${UserName}    ${PassWord}    ${Browser}=firefox    ${Alias}=${None}
+    [Documentation]    * 登录流程接受以下参数：
+    ...
+    ...    URL：网址
+    ...
+    ...    UserName：用户名
+    ...
+    ...    PassWord：密码
+    ...
+    ...    Browser: 选择浏览器，FireFox，Chrome，默认Chrome
+    ...
+    ...    Alias：浏览器别名，选填
+    打开浏览器并最大化    ${URL}    ${Browser}    ${Alias}
+    页面登录    ${UserName}    ${PassWord}

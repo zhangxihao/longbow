@@ -1,0 +1,11 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          脚本关键字.txt
+
+*** Keywords ***
+业务逻辑
+    [Arguments]    ${url}    ${search_content}
+    打开浏览器    ${url}
+    输入关键词    ${search_content}
+    点击搜索
+    关闭浏览器

@@ -1,0 +1,94 @@
+*** Settings ***
+Library           DatabaseLibrary
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../CBMSPage/Page_LimitManager.txt
+
+*** Keywords ***
+流程-添加分组
+    [Arguments]    ${groupingName}    ${groupinglimit}    ${companyName}    ${departmentType}    ${departmentName}    ${companyLimit}
+    ...    ${type}
+    [Documentation]    groupingName=信用组名
+    ...    groupinglimit=组信用额度
+    ...    companyName=公司名称
+    ...    departmentName=部门名称
+    ...    companyLimit=部门信用额度
+    ...    departmentType=部门类型：多部门、单部门。取值为0时，表示单部门；取值为1时，表示多部门。
+    ...    type=二结余额是否自动信用额度还款/抵扣：取值为1时，选择“是”；取值为0时，选择“否”；该字段默认取值为否。
+    单击按钮    addGrouping
+    页面-添加信用额度组    ${groupingName}    ${groupinglimit}    ${companyName}    ${departmentType}    ${departmentName}    ${companyLimit}
+    ...    ${type}
+
+流程-额度组添加客户
+    [Arguments]    ${groupingName}    ${companyName}    ${departmentType}    ${departmentName}    ${companyLimit}    ${type}
+    [Documentation]    groupingName=信用组名
+    ...    companyName=公司名称
+    ...    departmentName=部门名称
+    ...    companyLimit=部门信用额度
+    ...    departmentType=部门类型：多部门、单部门。取值为0时，表示单部门；取值为1时，表示多部门。
+    ...    type=二结余额是否自动信用额度还款/抵扣：取值为1时，选择“是”；取值为0时，选择“否”；该字段默认取值为否。
+    输入文本    groupingName    ${groupingName}
+    单击按钮    searchBtn
+    单击链接    xpath=//*[@id="databody"]/tr/td[7]/a[2]
+    页面-添加客户    ${companyName}    ${departmentType}    ${departmentName}    ${companyLimit}    ${type}
+
+流程-获取添加额度公司的部门数
+    [Documentation]    ${companyName}
+    connect to database using custom params    pymysql    database='steel_cbms_account', user='root', password='root', host='192.168.0.206', port=3306,charset='utf8'
+    ${queryResult}    query    SELECT COUNT(*) FROM cust_account t2 WHERE t2.parent_id IN(SELECT t.id FROM cust_account t WHERE t.name = \ 'sy买家');
+    log    ${queryResult}
+    disconnect from database
+
+流程-编辑客户
+    [Arguments]    ${groupingName}    ${companyLimit}    ${type}
+    [Documentation]    groupinglimit=组信用额度
+    ...    companyLimit=部门信用额度
+    ...    type=二结余额是否自动信用额度还款/抵扣：取值为1时，选择“是”；取值为0时，选择“否”；该字段默认取值为否。
+    输入文本    groupingName    ${groupingName}
+    单击按钮    searchBtn
+    单击链接    xpath=//*[@id="DataTables_Table_3"]/tbody/tr/td[9]/a[1]
+    页面-编辑客户额度信息    ${companyLimit}     ${type}
+
+流程-编辑信用额度组
+    [Arguments]    ${groupingName1}    ${groupingName2}    ${groupinglimit}
+    [Documentation]    groupingName1=修改前的信用组名
+    ...    groupingName2=修改后的信用组名
+    ...    groupinglimit=组信用额度
+    输入文本    groupingName    ${groupingName1}
+    单击按钮    searchBtn
+    单击链接    xpath=//*[@id="databody"]/tr/td[7]/a[1]
+    页面-编辑信用额度组     ${groupingName2}    ${groupinglimit}
+
+流程-删除客户额度
+    [Arguments]    ${groupingName}
+    输入文本    groupingName    ${groupingName}
+    单击按钮    searchBtn
+    单击链接    xpath=//*[@id="DataTables_Table_3"]/tbody/tr/td[9]/a[2]
+    输入文本    del_account_reason    测试用
+    单击按钮    btn_del_account
+
+流程-删除额度组
+    [Arguments]    ${groupingName}
+    输入文本    groupingName    ${groupingName}
+    单击按钮    searchBtn
+    单击链接    xpath=//*[@id="databody"]/tr/td[7]/a[3]
+    单击按钮    xpath=//*[@class="modal-footer"]//button[@class="btn btn-primary btn-sm"]
+
+流程-额度审核通过
+    [Arguments]    ${groupingName}
+    [Documentation]    审核通过
+    输入文本    groupingName    ${groupingName}
+    单击按钮    searchBtn
+    单击链接    xpath=//*[@id="databody"]/tr[1]/td[6]/a[1]
+    单击按钮    btncommit
+    sleep    10s
+    单击按钮    xpath=/html/body/div[6]/div[2]/div/div[2]/button
+
+流程-额度审核不通过
+    [Arguments]    ${groupingName}
+    [Documentation]    审核不通过
+    输入文本    groupingName    ${groupingName}
+    单击按钮    searchBtn
+    单击链接    xpath=//*[@id="databody"]/tr[1]/td[6]/a[2]    #点击“不同意”按钮
+    单击按钮    btncommit
+    sleep    10s
+    单击按钮    xpath=/html/body/div[6]/div[2]/div/div[2]/button

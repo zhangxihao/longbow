@@ -1,0 +1,51 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          新开交易单.txt
+
+*** Variables ***
+
+*** Test Cases ***
+CBMS_Login
+    @{login}    set variable    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    username    yangbin    password    Oct.2015
+    ...    http://sim-cbms.prcsteel.com/order/create.html
+    login    @{login}
+
+Create_order
+    @{login}    set variable    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    username    yangbin    password    Oct.2015
+    ...    http://sim-cbms.prcsteel.com/order/create.html
+    login    @{login}
+    ${buyer_id}    ${buyer_name}    set variable    xpath=//input[@id='buyer']    斯坦索姆
+    ${con_id}    ${con_name}    set variable    xpath=//input[@id='contact']    巫妖王
+    ${tel_id}    ${tel_num}    set variable    xpath=//input[@id='contactTel']    15558136832
+    ${seller_id}    ${seller_name}    set variable    xpath=.//*[@id='table_resource']/tbody/tr[1]/td[2]/input    卖家44
+    ${xpath}    ${xpath1}    set variable    xpath=//input[@name='nsortName']    xpath=//a[contains(text(),'建材')]
+    ${xpath2}    set variable    xpath=//a[contains(text(),'高线')]
+    ${qua_id}    ${qua}    set variable    xpath=.//*[@id='table_resource']/tbody/tr/td[4]/input    0902
+    ${spec_id}    ${spec}    set variable    xpath=.//*[@id='table_resource']/tbody/tr/td[5]/input    0.9*0.2
+    ${fac_id}    ${factory}    set variable    xpath=.//*[@id='table_resource']/tbody/tr/td[6]/input    曼联
+    ${prov_id}    ${prov_index}    set variable    name=province    11
+    ${city_id}    ${city_index}    set variable    name=city    78
+    ${dep_id}    ${depot}    set variable    xpath=.//*[@id='table_resource']/tbody/tr/td[8]/input    曼彻斯特
+    ${amou_id}    ${amount}    set variable    xpath=.//*[@id='table_resource']/tbody/tr/td[9]/input    9
+    ${weight_id}    ${weight}    set variable    xpath=.//*[@id='table_resource']/tbody/tr/td[10]/input    9
+    ${wei_id}    ${wei}    set variable    weightConcept    磅计
+    ${buyp_id}    ${buyprice}    set variable    xpath=.//*[@id='table_resource']/tbody/tr/td[12]/input    20
+    ${sale_id}    ${saleprice}    set variable    xpath=.//*[@id='table_resource']/tbody/tr/td[13]/input    10
+    ${button_id}    set variable    submit
+    sleep    2
+    新开单    ${buyer_id}    ${buyer_name}    ${con_id}    ${con_name}    ${tel_id}    ${tel_num}
+    ...    ${seller_id}    ${seller_name}    ${xpath}    ${xpath1}    ${xpath2}    ${qua_id}
+    ...    ${qua}    ${spec_id}    ${spec}    ${fac_id}    ${factory}    ${prov_id}
+    ...    ${prov_index}    ${city_id}    ${city_index}    ${dep_id}    ${depot}    ${amou_id}
+    ...    ${amount}    ${weight_id}    ${weight}    ${wei_id}    ${wei}    ${buyp_id}
+    ...    ${buyprice}    ${sale_id}    ${saleprice}    ${button_id}
+    @{login}    set variable    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    username    zhangxihao    password    123456
+    ...    http://sim-cbms.prcsteel.com/order/query/approval.html
+    login    @{login}
+    sleep    3
+    ${buyer_id}    ${buyer_name}    set variable    accountName    斯坦索姆
+    ${search_button}    ${aduit_xpath}    set variable    queryBtn    xpath=(//a[contains(text(),'审核')]
+    ${aduit_button}    ${ok_button}    set variable    order_audit_accept    xpath=(//button[@type='button'])[6]
+    审核新建订单    ${buyer_id}    ${buyer_name}    ${search_button}    ${aduit_xpath}    ${aduit_button}    ${ok_button}
+
+*** Keywords ***

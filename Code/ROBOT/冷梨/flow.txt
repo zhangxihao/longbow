@@ -1,0 +1,42 @@
+*** Settings ***
+Resource          mykeyword.txt
+Resource          page.txt
+
+*** Keywords ***
+登录流程
+    [Arguments]    ${url}    ${username}    ${password}
+    打开浏览器    ${url}
+    登录页面    ${username}    ${password}
+
+开单流程
+    [Arguments]    ${url}    ${buyer}    ${contact}    ${contactTel}    ${paymentType}    ${delayNum}
+    ...    ${sellerName}    ${material}    ${spec}    ${factory}    ${province}    ${city}
+    ...    ${warehouse}    ${quantity}    ${weight}    ${weightConcept}    ${dealPrice}    ${costPrice}
+    ...    ${isPayedByAcceptDraft}    ${deliveryType}    ${feeTaker}    ${outboundTaker}    ${contractAddress}
+    进入到新开交易单页面    ${url}
+    新开交易单页面    ${buyer}    ${contact}    ${contactTel}    ${paymentType}    ${delayNum}    ${sellerName}
+    ...    ${material}    ${spec}    ${factory}    ${province}    ${city}    ${warehouse}
+    ...    ${quantity}    ${weight}    ${weightConcept}    ${dealPrice}    ${costPrice}    ${isPayedByAcceptDraft}
+    ...    ${deliveryType}    ${feeTaker}    ${outboundTaker}    ${contractAddress}
+
+审核通过流程
+    [Arguments]    ${url}
+    进入到待审核交易单页面    ${url}
+    点击审核
+    通过审核
+
+审核不通过流程
+    [Arguments]    ${url}    ${refuseNote}
+    进入到待审核交易单页面    ${url}
+    点击审核
+    不通过审核    ${refuseNote}
+
+关联合同流程1
+    [Arguments]    ${url1}    ${accountName}    ${url2}
+    获取买家客户账户余额    ${url1}    ${accountName}
+    进入到待关联页面    ${url2}
+    待关联页面
+    ${var1}    Set Variable    ${account_balance}
+    获取买家客户账户余额    ${url1}    ${accountName}
+    ${var2}    Set Variable    ${account_balance}
+    Should Be Equal As Numbers    ${var1}    ${var2}+12

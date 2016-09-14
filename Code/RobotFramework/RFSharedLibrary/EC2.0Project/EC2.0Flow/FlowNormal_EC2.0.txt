@@ -1,0 +1,28 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../EC2.0Page/Page_EC2.0.txt
+Resource          ../ProjectResource_2.0.txt
+Resource          Flow_EC2.0.txt
+Resource          ../EC2.0Page/Page_Back.txt
+
+*** Keywords ***
+流程登录正常
+    流程首页    ${URL.Web}
+    流程登录-密码登录    ${URL.Login}    ${User.UsernameLogin}    ${User.PasswordLogin}
+
+流程进入会员中心
+    [Arguments]    ${locator1}    ${locator2}
+    流程首页    ${URL.Web}
+    流程登录-密码登录    ${URL.Login}    ${User.UsernameLogin}    ${User.PasswordLogin}
+    sleep    10s
+    页面会员中心-点击手机号    ${locator1}
+    选择窗口    ${locator2}
+
+流程进入会员中心-修改绑定手机
+    [Arguments]    ${locator1}    ${locator2}
+    流程首页    ${URL.Web}
+    流程登录-密码登录    ${URL.Login}    ${User.UsernameResetPhone}    ${User.PasswordResetPhone}
+    sleep    10s
+    页面会员中心-点击手机号    ${locator1}
+    选择窗口    ${locator2}

@@ -1,0 +1,64 @@
+*** Settings ***
+Resource          mykeyword.txt
+
+*** Keywords ***
+登录页面
+    [Arguments]    ${username}    ${password}
+    输入用户名_LL    ${username}
+    输入密码_LL    ${password}
+    点击登录_LL
+
+登录检查
+    [Arguments]    ${except}
+    [Documentation]    检查登录是否成功
+    ...    如果需要检查登录成功、参数请写"Pass"
+    ...    如果需要检查登录失败、参数请写"Fail"
+    Run Keyword If    '${except}'=="Pass"    检查登录成功_LL
+    Run Keyword If    '${except}'=="Fail"    检查登录失败_LL
+
+新开交易单页面
+    [Arguments]    ${buyer}    ${contact}    ${contactTel}    ${paymentType}    ${delayNum}    ${sellerName}
+    ...    ${material}    ${spec}    ${factory}    ${province}    ${city}    ${warehouse}
+    ...    ${quantity}    ${weight}    ${weightConcept}    ${dealPrice}    ${costPrice}    ${deliveryType}
+    ...    ${feeTaker}    ${outboundTaker}    ${contractAddress}
+    输入买家信息    ${buyer}    ${contact}    ${contactTel}
+    选择付款期限    ${paymentType}    ${delayNum}
+    添加卖家以及资源    ${sellerName}    ${material}    ${spec}    ${factory}    ${province}    ${city}
+    ...    ${warehouse}    ${quantity}    ${weight}    ${weightConcept}    ${dealPrice}    ${costPrice}
+    复制第1行资源信息
+    配置交（提）货信息    ${deliveryType}    ${feeTaker}    ${outboundTaker}    ${contractAddress}
+    点击提交审核
+
+开单检查
+    [Arguments]    ${except}
+    [Documentation]    检查开单是否成功
+    ...    如果需要检查开单成功、参数请写"Pass"
+    ...    如果需要检查卖家全称错误导致开单失败、参数请写"Fail"
+    Run Keyword If    '${except}'=="Pass"    检查开单成功
+    Run Keyword If    '${except}'=="Fail"    检查卖家全称错误
+
+通过审核
+    Click Element    order_audit_accept
+    Sleep    2
+    Click Element    xpath=html/body/div[3]/div[2]/div/div[2]/button[2]
+    Sleep    2
+
+不通过审核
+    [Arguments]    ${refuseNote}
+    Click Element    order_audit_refuse
+    Sleep    2
+    Input Text    refuseNote    ${refuseNote}
+    Click Element    order_audit_refuse_confirm
+    Sleep    2
+
+待申请付款详情页面
+    [Arguments]    ${contract_no}    ${filename}
+    上传合同    ${contract_no}    ${filename}
+    Sleep    3
+    Comment    Input Text    xpath=.//*[@id='payment_table']/tbody/tr/td[8]/input    ${paymentAmount}
+    Wait Until Element Is Visible    order_applypay
+    Click Button    order_applypay
+    Sleep    1
+    Click Element    xpath=html/body/div[3]/div[2]/div/div[2]/button[2]
+    Sleep    1
+    close Browser

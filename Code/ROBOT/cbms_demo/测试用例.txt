@@ -1,0 +1,70 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          业务流程.txt
+Library           MyLibrary
+
+*** Variables ***
+${url}            http://cbmstest.com:8019/web/index.html
+${username}       jiaoyiyuan7
+${pwd}            123456
+@{browser_type2}    firefox
+
+*** Test Cases ***
+login
+    #两种设置变量方式之一    ${browser_type2}    set variable    firefox    chrome
+    : FOR    ${browser_type}    IN    @{browser_type2}
+    \    登录cbms    ${url}    ${browser_type}    ${username}    ${pwd}
+
+新开交易单
+    打开新建交易单页面
+
+输入买家信息
+    input text    xpath=//input[@id='buyer']    test买家056
+    input text    xpath=//input[@id='contact']    买家056
+    input text    xpath=//input[@id='contactTel']    15000000056
+
+选择付款期限
+    select radio button    paymentType    1
+    input text    //input[@id='delayNum']    2
+
+添加卖家以及资源
+    input text    xpath=.//*[@id='table_resource']/tbody/tr[1]/td[2]/input    test买家032
+    click element    xpath=.//input[@class='d-text' and @readonly='readonly' and @name='nsortName']
+    set browser implicit wait    3
+    click element    xpath=.//*[@id='showLayer_nsortName']/div[1]/ul/li[2]/a
+    sleep    2
+    click element    xpath=.//*[@id='showLayer_nsortName']/div[3]/div[1]/div[2]/div[3]/span[2]/a
+    input text    xpath=.//*[@id='table_resource']/tbody/tr/td[4]/input    q235
+    input text    xpath=.//*[@id='table_resource']/tbody/tr/td[5]/input    10*20
+    input text    xpath=.//*[@id='table_resource']/tbody/tr/td[6]/input    鞍钢
+    sleep    1
+    Select From List By Value    province    11
+    sleep    1
+    Select From List By Value    city    78
+    input text    xpath=.//*[@id='table_resource']/tbody/tr/td[8]/input    文辉
+    input text    xpath=.//*[@id='table_resource']/tbody/tr/td[9]/input    2
+    input text    xpath=.//*[@id='table_resource']/tbody/tr/td[10]/input    10
+    Select From List By Value    weightConcept    磅计
+    input text    xpath=.//*[@id='table_resource']/tbody/tr/td[12]/input    2000
+    input text    xpath=.//*[@id='table_resource']/tbody/tr/td[13]/input    1500
+    Select From List By Value    isPayedByAcceptDraft    -1
+
+复制资源
+    click element    xpath=.//*[@id='table_resource']/tbody/tr/td[17]/div[1]/a[1]/i
+
+选择交提货信息
+    Select From List By Value    deliveryType    DISPATCH
+    Select From List By Value    feeTaker    seller
+    Select From List By Value    outboundTaker    seller
+    input text    .//*[@id='contractAddress']    123455
+
+提交订单
+    click button    xpath=.//*[@id='submit']
+
+lgout
+    click element    xpath=.//*[@id='navbar-container']/div[3]/ul/li/a
+    sleep    0.5
+    click element    xpath=.//*[@id='logout']
+
+关闭浏览器
+    close browser

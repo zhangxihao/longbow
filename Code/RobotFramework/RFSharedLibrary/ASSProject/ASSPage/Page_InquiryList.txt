@@ -1,0 +1,16 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Database.txt
+
+*** Keywords ***
+页面获取待分配状态的需求单总数
+    连接数据库    pymysql    database='ass',user='root',password='root',host='192.168.0.205',port=3306,charset='utf8'
+    ${count}    返回记录集行数    select * from busi_requirement where status='NEW'
+    断开数据库
+    [Return]    ${count}
+
+页面获取创建时间最早&待分配状态的需求单号
+    连接数据库    pymysql    database='ass',user='root',password='root',host='192.168.0.205',port=3306,charset='utf8'
+    @{codes}=    执行查询    select code from busi_requirement where status='NEW' order by created
+    ${earlyRequirementCode}=    Set Variable    @{codes[0]}
+    断开数据库
+    [Return]    ${earlyRequirementCode}

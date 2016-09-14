@@ -1,0 +1,113 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${url}    ${browser}
+    open browser    ${url}    ${browser}
+
+浏览器最大化
+    Maximize Browser Window
+
+输入用户名
+    [Arguments]    ${user}
+    input text    id=username    ${user}
+
+输入密码
+    [Arguments]    ${pwd}
+    input password    id=password    ${pwd}
+
+点击登录按钮
+    click button    xpath=/html/body/div/div[2]/div[3]/form/table/tbody/tr[4]/td/button
+
+等待时间
+    set browser implicit wait    3
+
+点击交易管理
+    [Arguments]    ${locator}
+    Click Element    ${locator}
+
+点击交易单管理
+    [Arguments]    ${url}
+    go to    ${url}
+
+点击第一条记录
+    [Arguments]    ${element}
+    Wait Until Element Is Visible    ${element}
+    Click Link    ${element}
+
+选择提货方式
+    [Arguments]    ${item}    ${value}
+    Select From List    ${item}    ${value}
+
+输入车船号
+    [Arguments]    ${locator}    ${text}
+    input text    ${locator}    ${text}
+
+输入司机姓名
+    [Arguments]    ${locator}    ${text}
+    input text    ${locator}    ${text}
+
+输入联系方式
+    [Arguments]    ${locator}    ${text}
+    input text    ${locator}    ${text}
+
+点击选择文件
+    [Arguments]    ${locator}
+    Click Element    ${locator}
+
+激活窗口
+    [Arguments]    ${strTitle}
+    Win Activate    ${strTitle}
+
+上传图片
+    [Arguments]    ${strControl}    ${strControlText}
+    Control Set Text    \    \    ${strControl}    ${strControlText}
+
+点击确认
+    [Arguments]    ${strText}    ${strButton}
+    Control Click    \    ${strText}    ${strButton}
+
+确认提交
+    [Arguments]    ${locator}
+    Comment    sleep    3s
+    click button    ${locator}
+
+点击待放货tab
+    [Arguments]    ${locator}
+    click link    ${locator}
+
+点击打印放货单
+    [Arguments]    ${url}
+    go to    ${url}
+    sleep    2s
+
+点击打印
+    [Arguments]    ${locator}
+    click button    ${locator}
+
+激活对话框
+    [Arguments]    ${strTitle}
+    win active    ${strTitle}
+    sleep    2s
+
+点击取消
+    [Arguments]    ${strTitle}    ${strText}    ${strButton}
+    Control Click    ${strTitle}    ${strText}    ${strButton}
+
+关闭对话框
+    [Arguments]    ${strTitle}
+    win close    ${strTitle}
+
+点击返回
+    [Arguments]    ${locator}
+    click button    ${locator}
+
+log out
+    click element    xpath=.//*[@id='navbar-container']/div[3]/ul/li/a
+    sleep    0.5
+    click element    xpath=.//*[@id='logout']
+
+关闭浏览器
+    close browser

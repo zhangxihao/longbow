@@ -1,0 +1,34 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/Database.txt
+
+*** Keywords ***
+页面理由Tab_点击新增
+    单击链接    xpath=.//*[@class='btn btn-sm btn-primary addCloseReason']
+
+页面理由Tab_新增
+    [Arguments]    ${content}    ${sort}    ${value}=1    ${remark}=${EMPTY}
+    [Documentation]    \#
+    ...
+    ...    content：理由
+    ...
+    ...    sort：显示顺序
+    ...
+    ...    value：0代表停用、1代表启用
+    ...
+    ...    remark：备注
+    输入文本    content    ${content}    #理由框
+    输入文本    remark    ${remark}    #备注框
+    单选框    use    ${value}    #启用、停用单选按钮
+    输入文本    sort    ${sort}    #显示顺序框
+    单击按钮    xpath=.//*[@id='dialogContBox']/div/div[8]/button[2]    #确定
+
+页面询价规则Tab
+    单击链接    xpath=.//*[@class='ot text-center inline-block']/li[3]/a    #询价规则链接
+
+页面询价规则Tab_配置询价参数
+    [Arguments]    ${value}=0
+    [Documentation]    \#
+    ...    value=0:询价单提交后返回分检工作台页面
+    ...    value=1：询价单提交后跳转至智能找货报价页面
+    下拉选择    inquirySwitch    ${value}

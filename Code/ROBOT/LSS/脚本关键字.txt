@@ -1,0 +1,24 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${url}    ${browser}
+    open browser    ${url}    ${browser}
+
+浏览器最大化
+    Maximize Browser Window
+
+输入用户名
+    [Arguments]    ${user}
+    input text    id=username    ${user}
+
+输入密码
+    [Arguments]    ${pwd}
+    input password    id=password    ${pwd}
+
+点击登录按钮
+    click button    xpath=/html/body/div/div[2]/div[3]/form/table/tbody/tr[4]/td/button
+
+等待时间
+    set browser implicit wait    3

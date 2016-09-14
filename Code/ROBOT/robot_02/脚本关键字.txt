@@ -1,0 +1,25 @@
+*** Settings ***
+Library           Selenium2Library
+Library           DatabaseLibrary
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${url}
+    open browser    ${url}
+
+输入关键词
+    [Arguments]    ${words}
+    Maximize Browser Window
+    input text    id=s_keywords    ${words}
+
+点击搜索
+    click link    id=do_search_s
+
+获取title
+    [Arguments]    ${result}
+    ${title}    Get Title
+    Should Contain    ${title}    ${result}
+
+关闭浏览器
+    sleep    20
+    close browser

@@ -1,0 +1,11 @@
+*** Settings ***
+Resource          Page.txt
+Resource          Assert.txt
+Resource          Flow.txt
+
+*** Keywords ***
+登录测试
+    [Arguments]    ${username}    ${password}    ${expected}
+    登录流程    ${username}    ${password}
+    Comment    登录检查    ${expected}
+    关闭浏览器

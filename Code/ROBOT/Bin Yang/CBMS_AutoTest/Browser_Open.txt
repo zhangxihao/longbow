@@ -1,0 +1,20 @@
+*** Variables ***
+@{login}          ${Url}    ${Search}    ${Title}    ${TextBox_ID}    ${Button_ID}
+
+*** Keywords ***
+Browser Open
+    [Arguments]    ${Url}    ${Search}    ${Title}    ${TextBox_ID}    ${Button_ID}=default value    @{login}
+    open browser    ${Url}
+    maximize browser window
+    input text    id=${TextBox_ID}    ${Search}
+    sleep    2
+    log    ${Title}
+    click element    id=${Button_ID}
+    sleep    3
+    ${Title}    get title
+    log    ${Title}
+    close browser
+
+Login
+    @{login}    set variable    http://www.baidu.com    Excel VBA    Title    kw    su
+    Browser open    @{login}

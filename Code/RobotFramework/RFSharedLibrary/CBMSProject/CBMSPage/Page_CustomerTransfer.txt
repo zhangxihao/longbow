@@ -1,0 +1,41 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/CBMSGloble.txt
+
+*** Keywords ***
+页面客户划转-客户名称
+    [Arguments]    ${accountName}
+    输入文本    xpath=//*[@id="accountName"]    ${accountName}
+
+页面客户划转-服务中心
+    [Arguments]    ${centerName}
+    下拉选择    xpath=//*[@id="org"]    ${centerName}
+
+页面客户划转-搜索按钮
+    单击按钮    xpath=//*[@id="queryBtn"]
+
+页面客户划转-划转服务中心按钮
+    [Arguments]    ${centerName}
+    单击按钮    xpath=//*[@id="transferTable"]/tbody/tr[1]/td[7]/button
+    下拉选择    xpath=//*[@id="transferOrg"]    ${centerName}
+    单击按钮    xpath=//*[@id="confirmBtn"]
+    单击浮层OK
+
+页面客户划转-客户划转历史按钮
+    [Arguments]    ${URL}
+    单击按钮    xpath=//*[@id="transferBtn"]
+    跳转到地址    ${URL}
+
+页面客户划转历史-客户名称
+    [Arguments]    ${accountName}
+    输入文本    xpath=//*[@id="accountName"]    ${accountName}
+
+页面客户划转历史-服务中心
+    [Arguments]    ${centerName}
+    下拉选择    xpath=//*[@id="org"]    ${centerName}
+
+页面客户划转历史-搜索按钮
+    单击按钮    xpath=//*[@id="queryBtn"]
+
+页面客户划转历史-返回按钮
+    单击元素    xpath=//*[@id="main-container"]/div[2]/div/div[2]/div[2]/a

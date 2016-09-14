@@ -1,0 +1,45 @@
+*** Settings ***
+Resource          ../CBMSPage/Page_CustomerTransfer.txt
+Resource          ../CBMSPage/Page.txt
+
+*** Keywords ***
+流程客户划转-登录
+    [Arguments]    ${URL}    ${UserName}    ${PassWord}    ${Browser}=chrome    ${Alias}=${None}
+    打开浏览器并最大化    ${URL}    ${Browser}    ${Alias}
+    页面登录    ${UserName}    ${PassWord}
+
+流程客户划转-进入客户划转
+    [Arguments]    ${URL}
+    跳转到地址    ${URL}
+
+流程客户划转-搜索
+    [Arguments]    ${accountName}    ${centerName}
+    页面客户划转-客户名称    ${accountName}
+    页面客户划转-服务中心    ${centerName}
+    页面客户划转-搜索按钮
+
+流程客户划转-服务中心划转
+    [Arguments]    ${centerName}
+    页面客户划转-划转服务中心按钮    ${centerName}
+
+流程客户划转-划转历史查看
+    [Arguments]    ${URL}
+    页面客户划转-客户划转历史按钮    ${URL}
+
+流程客户划转历史-登录
+    [Arguments]    ${URL}    ${UserName}    ${PassWord}    ${Browser}=chrome    ${Alias}=${None}
+    打开浏览器并最大化    ${URL}    ${Browser}    ${Alias}
+    页面登录    ${UserName}    ${PassWord}
+
+流程客户划转历史-进入客户划转历史
+    [Arguments]    ${URL}
+    跳转到地址    ${URL}
+
+流程客户划转历史-搜索
+    [Arguments]    ${accountName}    ${centerName}
+    页面客户划转历史-客户名称    ${accountName}
+    页面客户划转历史-服务中心    ${centerName}
+    页面客户划转历史-搜索按钮
+
+流程客户划转历史-返回
+    页面客户划转历史-返回按钮

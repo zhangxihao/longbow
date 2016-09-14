@@ -1,0 +1,8 @@
+*** Settings ***
+Resource          Page.txt
+
+*** Keywords ***
+登录流程
+    [Arguments]    ${username}    ${password}
+    打开浏览器    file:///D:/RobotFramework/Study/index.html     chrome
+    登录页面    ${username}    ${password}

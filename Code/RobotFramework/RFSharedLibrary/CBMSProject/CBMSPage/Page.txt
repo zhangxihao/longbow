@@ -1,0 +1,240 @@
+*** Settings ***
+Documentation     * 约定：
+...
+...               命名规则：页面“模块”-“子模块”-“...”
+...
+...               例如1：页面登录
+...
+...               例如2：页面新开交易单-录入买家
+...
+...               例如3：页面交易单管理-待审核Tab
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource.txt
+
+*** Keywords ***
+页面登录
+    [Arguments]    ${UserName}    ${PassWord}    # 用户名；密码
+    [Documentation]    * 登录页面：
+    ...
+    ...    UserName：用户名
+    ...
+    ...    PassWord：密码
+    输入文本    xpath=//*[@id="username"]    ${UserName}
+    输入文本    xpath=//*[@id="password"]    ${PassWord}
+    Comment    #通过故意修改为错误的选择器可以发现每过5秒“等待关键字运行成功”的效果，是2分钟内每次过5秒触发一次事件，可以缓解对象识别时的元素渲染问题
+    Comment    输入文本    xpath=//*[@id="username1"]    ${UserName}
+    单击按钮    xpath=//*[@id="fm1"]/button[1]    #索引从1开始
+
+页面搜索
+    [Arguments]    ${Code}    ${AccountName}    ${SellerName}    ${Select_pay_style}    ${StartTime}    ${EndTime}
+    [Documentation]    根据所传入的可选参数执行相应的动作：
+    ...
+    ...    code=交易单号
+    ...
+    ...    accountName=买家全称
+    ...
+    ...    sellerName=卖家全称
+    ...
+    ...
+    ...    selectValue=支付类型
+    ...
+    ...    startTime=开始日期
+    ...
+    ...    endTime=结束日期
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+    输入文本    xpath=//*[@id="code"]    ${Code}    #交易单号
+    输入文本    xpath=//*[@id="accountName"]    ${AccountName}    #买家全称
+    输入文本    xpath=//*[@id="sellerName"]    ${SellerName}    #卖家全称
+    Comment    输入文本    xpath=//*[@id="ownerId"]    ${OwnerId}    #交易员
+    Comment    下拉选择
+    下拉选择    xpath=//*[@id="select_pay_style"]    ${Select_pay_style}
+    输入文本    xpath=//*[@id="startTime"]    ${StartTime}    #开始时间
+    输入文本    xpath=//*[@id="endTime"]    ${EndTime}    #结束时间
+    单击按钮    xpath=//*[@id="queryBtn"]    #搜索按钮
+    Comment    等待页面不包含指定文本    Bitte warten...
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+
+页面新开交易单-获取订单号
+    ${Text}    获取元素文本    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]
+    [Return]    ${Text}
+
+页面新开交易单-录入买家信息
+    [Arguments]    ${BuyerName}    ${BuyerDepartment}    ${BuyerContact}    ${BuyerContactTel}    # @{OwnerId}
+    输入文本    xpath=//*[@id="buyer"]    ${BuyerName}    #买家全称
+    下拉选择    xpath=//*[@id="department"]    ${BuyerDepartment}
+    输入文本    xpath=//*[@id="contact"]    ${BuyerContact}    #买家联系人
+    输入文本    xpath=//*[@id="contactTel"]    ${BuyerContactTel}    #买家联系人电话
+    Comment    下拉选择    xpath=//*[@id="user"]    @{OwnerId}
+
+页面新开交易单-录入资源信息
+    [Arguments]    ${SellerName}    ${SellerDepartment}    ${SellerContact}    ${NsortName}    ${Material}    ${Spec}
+    ...    ${Factory}    ${Province}    ${City}    ${Warehouse}    ${Quantity}    ${Weight}
+    ...    ${WeightConcept}    ${DealPrice}    ${CostPrice}    ${IsPayedByAcceptDraft}
+    [Documentation]    * 录入开单所需的资源信息
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="sellerName"]    ${SellerName}    #卖家全称。根据id下的第一行中的name属性定位input。找到第一行tr[1]后在用//相对查找里面的input
+    下拉选择    xpath=//*[@id="table_resource"]/tbody/tr[last()]//select[@name="department"]    ${SellerDepartment}
+    Comment    下拉选择    xpath=//*[@id="table_resource"]/tbody/tr[last()]//select[@name="department"]/option[text()="${SellerDepartment}"]    ${SellerDepartment}
+    下拉选择    xpath=//*[@id="table_resource"]/tbody/tr[last()]//select[@name="contact"]    ${SellerContact }
+    Comment    通过JS将品名不可输入输入框变为可输入框
+    执行同步JavaScript    document.getElementsByName('nsortName')[0].removeAttribute('readonly');
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="nsortName"]    ${NsortName}    #品名
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="material"]    ${Material}    #材质
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="spec"]    ${Spec}    #规格
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="factory"]    ${Factory}    #厂家
+    下拉选择    xpath=//*[@id="table_resource"]/tbody/tr[last()]//select[@name="province"]    ${Province}
+    下拉选择    xpath=//*[@id="table_resource"]/tbody/tr[last()]//select[@name="city"]    ${City}
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="warehouse"]    ${Warehouse}    #仓库
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="quantity"]    ${Quantity}    #数量
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="weight"]    ${Weight}    #重量
+    下拉选择    xpath=//*[@id="table_resource"]/tbody/tr[last()]//select[@name="weightConcept"]    ${WeightConcept}
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="dealPrice"]    ${DealPrice}    #销售价
+    输入文本    xpath=//*[@id="table_resource"]/tbody/tr[last()]//input[@name="costPrice"]    ${CostPrice}    #采购价
+    下拉选择    xpath=//*[@id="table_resource"]/tbody/tr[last()]//select[@name="isPayedByAcceptDraft"]    ${IsPayedByAcceptDraft}
+
+页面新开交易单-录入交提货信息
+    [Arguments]    ${DeliveryType}    ${EndTime}    ${FeeTaker}    ${OutboundTaker}    ${ContractAddress}
+    下拉选择    xpath=//*[@id="deliveryType"]    ${DeliveryType}
+    Comment    交货时间
+    执行同步JavaScript    document.getElementById('endTime').value="${EndTime}";
+    下拉选择    xpath=//*[@id="feeTaker"]    ${FeeTaker}
+    Comment    输入文本    xpath=//*[@id="shipFee"]    ${ShipFee}    #运费金额
+    下拉选择    xpath=//*[@id="outboundTaker"]    ${OutboundTaker}
+    Comment    输入文本    xpath=//*[@id="outboundFee"]    ${OutboundFee}    #出库费金额
+    输入文本    xpath=//*[@id="contractAddress"]    ${ContractAddress}    #合同签订地
+
+页面交易单管理-待审核Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待审核Tab-订单号
+
+页面交易单管理-待审核Tab-审核通过
+    [Arguments]    ${OrderNote}    # 订单备注信息
+    [Documentation]    OrderNote：订单备注
+    输入文本    xpath=//*[@id="order_note"]    ${OrderNote}    #备注信息
+    单击按钮    xpath=//*[@id="order_audit_accept"]    #通过
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+
+页面交易单管理-待审核Tab-审核不通过
+    [Arguments]    ${OrderNote}    ${text}
+    [Documentation]    * 这里故意将备注选为必填，为后面做校验使用
+    输入文本    xpath=//*[@id="order_note"]    ${OrderNote}    #备注信息
+    单击按钮    xpath=//*[@id="order_audit_refuse"]    #不通过
+    输入文本    xpath=//*[@id="refuseNote"]    ${text}    #不通过的理由
+    单击按钮    xpath=//*[@id="order_audit_refuse_confirm"]    #单击确定
+    等待元素为不可见    xpath=//*[@id="order_audit_refuse_confirm"]
+
+页面交易单管理-待关联Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待关联Tab-关联
+    单击按钮    xpath=//*[@id="order_relate"]    #关联
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+
+页面交易单管理-待关联Tab-申请关闭
+    [Arguments]    ${text}
+    [Documentation]    text:申请关闭的理由
+    单击按钮    xpath=//*[@id="order_close"]    #申请关闭
+    输入文本    xpath=//*[@id="order_shut_editForm"]//textarea[@name="cause"]    ${text}
+    单击按钮    xpath=//*[@id="order_shut"]    #确定
+
+页面交易单管理-待申请付款Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待申请付款Tab-申请付款
+    [Arguments]    ${PictureFileName}    ${ContractNo}
+    单击链接    xpath=//*[@id="payment_table"]/tbody//a[text()="上传合同"]    #点击上传合同
+    选择文件    xpath=//*[@id="uploadselect"]    ${PictureFileName}    #选择图片
+    输入文本    xpath=//*[@id="contract_no"]    ${ContractNo}    #合同编号
+    Comment    点击确定之前先判断标签中是否有内容，如果没有证明图片还没加载完毕
+    单击按钮    xpath=//*[@id="btnsubmit"]
+    ${IsVisiableImg}    Get Text    xpath=//*[@id="uploadmsg"]    #请上传合同文件！
+    Log    ${IsVisiableImg}
+    Run Keyword If    '${IsVisiableImg}'!='请上传合同文件！'    等待关键字运行成功    ${Timeout.retry}    ${Timeout.retryInterval}    单击按钮    xpath=//*[@id="btnsubmit"]
+    等待元素为不可见    xpath=//*[@id="btnsubmit"]
+    单击按钮    xpath=//*[@id="order_applypay"]    #申请付款
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+
+页面交易单管理-待申请付款Tab-申请关闭
+    [Arguments]    ${text}
+    [Documentation]    text:申请关闭的理由
+    单击按钮    xpath=//*[@id="order_close"]    #申请关闭
+    输入文本    xpath=//*[@id="order_shut_editForm"]//textarea[@name="cause"]    ${text}
+    单击按钮    xpath=//*[@id="order_shut"]    #确定
+
+页面交易单管理-待审核付款Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待审核付款Tab-通过
+    单击按钮    xpath=//*[@id="order_payaudit_accept"]    #通过
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+
+页面交易单管理-待审核付款Tab-不通过
+    [Arguments]    ${text}
+    [Documentation]    text:不通过的理由
+    单击按钮    xpath=//*[@id="order_payaudit_refuse"]    #不通过
+    输入文本    xpath=//*[@id="refuseNote"]    ${text}
+    单击按钮    xpath=//*[@id="order_payaudit_refuse_confirm"]    #确定
+
+页面交易单管理-交易关闭Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待打印付款申请Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待打印付款申请Tab-打印付款申请单
+    单击按钮    xpath=//*[@id="printpendingpayapplystrike"]
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+    单击按钮    xpath=//*[@id="prints"]    #跳转到付款结算申请单点击打印
+    Comment    打印机操作
+    Comment    单击按钮    xpath=//*[@id="print-header"]//button[@class="cancel"]    #取消
+    Comment    执行同步JavaScript    setTimeout(function(){document.getElementsByTagName("button")[1].click();}, 5000);
+    点击打印机窗口取消按钮
+    等待元素为可见    xpath=//*[@id="prints"]
+    刷新
+    等待元素为可见    xpath=//*[@id="prints"]
+
+页面交易单管理-待确认已付款Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待确认已付款Tab-确认已付款
+    单击按钮    xpath=//*[@id="order_pay_confirm"]    #确认已付款(浦发)
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+
+页面交易单管理-待提货Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[last()]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待提货Tab-确认提交
+    [Arguments]    ${Text}    ${FilePath}    # 车船号
+    [Documentation]    Text：车船号。
+    ...
+    ...    例如：浙A12345
+    选择文件    xpath=//*[@id="pic"]    ${FilePath}
+    输入文本    xpath=//*[@id="pickupForm"]//input[@name="validCode"]    ${Text}    #车船号
+    Comment    点击确定之前先判断标签中是否有内容，如果没有证明图片还没加载完毕
+    ${IsVisiableImg}    Get Text    xpath=//*[@id="img_pics"]//a
+    Log    ${IsVisiableImg}
+    运行关键字并判断    '${IsVisiableImg}'!=' '    单击按钮    xpath=//*[@id="submit"]
+
+页面交易单管理-待放货Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[last()]/a[2]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待放货Tab-打印放货单
+    单击按钮    xpath=//*[@id="prints"]    #打印
+    Comment    点击打印机窗口取消按钮
+    点击打印机窗口取消按钮
+    单击按钮    xpath=//*[@id="back"]    #返回
+
+页面交易单管理-待二次结算Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[last()]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示
+
+页面交易单管理-待二次结算Tab-录入实提量
+    [Arguments]    ${Number}    ${Weight}
+    单击按钮    xpath=//*[@id="main-container"]//button[@class="button btn-xs btn-link edit"]
+    输入文本    xpath=//*[@id="editTable"]//input[@verify="number"]    ${Number}    #实提总数量
+    输入文本    xpath=//*[@id="editTable"]//input[@verify="weight"]    ${Weight}    #实提总重量
+    单击按钮    xpath=//*[@id="commit"]
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary"]    #单击浮层OK
+
+页面交易单管理-已二结Tab
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[1]/a[1]    #使用下标1而不是用last()防止最后的审核按钮因分辨率造成无法显示

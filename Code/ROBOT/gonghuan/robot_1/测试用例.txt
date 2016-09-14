@@ -1,0 +1,8 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          业务流程.txt
+
+*** Test Cases ***
+case
+    业务逻辑    http://www.baidu.com    杀生丸
+    业务逻辑    http://www.baidu.com    犬夜叉

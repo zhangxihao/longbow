@@ -1,0 +1,19 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../ASSPage/Page_SummaryAnalysis.txt
+
+*** Keywords ***
+流程今日实时数据_获取总需求量
+    跳转到地址    ${ASSURL.SummaryAnalysis}
+    ${requirementCount}    页面今日实时数据_获取总需求量
+    [Return]    ${requirementCount}
+
+流程今日实时数据_获取处理单数
+    跳转到地址    ${ASSURL.SummaryAnalysis}
+    ${countProcess}    页面今日实时数据_获取处理单数
+    [Return]    ${countProcess}
+
+流程今日实时数据_获取处理成功数
+    跳转到地址    ${ASSURL.SummaryAnalysis}
+    ${countInquiry}    页面今日实时数据_获取处理成功数
+    [Return]    ${countInquiry}

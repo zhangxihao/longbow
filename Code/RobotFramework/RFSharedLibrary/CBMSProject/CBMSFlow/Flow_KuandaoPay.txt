@@ -1,0 +1,169 @@
+*** Settings ***
+Documentation     - 这里所有没有以流程打头的都是其他模块的流程，暂时是随便写的，没有写具体规范
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../CBMSPage/Page_KuandaoPay.txt
+Resource          FlowInit.txt
+Resource          ../ProjectResource.txt
+
+*** Keywords ***
+流程临时-勾选卖家
+    [Arguments]    ${ServiceCenter}
+    多选框勾选    xpath=//*[@id="step_one_div"]//input[@type="checkbox" and @value="2"]
+    下拉选择    xpath=//*[@id="org"]    ${ServiceCenter}
+
+临时-勾选买卖家
+    [Arguments]    ${ServiceCenter}
+    多选框勾选    xpath=//*[@id="step_one_div"]//input[@type="checkbox" and @value="1"]
+    流程临时-勾选卖家    ${ServiceCenter}
+
+流程临时-锁定客户
+    [Documentation]    创建一个客户，并锁定
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.CompanyList}    #我的客户
+    输入文本    xpath=//*[@id="accountName"]    ${AccountName}
+    单击按钮    xpath=//*[@id="searchBtn"]    #搜索
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[last()]/a[1]    #锁定
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+    关闭当前浏览器
+
+流程临时-审核代运营协议
+    [Arguments]    ${AccountName}
+    [Documentation]    临时使用的测试流程
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL.Index}
+    单击链接    xpath=//*[@id="breadcrumbs"]//a[text()="审核代运营协议"]    #审核代运营协议
+    输入文本    xpath=//*[@id="companyName"]    ${AccountName}
+    单击按钮    xpath=//*[@id="searchBtn"]
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[2]/a
+    单击按钮    xpath=//*[@id="btnPass"]
+    单击浮层确定
+    关闭当前浏览器
+
+流程临时-修改客户信息
+    [Arguments]    ${ChangeAccountName}    ${orgCode}=${None}
+    [Documentation]    ChangeAccountName:需要修改的公司名称，建议对${MyAccountName}_${Type}_${AccountName}做追加
+    ...
+    ...    orgCode：组织机构代码
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL.CompanyList}    #我的客户
+    输入文本    xpath=//*[@id="accountName"]    ${AccountName}
+    单击按钮    xpath=//*[@id="searchBtn"]
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]/td[2]/span/a[1]
+    单击链接    xpath=//*[@id="main-container"]//a[@class="left13"]    #编辑
+    Comment    ${ReturnValueAccountName}    输入文本    xpath=//*[@id="acountName"]    ${ChangeAccountName}    #修改后的公司名称
+    输入文本    xpath=//*[@id="acountName"]    ${ChangeAccountName}    #修改后的公司名称
+    单击按钮    xpath=//*[@id="saveInfoBtn"]
+    Run keyword If    '${orgCode}' != '${None}'    流程临时-修改组织机构代码    ${orgCode}
+    关闭当前浏览器
+
+流程临时-修改组织机构代码
+    [Arguments]    ${orgCode}
+    单击按钮    xpath=//*[@id="editInfoBtn"]
+    输入文本    xpath=//*[@id="orgCode"]    ${orgCode}
+    单击按钮    xpath=//*[@id="saveInfoBtn"]
+
+流程款道-未开户-搜索
+    [Arguments]    ${MemeberName}=${EMPTY}    ${CustType}=${EMPTY}    ${Status}=${EMPTY}
+    [Documentation]    MemeberName：客户名称
+    ...
+    ...    CustType： 会员类型
+    ...
+    ...    Status：状态
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+    页面款道-未开户-客户名称    ${MemeberName}
+    页面款道-未开户-会员类型    ${CustType}
+    页面款道-未开户-状态    ${Status}
+    页面款道-未开户-搜索按钮
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+
+流程款道-已开户-搜索
+    [Arguments]    ${MemeberName}=${EMPTY}    ${MemeberCode}=${EMPTY}    ${virAcctNo}=${EMPTY}    ${Status}=${EMPTY}
+    [Documentation]    MemeberName：客户名称
+    ...
+    ...    CustType： 会员类型
+    ...
+    ...    Status：状态
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+    页面款道-已开户-客户名称    ${MemeberName}
+    页面款道-已开户-浦发会员号    ${MemeberCode}
+    页面款道-已开户-浦发虚拟账号    ${virAcctNo}
+    页面款道-已开户-状态    ${Status}
+    页面款道-已开户-搜索按钮
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+    运行关键字并判断    '${MemeberName}' != '${EMPTY}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[1]
+    运行关键字并判断    '${MemeberCode}' != '${EMPTY}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[2]
+    运行关键字并判断    '${virAcctNo}' != '${EMPTY}'    等待元素为可见    xpath=//*[@id="dynamic-table"]/tbody[1]/tr[1]//td[3]
+
+流程款道-未开户-开户
+    流程创建客户    Test营业执照注册号Test    Test企业注册地址Test    Test组织机构代码Test    买家
+    流程登录    ${URL.Login}    cbadmin    123456
+    跳转到地址    ${URL_Pay.UnOpenAccount}    #未开户
+    流程款道-未开户-搜索    ${AccountName}
+    流程款道-开户
+    跳转到地址    ${URL_Pay.OpenAccount}    #已开户
+
+流程款道-开户
+    页面款道-未开户-开户
+    单击浮层确定
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '客户开户成功'    单击浮层OK
+    ...    ELSE IF    '${Temp}' == '开户失败，请查看同步日志'    测试失败    开户失败，请查看日志
+    ...    ELSE    测试失败    开户失败，请查看日志
+
+流程款道-删除
+    页面款道-已开户-删除
+    单击浮层确定
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '操作超时，请刷新后再试'    Run Keywords    单击浮层OK
+    ...    AND    页面款道-已开户-删除
+    ...    ELSE IF    '${Temp}' == '删除客户成功'    单击浮层OK
+    ...    ELSE    测试失败    无法删除
+
+流程款道-未开户-批量开户
+    页面款道-未开户-批量开户
+    单击浮层确定
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '选中客户开户完成'    单击浮层OK
+    ...    ELSE IF    '${Temp}' == '操作超时，请刷新后再试'    Run Keywords    单击浮层OK
+    ...    AND    流程款道-未开户-批量开户
+    ...    ELSE    测试失败    无法删除
+
+流程款道-已开户-同步
+    页面款道-已开户-同步
+    单击浮层确定
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '客户信息同步成功'    单击浮层OK
+    ...    ELSE IF    '${Temp}' == '操作超时，请刷新后再试'    Run Keywords    单击浮层OK
+    ...    AND    流程款道-未开户-批量开户
+    ...    ELSE    测试失败    未知错误：无法同步
+
+流程款道-已开户-同步所有
+    页面款道-已开户-同步所有
+    单击浮层确定
+    ${Temp}    获取浮层文本
+    Run Keyword If    '${Temp}' == '客户信息同步完成，详情请看同步日志'    单击浮层OK
+    ...    ELSE IF    '${Temp}' == '操作超时，请刷新后再试'    Run Keywords    单击浮层OK
+    ...    AND    流程款道-未开户-批量开户
+    ...    ELSE    测试失败    未知错误：无法同步
+
+流程款道-同步日志-搜索
+    [Arguments]    ${MemeberName}=${EMPTY}    ${Status}=${EMPTY}
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+    页面款道-已开户-客户名称    ${MemeberName}
+    页面款道-同步日志-状态    ${Status}
+    页面款道-已开户-搜索按钮
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+
+流程款道-支付单管理-搜索
+    [Arguments]    ${consignOrderCode}=${EMPTY}    ${payMerName}=${EMPTY}    ${payeeMerName}=${EMPTY}    ${ownerId}=${EMPTY}    ${dateCreated}=${EMPTY}    ${dateEnd}=${EMPTY}
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]
+    页面款道-支付单管理-交易单号    ${consignOrderCode}
+    页面款道-支付单管理-付款方名称    ${payMerName}
+    页面款道-支付单管理-收款方名称    ${payeeMerName}
+    页面款道-支付单管理-交易员    ${ownerId}
+    页面款道-支付单管理-开始日期    ${dateCreated}
+    页面款道-支付单管理-结束日期    ${dateEnd}
+    页面款道-支付单管理-搜索
+    等待元素为不可见    xpath=//*[@id="dynamic-table_processing"]

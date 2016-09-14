@@ -1,0 +1,42 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../EC2.0Flow/Flow_Back.txt
+Resource          ../ProjectResource_2.0.txt
+Resource          ../EC2.0Flow/FlowNormal_EC2.0.txt
+
+*** Test Cases ***
+会员中心-提交空需求
+    [Setup]    Run Keywords    流程登录正常
+    流程会员中心-提交空需求    xpath=//*[@id="gtxh_uame"]/a[text()="15200000000"]    url=${URL.Member}
+    页面会员中心-点击钢为帮我找
+    ${Temp}    获取元素文本    xpath=//div[@class="find-content"]//div[@class="markbtn"]//span[text()="需求提交太频繁"]
+    Run Keyword If    '${Temp}' != '需求提交太频繁'    测试失败
+    关闭当前浏览器
+
+会员中心-提交文字需求
+    [Setup]    Run Keywords    流程登录正常
+    流程会员中心-提交文字需求    xpath=//*[@id="gtxh_uame"]/a[text()="15200000000"]    url=${URL.Member}    要求要求
+    关闭当前浏览器
+
+会员中心-提交文件需求
+    [Setup]    Run Keywords    流程登录正常
+    流程会员中心-提交文件需求    xpath=//*[@id="gtxh_uame"]/a[text()="15200000000"]    url=${URL.Member}    ${testFiles.NormalPic}
+    关闭当前浏览器
+
+会员中心-提交不符要求文件
+    [Setup]    Run Keywords    流程登录正常
+    页面会员中心-点击手机号    xpath=//*[@id="gtxh_uame"]/a[text()="15200000000"]
+    选择窗口    url=${URL.Member}
+    页面会员中心-上传文件中间（+）    ${testFiles.OverLarge}
+    ${Temp}    获取元素文本    xpath=//div[@class="find-content"]//div[@class="markbtn"]//span[text()="文件超过2M"]
+    Run Keyword If    '${Temp}' != '文件超过2M'    测试失败
+    页面会员中心-上传文件中间（+）    ${testFiles.AbnormalFormat}
+    ${Temp}    获取元素文本    xpath=//div[@class="find-content"]//div[@class="markbtn"]//span[text()="文件格式有误"]
+    Run Keyword If    '${Temp}' != '文件格式有误'    测试失败
+    页面会员中心-上传文件中间（+）    ${testFiles.IllegalFormat}
+    ${Temp}    获取元素文本    xpath=//div[@class="find-content"]//div[@class="markbtn"]//span[text()="非法上传文件"]
+    Run Keyword If    '${Temp}' != '非法上传文件'    测试失败
+    关闭当前浏览器

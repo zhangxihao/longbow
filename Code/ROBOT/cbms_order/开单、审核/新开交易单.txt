@@ -1,0 +1,64 @@
+*** Settings ***
+Resource          基础操作.txt
+
+*** Variables ***
+
+*** Keywords ***
+Login
+    [Arguments]    ${url}    ${id}    ${username}    ${pw_id}    ${pw}    ${goto}=default value
+    ...    @{login}
+    浏览器开启    ${url}
+    sleep    2
+    maximize browser window
+    输入文本    ${id}    ${username}
+    输入密码    ${pw_id}    ${pw}
+    sleep    2
+    点击登录
+    sleep    2
+    浏览器跳转    ${goto}
+
+新开单
+    [Arguments]    ${buyer_id}    ${buyer_name}    ${con_id}    ${con_name}    ${tel_id}    ${tel_num}
+    ...    ${seller_id}    ${seller_name}    ${xpath}    ${xpath1}    ${xpath2}    ${qua_id}
+    ...    ${qua}    ${spec_id}    ${spec}    ${fac_id}    ${factory}    ${prov_id}
+    ...    ${prov_index}    ${city_id}    ${city_index}    ${dep_id}    ${depot}    ${amou_id}
+    ...    ${amount}    ${weight_id}    ${weight}    ${wei_id}    ${wei}    ${buyp_id}
+    ...    ${buyprice}    ${sale_id}    ${saleprice}    ${button_id}
+    输入文本-Xpath    ${buyer_id}    ${buyer_name}    #输入买家名称
+    输入文本-Xpath    ${con_id}    ${con_name}    #输入联系人
+    输入文本-Xpath    ${tel_id}    ${tel_num}    #输入联系人电话
+    输入文本-Xpath    ${seller_id}    ${seller_name}    #输入卖家名称
+    选择品类-Xpath    ${xpath}    #选择品类
+    sleep    2
+    选择品类-Xpath    ${xpath1}    #选择品类
+    sleep    2
+    选择品类-Xpath    ${xpath2}    #选择品类
+    sleep    2    \    #选择品类
+    输入文本-Xpath    ${qua_id}    ${qua}    #输入材质
+    输入文本-Xpath    ${spec_id}    ${spec}    #输入规格
+    输入文本-Xpath    ${fac_id}    ${factory}    #输入厂家
+    sleep    2
+    下拉列表选择    ${prov_id}    ${prov_index}    #选择省份
+    sleep    2
+    下拉列表选择    ${city_id}    ${city_index}    #选择城市
+    sleep    2
+    输入文本-Xpath    ${dep_id}    ${depot}    #输入仓库
+    输入文本-Xpath    ${amou_id}    ${amount}    #输入数量
+    输入文本-Xpath    ${weight_id}    ${weight}    #输入重量
+    下拉列表选择    ${wei_id}    ${wei}    #选择计重方式
+    输入文本-Xpath    ${buyp_id}    ${buyprice}    #输入销售价格
+    输入文本-Xpath    ${sale_id}    ${saleprice}    #输入采购价格
+    点击按钮-ID    ${button_id}    #点击提交按钮
+    sleep    6
+    close browser
+
+审核新建订单
+    [Arguments]    ${buyer_id}    ${buyer_name}    ${search_button}    ${aduit_xpath}    ${aduit_button}    ${ok_button}
+    输入文本    ${buyer_id}    ${buyer_name}    #输入买家全称
+    sleep    2
+    点击按钮-ID    ${search_button}    #点击搜索按钮
+    点击按钮-Xpath    ${aduit_xpath}    #点击审核
+    sleep    3
+    点击按钮-ID    ${aduit_button}    #点击通过按钮
+    sleep    3
+    点击按钮-Xpath    ${ok_button}    #点击浮层确认按钮

@@ -1,0 +1,6 @@
+*** Variables ***
+&{ASSURL}         Login=http://ssotest.com:8080/cas/login?service=http://ass.prcsteel.test:8080/web/shiro-cas    WorkTable=http://ass.prcsteel.test:8080/web/desk/index.html    ReportBusiness=http://ass.prcsteel.test:8080/web/report/business/index.html    SummaryAnalysis=http://ass.prcsteel.test:8080/web/report/summary/analysis.html    SystemParam=http://ass.prcsteel.test:8080/web/systemParam/index.html    #登录，客服工作台，业务报表，汇总分析，系统设置
+&{ASSUser}        UsernameJiaoyiyuan=jiaoyiyuan    PasswordJiaoyiyuan=123456    UsernameAdmin=cbadmin    PasswordAdmin=123456    UsernameHangzhouowner=hangzhouowner    PasswordHangzhouowner=123456    # 登录的各个角色用户名和密码
+&{Browser}        AliasASS=ASS    AliasEC=EC
+&{User_EC}        UsernameLogin1=15200000000    PasswordLogin1=123456    UsernameLogin2=15800000000    PasswordLogin2=123456    UsernameLogin3=18900000000    PasswordLogin3=123456
+&{URL_EC}         Home=http://market.prcsteel.test:8081/web/    Login=http://market.prcsteel.test:8081/web/user/login    #主页，登录

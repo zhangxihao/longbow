@@ -1,0 +1,6 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Test Cases ***
+Test01
+    OpenBrowser    https://www.baidu.com/

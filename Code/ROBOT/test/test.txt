@@ -1,0 +1,12 @@
+*** Settings ***
+Library           MyLibrary
+Library           Selenium2Library
+Library           String
+
+*** Test Cases ***
+test
+    ${sum}    my_r_csv    d:\\test.csv    a    11    b    c
+    ...    d
+    comment    ${11}=    Decode Bytes To String    ${sum[2]}    UTF-8
+    ${11}=    evaluate    decode(${sum[2]},"gbk")
+    log    ${11}

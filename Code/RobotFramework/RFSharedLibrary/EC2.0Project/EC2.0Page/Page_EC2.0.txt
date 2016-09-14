@@ -1,0 +1,108 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource_2.0.txt
+Resource          ../../SharedLibrary/Action/Database.txt
+
+*** Keywords ***
+页面注册-注册手机号
+    [Arguments]    ${userPhonetellogin}
+    comment    #注册手机号
+    输入文本    xpath=//*[@id="userPhonetellogin"]    ${userPhonetellogin}
+    模拟发送按键    {TAB}
+
+页面注册-获取验证码
+    [Arguments]    ${locator}
+    单击元素    ${locator}
+
+页面注册-连接数据库
+    连接数据库    pymysql    database='ec2.0',user='root',password='root',host='192.168.0.199',port=3306,charset='utf8'
+    ${queryResults}=    执行查询    SELECT * FROM base_sms_valid_code ORDER BY id DESC;
+    Comment    ${count}    返回记录集行数    SELECT max(id),valid_code FROM base_sms_valid_code WHERE mobile="13777700000";
+    Comment    log    ${count}
+    Set Global Variable    ${smsCodeNumber}    ${queryResults[0][4]}
+    Comment    ${smsCodeNumber}    Set Variable    ${queryResults[0][4]}
+    断开数据库
+    [Return]    ${smsCodeNumber}
+
+页面注册-输入验证码
+    [Arguments]    ${smsCodeNumber}
+    输入文本    xpath=//*[@id="smsCodeNumber"]    ${smsCodeNumber}
+
+页面注册-设置密码
+    [Arguments]    ${userPwd}
+    输入文本    xpath=//*[@id="userPwd"]    ${userPwd}
+
+页面注册-确认密码
+    [Arguments]    ${afterPwd}
+    输入文本    xpath=//*[@id="afterPwd"]    ${afterPwd}
+
+页面注册-立即注册
+    单击按钮    xpath=//*[@id="submit"]
+
+页面登录-密码登录-输入手机号
+    [Arguments]    ${userPhonetellogin1}
+    输入文本    xpath=//*[@id="userPhonetellogin1"]    ${userPhonetellogin1}
+
+页面登录-密码登录-输入密码
+    [Arguments]    ${userPwd}
+    输入文本    xpath=//*[@id="userPwd"]    ${userPwd}
+
+页面登录-密码登录-点击登录
+    单击按钮    xpath=//*[@id="dftSubmit"]
+
+页面登录-验证码登录-输入手机号
+    [Arguments]    ${userPhonetellogin}
+    输入文本    xpath=//*[@id="userPhonetellogin"]    ${userPhonetellogin}
+
+页面登录-验证码登录-获取验证码
+    [Arguments]    ${locator}
+    单击元素    ${locator}
+
+页面登录-连接数据库
+    连接数据库    pymysql    database='ec2.0',user='root',password='root',host='192.168.0.199',port=3306,charset='utf8'
+    ${queryResults}=    执行查询    SELECT * FROM base_sms_valid_code ORDER BY id DESC;
+    Set Global Variable    ${smsCodeNumber}    ${queryResults[0][4]}
+    断开数据库
+    [Return]    ${smsCodeNumber}
+
+页面登录-验证码登录-输入验证码
+    [Arguments]    ${smsCodeNumber}
+    输入文本    xpath=//*[@id="smsCodeNumber"]    ${smsCodeNumber}
+
+页面登录-验证码登录-点击登录
+    单击按钮    xpath=//*[@id="dftSubmit"]
+
+超市首页-点击我想通过电话聊
+    [Arguments]    ${locator}
+    单击元素    ${locator}
+
+超市首页-点击我想发送采购单
+    [Arguments]    ${locator}
+    双击元素    ${locator}
+
+超市首页-点击我想发送采购单-输入文本
+    [Arguments]    ${value}
+    输入文本    xpath=//*[@id="focastextarea"]    ${value}
+
+超市首页-点击我想发送采购单-上传文件（中间+）
+    [Arguments]    ${FilePath}
+    选择文件    xpath= //*[@id="banner03"]//div[@class="markbtn"]//*[@id="uploadFile1"]    ${FilePath}
+    Comment    点击提交之前先判断标签中是否有内容，如果没有证明图片还没加载完毕
+    Comment    ${IsVisiableImg}    Get Text    xpath=//*[@id="file_upload-queue1"]//div
+    Comment    Log    ${IsVisiableImg}
+    Comment    运行关键字并判断    '${IsVisiableImg}'!=' '    执行同步JavaScript    document.getElementsByClassName("input_btn")[0].click();
+
+超市首页-点击我想发送采购单-上传文件（左下+）
+    [Arguments]    ${FilePath}
+    选择文件    xpath= //*[@id="banner03"]//div[@class="upload_btn"]//*[@id="uploadFile2"]    ${FilePath}
+    Comment    点击提交之前先判断标签中是否有内容，如果没有证明图片还没加载完毕
+    Comment    ${IsVisiableImg}    Get Text    xpath=//*[@id="file_upload-queue1"]//div
+    Comment    Log    ${IsVisiableImg}
+    Comment    运行关键字并判断    '${IsVisiableImg}'!=' '    执行同步JavaScript    document.getElementsByClassName("input_btn")[0].click();
+
+超市首页-发送需求-点击提交
+    执行同步JavaScript    document.getElementsByClassName("input_btn")[0].click();
+
+超市首页-需求提交成功-点击我知道了
+    单击链接    xpath=//*[@id="dialogContBox"]//div[@class="succ-link"]//a[text()="我知道了"]

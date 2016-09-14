@@ -1,0 +1,176 @@
+*** Settings ***
+Library           Selenium2Library
+Library           String
+Resource          page.txt
+
+*** Variables ***
+${account_blance_second_settlement}    ${EMPTY}
+${account_balance}    ${EMPTY}
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${url}
+    Open Browser    ${url}
+
+输入用户名
+    [Arguments]    ${username}
+    Input Text    username    ${username}
+
+输入密码
+    [Arguments]    ${password}
+    Input Text    password    ${password}
+
+点击登录
+    Click Button    xpath=.//*[@id='fm1']/button
+
+检查登录成功
+    Page Should Contain    品牌店代运营系统
+
+检查登录失败
+    Page Should Contain Element    msg
+
+选择交易员
+    [Arguments]    ${user}
+    Select From List    userList    ${user}
+
+输入买家信息
+    [Arguments]    ${buyer}    ${contact}    ${contactTel}
+    Input Text    buyer    ${buyer}
+    Input Text    contact    ${contact}
+    Sleep    1
+    Input Text    contactTel    ${contactTel}
+
+选择付款期限
+    [Arguments]    ${paymentType}    ${delayNum}
+    Select Radio Button    paymentType    ${paymentType}
+    Run Keyword If    '${paymentType}'=='1'    Input Text    delayNum    ${delayNum}
+
+添加卖家以及资源
+    [Arguments]    ${sellerName}    ${material}    ${spec}    ${factory}    ${province}    ${city}
+    ...    ${warehouse}    ${quantity}    ${weight}    ${weightConcept}    ${dealPrice}    ${costPrice}
+    ...    ${isPayedByAcceptDraft}
+    Input Text    sellerName    ${sellerName}
+    选择品名
+    Input Text    material    ${material}
+    Input Text    spec    ${spec}
+    Input Text    factory    ${factory}
+    Sleep    2
+    Select From List    province    ${province}
+    Sleep    1
+    Select From List    city    ${city}
+    Input Text    warehouse    ${warehouse}
+    Input Text    quantity    ${quantity}
+    Input Text    weight    ${weight}
+    Sleep    1
+    Select From List    weightConcept    ${weightConcept}
+    Input Text    dealPrice    ${dealPrice}
+    Input Text    costPrice    ${costPrice}
+    Sleep    1
+    Select From List    isPayedByAcceptDraft    ${isPayedByAcceptDraft}
+
+选择品名
+    Click Element    nsortName
+    sleep    3
+    Click Element    xpath=.//*[@id='showLayer_nsortName']/div[1]/ul/li[2]/a
+    Sleep    3
+    Click Element    xpath=.//*[@id='showLayer_nsortName']/div[3]/div[1]/div[2]/div[3]/span[2]
+
+最大化浏览器窗口
+    Maximize Browser Window
+
+复制第1行资源信息
+    Click Element    xpath=.//*[@id='table_resource']/tbody/tr[1]/td[17]/div[1]/a[1]/i
+
+删除第1行资源信息
+    Click Element    xpath=.//*[@id='table_resource']/tbody/tr[1]/td[16]/div[1]/a[2]/i
+    Sleep    3
+    Click Element    xpath=html/body/div[7]/div[2]/div/div[2]/button[2]
+
+配置交（提）货信息
+    [Arguments]    ${deliveryType}    ${feeTaker}    ${outboundTaker}    ${contractAddress}
+    Select From List    deliveryType    ${deliveryType}
+    Comment    Input Text    endTime    ${endTime}
+    Select From List    feeTaker    ${feeTaker}
+    Select From List    outboundTaker    ${outboundTaker}
+    Input Text    contractAddress    ${contractAddress}
+
+点击提交审核
+    Click Button    submit
+
+检查卖家全称错误
+    Sleep    2
+    ${var}    Get Text    xpath=//div[contains(@class,'bootbox-body')]
+    Log    ${var}
+    Should Be Equal    ${var}    未找到对应的代运营客户，请重新输入！
+    Click Button    xpath=//div[contains(@class,'modal-footer')]/button
+
+关闭浏览器
+    Close Browser
+
+检查开单成功
+    Comment    Sleep    10
+    Comment    Location Should Be    http://cbmstest.com:8019/web/order/query/approval.html
+    Sleep    1
+    ${var}    Get Text    xpath=//div[contains(@class,'bootbox-body')]
+    Log    ${var}
+    Should Be Equal    ${var}    提交订单成功，请等待办事处总经理审核订单！
+    Sleep    6
+
+退出登录
+    Click Element    xpath=.//*[@id='navbar-container']/div[3]/ul/li/a/i
+    Sleep    2
+    Click Element    logout
+
+进入到待审核交易单页面
+    [Arguments]    ${url}
+    Go To    ${url}
+
+进入到新开交易单页面
+    [Arguments]    ${url}
+    最大化浏览器窗口
+    Go To    ${url}
+
+点击审核
+    Sleep    2
+    Click Element    xpath=.//*[@id='dynamic-table']/tbody/tr/td[12]/a
+
+进入到待关联页面
+    [Arguments]    ${url}
+    Go To    ${url}
+    Sleep    2
+
+获取买家客户账户余额
+    [Arguments]    ${url}    ${accountName}
+    Go To    ${url}
+    Sleep    1
+    Input Text    xpath=.//*[@id='accountName']    ${accountName}
+    Click Element    xpath=.//*[@id='searchVendorlist']
+    Sleep    1
+    Click Element    xpath=.//*[@id='dynamic-table']/tbody/tr/td[1]/a
+    Sleep    2
+    Click Element    xpath=.//*[@id='myTab4']/li[6]/a
+    Sleep    3
+    ${var1}    Get Text    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div/div/div[2]/span[1]/label[1]
+    @{var1}=    Split String    ${var1}    ：
+    ${account_balance}    Set Variable    ${var1[1]}
+    Log    ${account_balance}
+    ${var2}    Get Text    xpath=.//*[@id='main-container']/div[2]/div/div[2]/div/div/div[2]/span[1]/label[2]
+    @{var2}=    Split String    ${var2}    ：
+    ${account_blance_second_settlement}    Set Variable    ${var2[1]}
+    Log    ${account_blance_second_settlement}
+
+检查关联成功
+    ${var}    Get Text    xpath=//div[contains(@class,'bootbox-body')]
+    Log    ${var}
+    Should Be Equal    ${var}    合同关联成功！
+    Sleep    2
+
+关联合同流程
+    [Arguments]    ${url1}    ${accountName}    ${url2}
+    获取买家客户账户余额    ${url1}    ${accountName}
+    ${var1}    Set Variable    ${account_balance}
+    进入到待关联页面    ${url2}
+    待关联页面
+    获取买家客户账户余额    ${url1}    ${accountName}
+    ${var2}    Set Variable    ${account_balance}
+    Should Be Equal As Numbers    ${var1}    ${var2}+12

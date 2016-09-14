@@ -1,0 +1,28 @@
+*** Settings ***
+Documentation     - 功能模块的封装操作(这里暂时放到公用库库，如果发现超市、分拣弹层也可以用这个的话直接拿去用吧)
+...               1. 弹层：通过查看源码可以发现CBMS中弹层都是用的公用模块，所以这里把弹层单独封装起来。
+...               2.
+Resource          Selenium.txt
+
+*** Keywords ***
+单击浮层确定
+    [Documentation]    弹出的浮层是包含 确认和取消
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary btn-sm"]    #单击浮层确定
+
+单击浮层取消
+    [Documentation]    弹出的浮层是包含 确认和取消
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-sm"]    #单击浮层取消
+
+单击浮层关闭
+    [Documentation]    弹出的浮层是包含 确认和取消
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="bootbox-close-button close"]    #单击X关闭
+
+获取浮层文本
+    [Documentation]    弹出的浮层是包含 确认和取消
+    ${Temp}    获取元素文本    xpath=//*[@class="modal-content"]//div[@class="bootbox-body"]    #获取弹层的文本
+    Set Global Variable    ${Text}    ${Temp}
+    [Return]    ${Text}
+
+单击浮层OK
+    [Documentation]    弹出的浮层是OK
+    单击按钮    xpath=//*[@class="modal-content"]//button[@class="btn btn-primary"]    #单击浮层OK

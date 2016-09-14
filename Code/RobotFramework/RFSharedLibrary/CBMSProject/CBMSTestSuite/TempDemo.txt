@@ -1,0 +1,161 @@
+*** Settings ***
+Documentation     提供一个临时的测试套件，大家可以在这里创建临时用的测试用例。里面有些例子可以看看如何使用关键字等等...
+Test Setup        结束ChromeDriver
+Force Tags
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../ProjectResource.txt
+Library           Dialogs
+Library           Process
+Resource          ../../SharedLibrary/Action/Database.txt
+
+*** Variables ***
+${suite2}         我是当前suite里的变量
+
+*** Test Cases ***
+Temp_temp
+    打开浏览器    ${testURL}
+    ${textReturn}    get text    div5
+    ${valueReturn}    get value    div5
+    Log    Text=${textReturn}
+    Log    Value=${valueReturn}
+    断言两个对象是否相等    ${textReturn}    text
+
+Temp_浏览器切换选择
+    打开浏览器    https://www.baidu.com/    chrome    Baidu
+    ${titile1}    Get Title
+    打开浏览器    http://www.51testing.com/html/index.html    ff    51testing
+    ${titile2}    Get Title
+    选择浏览器    Baidu
+    ${titile3}    Get Title
+    选择浏览器    51testing
+    ${titile4}    Get Title
+    关闭所有浏览器
+
+Temp_键盘按键
+    [Documentation]    Alt和Ctrl组合键不知道为啥不行，发送单独按键可以
+    Comment    Open Browser    https://www.baidu.com/?tn=92204315_hao_pg    ff
+    Comment    Wait Until Page Contains Element    id=kw    10    页面元素没有出现
+    Comment    Send    {F12}
+    Comment    sleep    1s
+    Comment    Send    {Esc}    \    #发送按键
+    Comment    CLOSE BROWSER
+    Run    notepad.exe
+    Wait For Active Window    无标题 - 记事本
+    Comment    Send    {ALTDOWN}    \    #按下 Alt
+    Comment    Send    {F}    \    #Alt+F4
+    Comment    Send    {ALTUP}    \    #松开 Alt
+    Comment    Send    {CTRLDOWN}    \    # 按下Ctrl键
+    Comment    Send    s
+    Comment    Send    {CTRLUP}    \    # 松开Ctrl键
+
+Temp_Process
+    [Documentation]    * 还有问题，未完待续
+    打开浏览器    ${testURL}
+    ${temp}=    Process Exists    chromedriver.exe
+    : FOR    ${temp}    IN RANGE    99999
+    \    Process Close    chromedriver.exe
+    \    Exit For Loop If    ${temp}<1
+
+Temp_根据返回的状态执行相应操作
+    打开浏览器    https://www.baidu.com/
+    Comment    返回为None
+    ${returnStatus1}=    运行关键字并返回状态    Page Should Contain Element    xpath=//*[@id="kw"]
+    Log    ${returnStatus1}
+    Run Keyword If    '${returnStatus1}'=='None'    输入文本    xpath=//*[@id="kw"]    test1
+    Comment    为None的第二种判断方式
+    ${returnStatus2}=    运行关键字并返回状态    Wait Until Element Is Visible    css=#kw
+    Log    ${returnStatus2}
+    Run Keyword If    ${returnStatus2} is None or ${returnStatus2} != "FAIL"    输入文本    xpath=//*[@id="kw"]    test2
+    ${returnStatus3}=    运行关键字并返回状态    Wait Until Element Is Visible    css=#kw
+    Log    ${returnStatus3}
+    Run Keyword If    ${returnStatus2} != "FAIL"    输入文本    xpath=//*[@id="kw"]    test3
+
+Temp_跨Suite调用1
+    Comment    可以通过这种方式在运行的testcase中将变量返回给下一个testcase用
+    Set Global Variable    ${suite1}    定义一个运行时全局变量，给Temp_跨Suite调用2使用。这里暂时用TestCase举例，Suite使用相同
+
+Temp_跨Suite调用2
+    [Documentation]    * 此用例需要配合Temp_跨Suite调用1一起运行，主要是为了演示如何跨Suite调用变量。这里暂时用testcase代替，避免创建新的suite做测试
+    Log    ${suite1}
+    Log    ${suite2}
+    Comment    通过resource方式可以调用外部文件里面的变量
+    Log    ${suite3}
+
+Temp_使用全局资源
+    打开浏览器    ${testURL}
+
+Temp_JS相关操作
+    打开浏览器    ${testURL}
+    Comment    修改InputText文本框里面内容的值
+    执行同步JavaScript    document.getElementById("text1").value="111";
+    Comment    修改元素标签之间的内容
+    执行同步JavaScript    document.getElementById("div1").value="修改标签之间的内容";
+    Comment    执行同步JavaScript    document.getElementById("selectFile").src="C:\Users\Administrator\Pictures\cbms_picture\买家_打款资料.png"
+    Comment    单击某个按钮
+    执行同步JavaScript    document.getElementById('button1').click();
+
+Temp_日期函数
+    获取当前日期
+    获取当前秒数
+
+Temp_Print
+    [Documentation]    打印机操作
+    打开浏览器    ${testURL}
+    click Button    id=print
+    sleep    1s
+    Comment    模拟发送按键    {Esc}
+
+Temp_UseJQuery
+    [Documentation]    * 使用 jquery
+    ...
+    ...    http://robotframework.org/Selenium2Library/doc/Selenium2Library.html
+    打开浏览器    ${testURL}
+    Execute Javascript    var jQ = window.document.createElement('script');jQ.src='https://code.jquery.com/jquery-3.0.0.min.js';window.document.body.appendChild(jQ);
+    单击按钮    dom=$("#print")    #选取ID为Print的元素
+
+Temp_生成全局唯一值
+    ${GlobalOnlyValue}    生成全局唯一值
+    Log    SDD_${GlobalOnlyValue}
+    ${GlobalOnlyValueTel}    生成全局唯一值手机号
+    Log    ${GlobalOnlyValueTel}
+
+Temp_内建变量
+    [Documentation]    RF系统内置的变量
+    Log    RF系统内置的变量,不区分大小写
+    Log    数字变量
+    Log    创建数字变量${314}
+    Log    ${3.14}
+    Log    Boolean变量:true,false.通过不加\${}可以发现Log会直接当文本打印
+    Log    ${true}
+    Log    ${false}
+    Log    内建变量：null和None
+    Log    ${null}
+    Log    ${none}
+    Log    空格和空变量：space，empty
+    Log    ${SPACE}
+    Log    ${EMPTY}
+
+Temp_Table相关操作
+    Comment    获取表格行数，减去第一行头
+    执行同步JavaScript    document.getElementById("dynamic-table").rows.length-1
+
+Temp_IF
+    ${a}    Set Variable    0
+    ${b}    Set Variable    5
+    Run Keyword IF    ${a} > 1    Log    1
+    ...    ELSE IF    ${b} <= 4    Log    2
+    ...    ELSE IF    ${b} <= 7    Log    4
+    ...    ELSE    Log    3
+
+Temp_DataBase
+    连接数据库    pymysql    database='smartmatch2.0',user='root',password='root',host='192.168.0.198',port=3306,charset='utf8'
+    ${str}    Set Variable    smartmatch2.0
+    @{QueryResults}=    执行查询    SELECT * FROM `${str}`.kuandao_deposit_journal_test order by id desc;
+    ${Chinese}    Set Variable    u'\u6d66\u53d12000046934'
+    ${utf8cn}    Evaluate    ${Chinese}
+    log    ${utf8cn}
+    Comment    @{Chinese}    Evaluate    '@{QueryResults}'.decode('gbk')
+    Log Many    @{QueryResults}

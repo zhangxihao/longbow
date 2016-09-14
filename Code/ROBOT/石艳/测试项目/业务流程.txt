@@ -1,0 +1,85 @@
+*** Settings ***
+Resource          脚本关键字.txt
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+登录系统
+    [Arguments]    ${url}    ${username}    ${password}
+    打开浏览器    ${url}
+    最大化浏览器窗口
+    输入用户名    ${username}
+    输入密码    ${password}
+    点击登录
+
+进入新增交易单页面
+    [Arguments]    ${menu}
+    go to    ${menu}
+
+输入买家信息
+    [Arguments]    ${buyer}
+    input text    id=buyer    ${buyer}
+    input text    id=contact    张一
+    input text    id=contactTel    13654125874
+
+选择付款期限
+    select radio button    paymentType    1
+    input text    delayNum    5
+
+输入卖家及交易资源信息
+    [Arguments]    ${seller}
+    input text    name=sellerName    ${seller}
+    click element    name=nsortName
+    set browser implicit wait    3
+    click element    id=showLayer_nsortName
+    click element    xpath=//div[@ name='nsort']/div/div[2]/div/span[2]/a
+    input text    xpath=//*[@id='table_resource']/tbody/tr/td[4]/input    钢材
+    input text    xpath=//*[@id='table_resource']/tbody/tr/td[5]/input    20*20
+    input text    xpath=//*[@id='table_resource']/tbody/tr/td[6]/input    测试厂家
+    select from list by value    xpath=//*[@id='table_resource']/tbody/tr/td[7]/select[1]    18
+    sleep    3
+    select from list by value    xpath=//*[@id='table_resource']/tbody/tr/td[7]/select[2]    184
+    sleep    3
+    input text    xpath=//*[@id='table_resource']/tbody/tr/td[8]/input    测试仓库
+    input text    xpath=//*[@id='table_resource']/tbody/tr/td[9]/input    10
+    input text    xpath=//*[@id='table_resource']/tbody/tr/td[10]/input    10
+    select from list by value    xpath=//*[@id='table_resource']/tbody/tr/td[11]/select    抄码
+    input text    xpath=//*[@id='table_resource']/tbody/tr/td[12]/input    120
+    input text    xpath=//*[@id='table_resource']/tbody/tr/td[13]/input    100
+
+选择交提货信息
+    select from list by value    deliveryType    DISPATCH
+    click element    endTime
+    Comment    click element    xpath=/html/body/div/div[3]/table/tbody/tr[6]/td[4]
+    select from list by value    feeTaker    seller
+    select from list by value    outboundTaker    seller
+    input text    contractAddress    合同签订地
+
+提交订单
+    click button    submit
+    sleep    5
+    Comment    ${msg}    get alert message
+    Comment    log    ${msg}
+    Comment    alert should be present
+
+退出登录
+    click element    xpath=//div[@id='navbar-container']/div[3]/ul/li/a/i
+    sleep    1
+    click element    xpath=//*[@id='logout']
+    beijingowner
+
+根据卖家全称进行搜索
+    [Arguments]    ${seller}
+    input text    sellerName    ${seller}
+    click button    queryBtn
+    sleep    3
+
+进入新开交易单的审核页面
+    click element    xpath=//*[@id='dynamic-table']/tbody/tr/td[12]/a
+
+审核新开交易单
+    Comment    choose cancel on next confirmation
+    click button    order_audit_accept
+    ${msg}    confirm action
+    log    ${msg}
+    Comment    ${msg}    dismiss alert

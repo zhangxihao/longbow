@@ -1,0 +1,40 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${url}
+    open browser    ${url}
+
+输入用户名
+    [Arguments]    ${username}
+    input text    id=username    ${username}
+
+输入密码
+    [Arguments]    ${password}
+    input password    id=password    ${password}
+
+点击登录
+    click button    xpath=//button[@class='animated infinite pulse']
+
+检查登录成功
+    page should contain image    xpath=//div[@class='pull-left']/a/img
+
+检查登录失败
+    page should contain element    id=msg    Invalid credentials.
+
+关闭浏览器
+    close browser
+
+检查有“交易管理”菜单
+    page should contain element    xpath=//span[@class='menu-text']    交易管理
+
+在左侧菜单栏中点击交易管理
+    click element    xpath=//span[text()=' 交易管理 ']
+
+最大化浏览器窗口
+    Maximize Browser Window
+
+进入菜单页面
+    [Arguments]    ${menu}
+    go to    ${menu}

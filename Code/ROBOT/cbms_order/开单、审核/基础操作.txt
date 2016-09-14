@@ -1,0 +1,43 @@
+*** Keywords ***
+浏览器开启
+    [Arguments]    ${url}
+    open browser    ${url}
+
+输入文本
+    [Arguments]    ${id}    ${text}
+    input text    id=${id}    ${text}
+
+输入密码
+    [Arguments]    ${pw_id}    ${text}
+    input password    id=${pw_id}    ${text}
+
+浏览器跳转
+    [Arguments]    ${goto}
+    go to    ${goto}
+
+点击登录
+    click button    xpath=/html/body/div/div[2]/div[3]/form/table/tbody/tr[4]/td/button
+
+选择品类
+    [Arguments]    ${xpath}
+    click element    ${xpath}
+
+下拉列表选择
+    [Arguments]    ${ddlist_id}    ${ddlist_index}
+    Select From List By Value    ${ddlist_id}    ${ddlist_index}
+
+输入文本-Xpath
+    [Arguments]    ${path}    ${text}
+    input text    ${path}    ${text}
+
+选择品类-Xpath
+    [Arguments]    ${xpath}
+    click element    ${xpath}
+
+点击按钮-ID
+    [Arguments]    ${button_id}
+    click element    id=${button_id}
+
+点击按钮-Xpath
+    [Arguments]    ${xpath}
+    click element    ${xpath}

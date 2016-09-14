@@ -1,0 +1,143 @@
+*** Settings ***
+Documentation     - 如果按照代码的逻辑，这里是每一个都是对象，Element。较好的设计方式是，Object.method形式编写脚本。但是暂无好的方式实现，只能把对象赋予本身的方法。
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../ProjectResource.txt
+Resource          ../../SharedLibrary/Action/CBMSGloble.txt
+
+*** Keywords ***
+页面款道-未开户-客户名称
+    [Arguments]    ${MemeberName}    ${Method}=${EMPTY}
+    [Documentation]    实现一个简单的面向对象编程设计，根据传入的不同Method对元素执行不同的方法
+    Comment    #搜索栏的客户名称
+    Comment    Run Keyword If    '${Method}'=='input'    Input text    xpath=//*[@id="memeberName"]    ${MemeberName}
+    Comment    ...
+    ...    ELSE IF    '${Method}' == 'click'    Click Button    xpath=//*[@id="memeberName"]    ${MemeberName}
+    Comment    ...    ElSE    Log    对象不存在此方法
+    输入文本    xpath=//*[@id="memeberName"]    ${MemeberName}
+
+页面款道-未开户-会员类型
+    [Arguments]    ${CustType}
+    Comment    #搜索栏的会员类型
+    下拉选择    xpath=//*[@id="custType"]    ${CustType}
+
+页面款道-未开户-状态
+    [Arguments]    ${Status}
+    Comment    #未开户搜索栏的状态元素
+    下拉选择    xpath=//*[@id="status"]    ${Status}
+
+页面款道-未开户-搜索按钮
+    Comment    #搜索栏的搜索按钮
+    单击按钮    xpath=//*[@id="queryBtn"]
+
+页面款道-未开户-批量开户
+    Comment    #搜索栏的批量开户按钮
+    单击按钮    xpath=//*[@id="openAccountBtn"]
+
+页面款道-未开户-开户
+    Comment    #第一行的开户链接
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[last()]/a[text()="开户"]
+
+页面款道-未开户-修改
+    Comment    #第一行的修改链接
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[last()]/a[text()="修改"]
+
+页面款道-未开户-修改-输入公司名称
+    [Arguments]    ${TextValue}
+    输入文本    xpath=//*[@id="memeberName"]    ${TextValue}
+
+页面款道-未开户-修改-输入组织机构代码
+    [Arguments]    ${TextValue}
+    输入文本    xpath=//*[@id="orgCode"]    ${TextValue}
+
+页面款道-未开户-修改-输入款道手机
+    [Arguments]    ${TextValue}
+    输入文本    xpath=//*[@id="mobile"]    ${TextValue}
+
+页面款道-未开户-修改-确定
+    单击按钮    xpath=//*[@id="commit"]
+
+页面款道-未开户-修改-取消
+    单击按钮    xpath=//*[@id="cancel"]
+
+页面款道-已开户-客户名称
+    [Arguments]    ${MemeberName}
+    Comment    #搜索栏的客户名称
+    输入文本    xpath=//*[@id="memeberName"]    ${MemeberName}
+
+页面款道-已开户-浦发会员号
+    [Arguments]    ${MemeberCode}
+    Comment    #搜索栏的浦发会员号
+    输入文本    xpath=//*[@id="memeberCode"]    ${MemeberCode}
+
+页面款道-已开户-浦发虚拟账号
+    [Arguments]    ${virAcctNo}
+    Comment    #搜索栏的浦发虚拟账号
+    输入文本    xpath=//*[@id="virAcctNo"]    ${virAcctNo}
+
+页面款道-已开户-状态
+    [Arguments]    ${Status}
+    Comment    #已开户搜索栏的状态元素
+    下拉选择    xpath=//*[@id="status"]    ${Status}
+
+页面款道-已开户-搜索按钮
+    Comment    #已开户搜索栏的搜索按钮
+    单击按钮    xpath=//*[@id="queryBtn"]
+
+页面款道-已开户-会员查询
+    Comment    #已开户会员查询元素
+    单击按钮    xpath=//*[@id="queryAllBtn"]
+    单击浮层确定
+    ${Temp}    获取浮层文本
+    Run Keyword IF    '${Temp}'=='客户信息查询完成'    单击浮层OK
+    ...    ELSE    测试失败    会员查询接口调用失败
+
+页面款道-已开户-同步所有
+    Comment    #已开户页面同步所有元素
+    单击按钮    xpath=//*[@id="synchronizeAllBtn"]
+
+页面款道-已开户-同步
+    Comment    #第一行的同步链接
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[last()]/a[text()="同步"]
+
+页面款道-已开户-删除
+    Comment    #第一行的删除链接
+    单击链接    xpath=//*[@id="dynamic-table"]/tbody/tr[1]/td[last()]/a[text()="删除"]
+
+页面款道-支付单管理-交易单号
+    [Arguments]    ${consignOrderCode}
+    [Documentation]    - 支付单管理模块
+    输入文本    xpath=//*[@id="consignOrderCode"]    ${consignOrderCode}
+
+页面款道-支付单管理-付款方名称
+    [Arguments]    ${payMerName}
+    [Documentation]    - 支付单管理模块
+    输入文本    xpath=//*[@id="payMerName"]    ${payMerName}
+
+页面款道-支付单管理-收款方名称
+    [Arguments]    ${payeeMerName}
+    [Documentation]    - 支付单管理模块
+    输入文本    xpath=//*[@id="payeeMerName"]    ${payeeMerName}
+
+页面款道-支付单管理-交易员
+    [Arguments]    ${ownerId}
+    [Documentation]    - 支付单管理模块
+    输入文本    xpath=//*[@id="ownerId"]    ${ownerId}
+
+页面款道-支付单管理-开始日期
+    [Arguments]    ${dateCreated}
+    [Documentation]    - 支付单管理模块
+    输入文本    xpath=//*[@id="dateCreated"]    ${dateCreated}
+
+页面款道-支付单管理-结束日期
+    [Arguments]    ${dateEnd}
+    [Documentation]    - 支付单管理模块
+    输入文本    xpath=//*[@id="dateEnd"]    ${dateEnd}
+
+页面款道-支付单管理-搜索
+    [Documentation]    - 支付单管理模块
+    单击按钮    xpath=//*[@id="queryBtn"]
+
+页面款道-同步日志-状态
+    [Arguments]    ${Status}
+    下拉选择    xpath=//*[@id="result"]    ${Status}

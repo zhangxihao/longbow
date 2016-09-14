@@ -1,0 +1,31 @@
+*** Settings ***
+Resource          Action.txt
+
+*** Keywords ***
+登录页面_SDD
+    [Arguments]    ${username}    ${password}
+    输入用户名    username    ${username}
+    输入密码    password    ${password}
+    点击Button    //*[@id="form1"]/table/tbody/tr[4]/td/button
+    Comment    Wait Until Page Contains Element    logout
+    Comment    点击Button    xpath=//*[@id="fm1"]/button    测试环境
+
+执行搜索
+    [Arguments]    ${code}=    ${accountName}=    ${sellerName}=    ${ownerId}=    ${selectValue}=    ${startTime}=
+    ...    ${endTime}=    # code:交易单号, accountName:买家全称, sellerName:卖家全称, ownerId:交易员, selectValue:下拉选择, startTime:开始日期, endTime:结束日期。
+    [Documentation]    根据所传入的可选参数执行相应的动作：
+    ...    code=交易单号,
+    ...    accountName=买家全称,
+    ...    sellerName=卖家全称,
+    ...    ownerId=交易员,
+    ...    selectValue=下拉选择,
+    ...    startTime=开始日期,
+    ...    endTime=结束日期。
+    输入字符串    code    ${code}
+    输入字符串    accountName    ${accountName}
+    输入字符串    sellerName    ${sellerName}
+    输入字符串    ownerId    ${ownerId}
+    下拉选择    //*[@id="select_pay_style"]    ${selectValue}
+    输入字符串    startTime    ${startTime}
+    输入字符串    endTime    ${endTime}
+    点击Button    queryBtn

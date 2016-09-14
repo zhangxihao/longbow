@@ -1,0 +1,296 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+Resource          ../../SharedLibrary/Action/BuilIn.txt
+Resource          ../../SharedLibrary/Action/AutoIt.txt
+Resource          ../../SharedLibrary/Assert/Assert.txt
+Resource          ../EC2.0Flow/Flow_Reset.txt
+Resource          ../ProjectResource_2.0.txt
+Resource          ../EC2.0Flow/FlowNormal_EC2.0.txt
+
+*** Test Cases ***
+忘记密码流程
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Login}
+    流程忘记密码-进入页面    url=${URL.Resetpassword}
+    流程忘记密码-输入手机号    15800000000
+    流程忘记密码-点击获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程忘记密码-查询验证码
+    流程忘记密码-输入信息修改密码    ${smsCodeNumber}    888888    888888
+    关闭当前浏览器
+
+忘记密码—手机号为空或异常
+    [Documentation]    验证三种情况：
+    ...
+    ...    一、手机号为空的情况
+    ...
+    ...    二、手机号少于11位
+    ...
+    ...    三、手机号含有字母
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Login}
+    流程忘记密码-进入页面    url=${URL.Resetpassword}
+    页面忘记密码-点击下一步    #验证第一种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="手机号码不能为空"]
+    Run Keyword If    '${Temp}' == '手机号码不能为空'    刷新
+    流程忘记密码-输入手机号    15800000    #验证码第二种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="手机号码格式不正确"]
+    Run Keyword If    '${Temp}' == '手机号码格式不正确'    刷新
+    流程忘记密码-输入手机号    1580000000A    #验证码第三种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="手机号码格式不正确"]
+    Run Keyword If    '${Temp}' != '手机号码格式不正确'    测试失败
+    关闭当前浏览器
+
+忘记密码—验证码为空或异常
+    [Documentation]    验证三种情况：
+    ...
+    ...    一、验证码为空的情况
+    ...
+    ...    二、验证码少于4位
+    ...
+    ...    三、验证码输入错误
+    ...
+    ...    四、60秒内多次点击获取验证码
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Login}
+    流程忘记密码-进入页面    url=${URL.Resetpassword}
+    流程忘记密码-输入手机号    15800000000    #验证码第一种情况
+    页面忘记密码-点击下一步
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码不能为空"]
+    Run Keyword If    '${Temp}' == '验证码不能为空'    刷新
+    流程忘记密码-输入手机号    15800000000    #验证码第二种情况
+    页面忘记密码-输入验证码    123
+    页面忘记密码-点击下一步
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    流程忘记密码-输入手机号    15800000000    #验证码第三种情况
+    流程忘记密码-点击获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    页面忘记密码-输入验证码    0000
+    页面忘记密码-点击下一步
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    流程忘记密码-输入手机号    15800000000    #验证码第四种情况
+    页面忘记密码-点击获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送太频繁"]
+    Run Keyword If    '${Temp}' != '验证码发送太频繁'    测试失败
+    关闭当前浏览器
+
+忘记密码—密码为空或异常
+    [Documentation]    验证四种情况：
+    ...
+    ...    一、密码为空的情况
+    ...
+    ...    二、密码少于6位
+    ...
+    ...    三、两次输入密码不一致
+    ...
+    ...    四、刷新回到前页面，验证码仍可用
+    流程首页    ${URL.Web}
+    跳转到地址    ${URL.Login}
+    流程忘记密码-进入页面    url=${URL.Resetpassword}
+    流程忘记密码-输入手机号    15550000000    #验证码第一种情况
+    流程忘记密码-点击获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程忘记密码-查询验证码
+    页面忘记密码-输入验证码    ${smsCodeNumber}
+    页面忘记密码-点击下一步
+    页面忘记密码-点击确定
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="用户密码不能为空"]
+    Run Keyword If    '${Temp}' != '用户密码不能为空'    测试失败
+    页面忘记密码-设置密码    1234    #验证第二种情况
+    页面忘记密码-点击确定
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="用户密码不能少于6位"]
+    Run Keyword If    '${Temp}' != '用户密码不能少于6位'    测试失败
+    页面忘记密码-设置密码    ${EMPTY}    #验证第三种情况
+    页面忘记密码-设置密码    123456
+    页面忘记密码-确认密码    123455
+    页面忘记密码-点击确定
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="两次密码不一致"]
+    Run Keyword If    '${Temp}' == '两次密码不一致'    刷新
+    流程忘记密码-输入手机号    15550000000    #验证码第四种情况
+    页面忘记密码-输入验证码    ${smsCodeNumber}
+    页面忘记密码-点击下一步
+    页面忘记密码-设置密码    222222
+    页面忘记密码-确认密码    222222
+    页面忘记密码-点击确定
+    关闭当前浏览器
+
+重置密码流程
+    流程进入会员中心    xpath=//*[@id="gtxh_uame"]/a[text()="15200000000"]    url=${URL.Member}
+    页面重置密码-点击重置密码
+    选择窗口    url=${URL.Modifypassword}
+    流程重置密码-点击获取验证码    xpath=//*[@id="getCode"]    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程重置密码-查询验证码
+    流程重置密码-输入信息修改密码    ${smsCodeNumber}    123456    123456
+    关闭当前浏览器
+
+重置密码—验证码为空或异常
+    [Documentation]    验证三种情况：
+    ...
+    ...    一、验证码为空的情况
+    ...
+    ...    二、验证码少于4位
+    ...
+    ...    三、验证码输入错误
+    ...
+    ...    四、60秒内多次点击获取验证码
+    流程进入会员中心    xpath=//*[@id="gtxh_uame"]/a[text()="15200000000"]    url=${URL.Member}
+    流程重置密码-进入页面    url=${URL.Modifypassword}
+    页面重置密码-点击下一步    #验证码第一种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码不能为空"]
+    Run Keyword If    '${Temp}' == '验证码不能为空'    刷新
+    页面重置密码-输入验证码    123    #验证码第二种情况
+    页面重置密码-点击下一步
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    流程重置密码-点击获取验证码    xpath=//*[@id="getCode"]    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]    #验证码第三种情况
+    页面重置密码-输入验证码    0000
+    页面重置密码-点击下一步
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    页面重置密码-点击获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]    #验证码第四种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送太频繁"]
+    Run Keyword If    '${Temp}' != '验证码发送太频繁'    测试失败
+    关闭当前浏览器
+
+重置密码—密码为空或异常
+    [Documentation]    验证四种情况：
+    ...
+    ...    一、密码为空的情况
+    ...
+    ...    二、密码少于6位
+    ...
+    ...    三、两次输入密码不一致
+    ...
+    ...    四、刷新回到前页面，验证码仍可用
+    流程进入会员中心    xpath=//*[@id="gtxh_uame"]/a[text()="15200000000"]    url=${URL.Member}
+    流程重置密码-进入页面    url=${URL.Modifypassword}
+    流程重置密码-点击获取验证码    xpath=//*[@id="telCheckLogin"]//span[@class="sms_btn"]    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]    #验证码第一种情况
+    流程重置密码-查询验证码
+    页面重置密码-输入验证码    ${smsCodeNumber}
+    页面重置密码-点击下一步
+    页面重置密码-点击确定
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="用户密码不能为空"]
+    Run Keyword If    '${Temp}' != '用户密码不能为空'    测试失败
+    页面重置密码-设置密码    1234    #验证第二种情况
+    页面重置密码-点击确定
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="用户密码不能少于6位"]
+    Run Keyword If    '${Temp}' != '用户密码不能少于6位'    测试失败
+    页面重置密码-设置密码    ${EMPTY}    #验证第三种情况
+    页面重置密码-设置密码    123456
+    页面重置密码-确认密码    123455
+    页面重置密码-点击确定
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="两次密码不一致"]
+    Run Keyword If    '${Temp}' == '两次密码不一致'    刷新
+    页面重置密码-输入验证码    ${smsCodeNumber}    #验证码第四种情况
+    页面重置密码-点击下一步
+    页面重置密码-设置密码    222222
+    页面重置密码-确认密码    222222
+    页面重置密码-点击确定
+    关闭当前浏览器
+
+修改绑定手机流程
+    流程进入会员中心-修改绑定手机    xpath=//*[@id="gtxh_uame"]/a[text()="15520000000"]    url=${URL.Member}
+    流程修改绑定手机-进入页面    url=${URL.Resetphone}
+    流程修改绑定手机-点击获取验证码    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程修改绑定手机-查询验证码
+    流程修改绑定-输入验证码进行下一步    ${oldCode}
+    流程修改绑定手机-输入新手机号    13580000000
+    流程修改绑定手机-点击获取新验证码    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程修改绑定手机-查询新验证码
+    流程修改绑定-输入验证码立即绑定    ${smsCodeNumber}
+    关闭当前浏览器
+
+修改绑定手机流程-验证码为空或异常
+    [Documentation]    验证三种情况：
+    ...
+    ...    一、验证码为空的情况
+    ...
+    ...    二、验证码少于4位
+    ...
+    ...    三、验证码输入错误
+    ...
+    ...    四、60秒内多次点击获取验证码
+    流程进入会员中心-修改绑定手机    xpath=//*[@id="gtxh_uame"]/a[text()="13580000000"]    url=${URL.Member}
+    流程修改绑定手机-进入页面    url=${URL.Resetphone}
+    页面修改绑定手机-点击下一步    #验证第一种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    流程修改绑定-输入验证码进行下一步    111    #验证第二种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    流程修改绑定手机-点击获取验证码    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]    #验证第三种情况
+    流程修改绑定-输入验证码进行下一步    0000
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    页面修改绑定手机-点击获取验证码    #验证第四种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送太频繁"]
+    Run Keyword If    '${Temp}' != '验证码发送太频繁'    测试失败
+    关闭当前浏览器
+
+修改绑定手机流程-新手机号为空或异常
+    [Documentation]    验证三种情况：
+    ...
+    ...    一、手机号为空的情况
+    ...
+    ...    二、手机号少于11位
+    ...
+    ...    三、手机号含有字母
+    ...
+    ...    四、手机号已存在
+    流程进入会员中心-修改绑定手机    xpath=//*[@id="gtxh_uame"]/a[text()="13580000000"]    url=${URL.Member}
+    流程修改绑定手机-进入页面    url=${URL.Resetphone}
+    流程修改绑定手机-点击获取验证码    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程修改绑定手机-查询验证码
+    流程修改绑定-输入验证码进行下一步    ${oldCode}
+    页面修改绑定手机-点击立即绑定    #验证第一种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="手机号码不能为空"]
+    Run Keyword If    '${Temp}' != '手机号码不能为空'    测试失败
+    流程修改绑定手机-输入新手机号    138000000    #验证第二种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="手机号码格式不正确"]
+    Run Keyword If    '${Temp}' != '手机号码格式不正确'    测试失败
+    页面修改绑定手机-输入新手机号    ${EMPTY}    #验证第三种情况
+    流程修改绑定手机-输入新手机号    1358000000A
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="手机号码格式不正确"]
+    Run Keyword If    '${Temp}' != '手机号码格式不正确'    测试失败
+    流程修改绑定手机-输入新手机号    15800000000    #验证第四种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="手机号已存在"]
+    Run Keyword If    '${Temp}' != '手机号已存在'    测试失败
+    关闭当前浏览器
+
+修改绑定手机流程-新验证码为空或异常
+    [Documentation]    验证三种情况：
+    ...
+    ...    一、验证码为空的情况
+    ...
+    ...    二、验证码少于4位
+    ...
+    ...    三、验证码输入错误
+    ...
+    ...    四、60秒内多次点击获取验证码
+    ...
+    ...    五、验证原验证码30分钟内仍可用
+    流程进入会员中心-修改绑定手机    xpath=//*[@id="gtxh_uame"]/a[text()="13580000000"]    url=${URL.Member}
+    流程修改绑定手机-进入页面    url=${URL.Resetphone}
+    流程修改绑定手机-点击获取验证码    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程修改绑定手机-查询验证码
+    流程修改绑定-输入验证码进行下一步    ${oldCode}
+    流程修改绑定手机-输入新手机号    15520000000
+    页面修改绑定手机-点击立即绑定    #验证第一种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' != '验证码错误'    测试失败
+    流程修改绑定-输入验证码立即绑定    111    #验证第二种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' != '验证码错误'    测试失败
+    页面修改绑定手机-输入新验证码    ${EMPTY}    #验证第三种情况
+    Comment    流程修改绑定手机-点击获取新验证码    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程修改绑定-输入验证码立即绑定    0000
+    ${Temp}    获取元素文本    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="验证码错误"]
+    Run Keyword If    '${Temp}' == '验证码错误'    刷新
+    页面修改绑定手机-点击获取验证码    #验证第四种情况
+    ${Temp}    获取元素文本    xpath=//*[@id="telCheckLogin"]//p[@class="form-err"]//span[text()="验证码发送太频繁"]
+    Run Keyword If    '${Temp}' != '验证码发送太频繁'    测试失败
+    流程修改绑定-输入验证码进行下一步    ${oldCode}    #验证第五种情况
+    流程修改绑定手机-输入新手机号    15520000000
+    流程修改绑定手机-点击获取新验证码    xpath=//*[@id="newphone"]//p[@class="form-err"]//span[text()="验证码发送成功"]
+    流程修改绑定手机-查询新验证码
+    流程修改绑定-输入验证码立即绑定    ${smsCodeNumber}
+    关闭当前浏览器

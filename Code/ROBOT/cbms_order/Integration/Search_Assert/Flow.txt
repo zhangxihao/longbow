@@ -1,0 +1,13 @@
+*** Settings ***
+Resource          Page.txt
+
+*** Keywords ***
+登录流程_SDD
+    [Arguments]    ${URL}    ${username}    ${password}    ${browser}=ff
+    [Documentation]    登录流程有以下参数：
+    ...    URL：访问地址，
+    ...    username:用户名，
+    ...    password:密码，
+    ...    [browser:浏览器,可选参数，默认chrome]。
+    打开浏览器_SDD    ${URL}    ${browser}
+    登录页面_SDD    ${username}    ${password}

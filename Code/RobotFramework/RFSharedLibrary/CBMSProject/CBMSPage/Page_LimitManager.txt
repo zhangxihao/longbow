@@ -1,0 +1,55 @@
+*** Settings ***
+Resource          ../../SharedLibrary/Action/Selenium.txt
+
+*** Keywords ***
+页面-添加信用额度组
+    [Arguments]    ${groupingName}    ${groupinglimit}    ${companyName}    ${departmentType}    ${departmentName}    ${companyLimit}
+    ...    ${type}
+    [Documentation]    新增分组及添加客户额度
+    ...
+    ...    groupingName=信用组名
+    ...    groupinglimit=组信用额度
+    ...    companyName=公司名称
+    ...    departmentName=部门名称
+    ...    companyLimit=部门信用额度
+    ...    departmentType=部门类型：多部门、单部门。取值为0时，表示单部门；取值为1时，表示多部门。
+    ...    type=二结余额是否自动信用额度还款/抵扣：取值为1时，选择“是”；取值为0时，选择“否”；该字段默认取值为否。
+    输入文本    xpath=//*[@id="groupingName"]    ${groupingName}    #信用组名
+    输入文本    xpath=//*[@id="groupinglimit"]    ${groupinglimit}    #组信用额度
+    输入文本    xpath=//*[@name="companyName"]    ${companyName}    #公司名称
+    Comment    log    ${departmentType}
+    run keyword if    ${departmentType}==1    下拉选择    xpath=//*[@name="depertSelect"]    ${departmentName}
+    Comment    下拉选择    xpath=//*[@name="depertSelect"]    ${departmentName}    #部门名称
+    输入文本    xpath=//*[@name="companyLimit"]    ${companyLimit}    #信用额度
+    run keyword if    ${type}==1    单选框    isShowAuto1    1    #“二结余额是否自动信用额度还款/抵扣”选择“是”
+    单击按钮    xpath=//*[@id="confirmBtn"]
+
+页面-添加客户
+    [Arguments]    ${companyName}    ${departmentType}    ${departmentName}    ${companyLimit}    ${type}
+    [Documentation]    companyName=公司名称
+    ...    departmentName=部门名称
+    ...    companyLimit=部门信用额度
+    ...    departmentType=部门类型：多部门、单部门。取值为0时，表示单部门；取值为1时，表示多部门。
+    ...    type=二结余额是否自动信用额度还款/抵扣：取值为1时，选择“是”；取值为0时，选择“否”；该字段默认取值为否。
+    输入文本    companyName    ${companyName}
+    run keyword if    ${departmentType}==1    下拉选择    xpath=//*[@name="depertSelect"]    ${departmentName}
+    输入文本    companyLimit     ${companyLimit}
+    run keyword if    ${type}==1    单选框    radioautorefund    1    #“二结余额是否自动信用额度还款/抵扣”选择“是”
+    单击按钮    btn_edit_account
+
+页面-编辑客户额度信息
+    [Arguments]    ${companyLimit}    ${type}
+    [Documentation]    companyLimit=部门信用额度
+    ...    type=二结余额是否自动信用额度还款/抵扣：取值为1时，选择“是”；取值为0时，选择“否”；该字段默认取值为否。
+     输入文本    name=companyLimit    ${companyLimit}
+    run keyword if    ${type}==1    单选框    radioautorefund    1    #“二结余额是否自动信用额度还款/抵扣”选择“是”
+    单击按钮    btn_edit_account
+
+页面-编辑信用额度组
+    [Arguments]    ${groupingName}    ${groupinglimit}
+    [Documentation]    groupingName=信用组名
+    ...    groupinglimit=组信用额度
+    输入文本    editGroupingName    ${groupingName}
+    输入文本    editGroupinglimit    ${groupinglimit}
+    单击按钮    editGroupConFirmBtn
+    Comment    单击按钮    editGroupCancelBtn

@@ -1,0 +1,12 @@
+*** Settings ***
+Resource          Flow.txt
+Resource          Assert.txt
+
+*** Test Cases ***
+Search
+    登录流程    http://sso.prcsteel.com:8080/cas/login?service=http://sim-cbms.prcsteel.com/shiro-cas    zhangxihao    123456
+    登录检查    Pass
+    Maximize Browser Window
+    go to    http://sim-cbms.prcsteel.com/order/query/index.html?userName=%E5%BC%A0%E9%94%A1%E5%A5%BD&orgName=%E6%B5%8B%E8%AF%95%E7%BB%84&cbmsDomain=http%3A%2F%2Fsim-cbms.prcsteel.com&smartmatchDomain=http%3A%2F%2Fsim-cbms.prcsteel.com
+    Wait Until Page Contains Element    queryBtn
+    执行搜索    DD-QA-004649-1604-0006Da    \    \    \    现金支付    2015-04-12

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<testdirs>
+    <testdir id="测试根目录">
+        <root>testauto</root>
+    </testdir>
+
+    <testdir id="data">	    <!-- 用于存放数据驱动测试用例 -->
+        <login>login</login>
+    </testdir>
+
+    <testdir id="reports">      <!-- 暂时用不到通过jenkins自动生成,删除 -->
+        <report>$WORKSPACE/todolist/build/test-reports/junit-report.xml</report>
+    </testdir>
+
+    <testdir id="screenshot">   <!-- 暂时用不到通过robotium自动生成,jenkins删除 -->
+        <screenshot>$WORKSPACE/todolist/build/test-reports/</screenshot>
+    </testdir>
+
+</testdirs>

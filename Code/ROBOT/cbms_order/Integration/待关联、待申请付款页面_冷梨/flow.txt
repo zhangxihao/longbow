@@ -1,0 +1,61 @@
+*** Settings ***
+Resource          mykeyword.txt
+Resource          page.txt
+
+*** Keywords ***
+登录流程_LL
+    [Arguments]    ${url}    ${username}    ${password}
+    打开浏览器_LL    ${url}
+    登录页面    ${username}    ${password}
+
+开单流程
+    [Arguments]    ${url}    ${buyer}    ${contact}    ${contactTel}    ${paymentType}    ${delayNum}
+    ...    ${sellerName}    ${material}    ${spec}    ${factory}    ${province}    ${city}
+    ...    ${warehouse}    ${quantity}    ${weight}    ${weightConcept}    ${dealPrice}    ${costPrice}
+    ...    ${isPayedByAcceptDraft}    ${feeTaker}    ${outboundTaker}    ${contractAddress}
+    进入到新开交易单页面    ${url}
+    新开交易单页面    ${buyer}    ${contact}    ${contactTel}    ${paymentType}    ${delayNum}    ${sellerName}
+    ...    ${material}    ${spec}    ${factory}    ${province}    ${city}    ${warehouse}
+    ...    ${quantity}    ${weight}    ${weightConcept}    ${dealPrice}    ${costPrice}    ${isPayedByAcceptDraft}
+    ...    ${feeTaker}    ${outboundTaker}    ${contractAddress}
+
+审核通过流程
+    [Arguments]    ${url}
+    进入到待审核交易单页面    ${url}
+    点击审核
+    通过审核
+
+审核不通过流程
+    [Arguments]    ${url}    ${refuseNote}
+    进入到待审核交易单页面    ${url}
+    点击审核
+    不通过审核    ${refuseNote}
+
+获取金额容差流程
+    [Arguments]    ${username}    ${password}    ${url}
+    登录页面    ${username}    ${password}
+    ${rongcha}    获取金额容差    ${url}
+    [Return]    ${rongcha}
+
+获取买家客户账户余额流程
+    [Arguments]    ${username}    ${password}    ${url}    ${accountName}
+    登录页面    ${username}    ${password}
+    ${account_balance}    获取买家客户账户余额    ${url}    ${accountName}
+    [Return]    ${account_balance}
+
+关联合同流程
+    [Arguments]    ${usr1}    ${pwd1}    ${url1}    ${usr2}    ${pwd2}    ${url2}
+    ...    ${accountName}    ${url3}    ${order_total_amount}    ${testBuyerAccount}
+    ${rongcha}    获取金额容差流程    ${usr1}    ${pwd1}    ${url1}
+    退出登录_LL
+    ${account_balance}    获取买家客户账户余额流程    ${usr2}    ${pwd2}    ${url2}    ${accountName}
+    ${sum}    Evaluate    ${rongcha}+${account_balance}
+    进入到待关联详情页面    ${url3}    ${testBuyerAccount}
+    Run Keyword If    ${sum}>=${order_total_amount}    点击关联_LL
+    ...    ELSE    检查不可关联
+    sleep    2S
+
+申请付款流程
+    [Arguments]    ${url}    ${contract_no}    ${filename}    ${testBuyerAccount}
+    进入到待申请付款详情页面    ${url}    ${testBuyerAccount}
+    待申请付款详情页面    ${contract_no}    ${filename}    #${paymentAmount}    #需要先获取原金额然后把这个参数设置成默认值

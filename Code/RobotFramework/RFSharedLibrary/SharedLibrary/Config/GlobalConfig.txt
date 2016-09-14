@@ -1,0 +1,2 @@
+*** Variables ***
+&{Timeout}        retry=2min    retryInterval=5 sec    # 设置默认识别元素等待超时时间，2分钟内每隔5秒重试一次。用于给“等待关键字运行成功”关键字使用

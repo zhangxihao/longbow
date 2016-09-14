@@ -1,0 +1,72 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+
+*** Keywords ***
+打开浏览器
+    [Arguments]    ${url}
+    openBrowser    ${url}
+
+输入用户名
+    [Arguments]    ${username}
+    InputText    username    ${username}
+
+输入密码
+    [Arguments]    ${pwd}
+    InputText    password    ${pwd}
+
+登录
+    ClickButton    登录
+
+关闭浏览器
+    Close All Browsers
+
+结束进程
+    process close    firefox.exe
+
+窗口最大化
+    maximize browser window
+
+检查登录失败
+    ${msg}=    get text    xpath=/html/body/div/form/h2/div
+    should be equal as strings    ${msg}    Invalid credentials.
+
+检查登录成功
+    ${msg}=    get text    xpath=/html/body/div[1]/div/div[3]/ul/li/a/span[1]
+    should be equal as strings    ${msg}    杭州测试服务中心
+
+测试失败时调用
+    run keyword if test failed    关闭浏览器
+
+打开采购单
+    click link    xpath=/html/body/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[4]/div/a[1]
+
+输入买家电话
+    [Arguments]    ${tel}
+    inputtext    tel    ${tel}
+
+输入联系人
+    [Arguments]    ${contact}
+    inputtext    contact    ${contact}
+
+输入公司
+    [Arguments]    ${buy}
+    inputtext    buyer    ${buy}
+
+输入品名
+    click element    xpath=/html/body/div[3]/div[2]/div[1]/div[2]/div[2]/span[1]/a
+
+输入材质
+    click element    xpath=/html/body/div[2]/div[2]/div/div[2]/form/div[2]/div/div[2]/div/div/div[2]/div[1]/span[4]/a
+
+输入规格
+    click element    xpath=/html/body/div[2]/div[2]/div/div[2]/form/div[2]/div/div[3]/div[1]/div/div/div[2]/div[1]/span[2]/a
+    click element    xpath=/html/body/div[2]/div[2]/div/div[2]/form/div[2]/div/div[3]/div[2]/div/div/div[1]/div[1]/span/a
+    click element    xpath=/html/body/div[2]/div[2]/div/div[2]/form/div[2]/div/div[3]/div[3]/div/div/div[1]/div[1]/span/a
+
+输入重量
+    [Arguments]    ${weight}
+    inputtext    xpath=/html/body/div[2]/div[2]/div/div[2]/form/div[2]/div/div[5]/label/input    ${weight}
+
+保存
+    click button    xpath=/html/body/div[2]/div[2]/div/div[2]/form/div[4]/button[2]

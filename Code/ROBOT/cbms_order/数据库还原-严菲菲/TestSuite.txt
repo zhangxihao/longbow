@@ -1,0 +1,24 @@
+﻿*** Settings ***
+Library           AutoItLibrary
+Resource          mykeyword.txt
+Resource          flow.txt
+Library           Selenium2Library
+Resource          page2.txt
+Library           DatabaseLibrary
+Library           String
+Resource          template.txt
+Library           MyLibrary.py
+Resource          dbkey.txt
+
+*** Test Cases ***
+数据库备份
+    连接数据库    database='yff', user='root', password='123456', host='localhost', port=3306,charset='utf8'
+    备份数据库    D:\\yanfeifei\\TestDemo1\\
+    延迟时间
+    断开数据库
+
+还原数据库
+    连接数据库    database='yff', user='root', password='123456', host='localhost', port=3306,charset='utf8'
+    还原数据库    D:\\yanfeifei\\TestDemo1\\
+    延迟时间
+    断开数据库

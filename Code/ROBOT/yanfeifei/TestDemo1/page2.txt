@@ -1,0 +1,15 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          mykeyword.txt
+
+*** Keywords ***
+添加采购单
+    [Arguments]    ${tel}    ${contact}    ${buy}    ${weight}
+    输入买家电话    ${tel}
+    输入联系人    ${contact}
+    输入公司    ${buy}
+    输入品名
+    输入材质
+    输入规格
+    输入重量    ${weight}
+    保存

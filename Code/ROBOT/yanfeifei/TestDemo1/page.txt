@@ -1,0 +1,17 @@
+*** Settings ***
+Resource          mykeyword.txt
+
+*** Keywords ***
+登录页面
+    [Arguments]    ${username}    ${pwd}
+    输入用户名    ${username}
+    输入密码    ${pwd}
+    登录
+
+登录检查
+    [Arguments]    ${expected}
+    [Documentation]    检查登录是否成功
+    ...    若需要检查登录成功参数请写“pass”
+    ...    若需要检查登录失败参数请写"fail"
+    run keyword if     '${expected}'=='pass'    检查登录成功
+    run keyword if    '${expected}'=='faill'    检查登录失败

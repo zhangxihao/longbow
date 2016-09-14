@@ -1,0 +1,27 @@
+*** Settings ***
+Library           Selenium2Library
+Library           DatabaseLibrary
+Library           RequestsLibrary
+Library           requests
+Library           HttpLibrary.HTTP
+
+*** Test Cases ***
+链接数据库
+    Connect To Database Using Custom Params    pymysql    database='steel_cbms',user='steel_cbms',password='steel_cbms',host='192.168.0.207',port=3306,charset='utf8'
+    ${user}    query    SELECT * FROM `acl_user` where name = '张锡好';
+    Disconnect From Database
+    log    ${user}
+    should be equal    ${user[0][2]}    张锡好
+
+接口测试
+    Create Session    api    http://market.prcsteel.com
+    ${addr}    Get Request    api    Common/GetSortAndNsort
+    Should Be Equal As Strings    ${addr.status_code}    200
+    log    ${addr.content}
+    ${responsedata}    to json    ${addr.content}
+
+接口测试2
+    Create Http Context    market.prcsteel.com
+    HttpLibrary.HTTP.POST    /Home/GetCompanyInfo?companyName=天津达陆钢绞线有限公司
+    ${str_json}    get Response Body
+    ${json}    parse json    ${str_json}
